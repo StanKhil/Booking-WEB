@@ -29,3 +29,58 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+header {
+    background-color: #003b95;
+}
+.header-logo
+{
+    width: 10rem;
+    height: 3rem;
+}
+.tab-nav {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.tab-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 25px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 1px solid transparent;
+    color: white;
+    transition: background-color 0s ease, border-color 0s ease, color 0s ease, box-shadow 0s ease;
+}
+
+.tab-button:not(.active):hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.15); 
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.tab-button.active {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.tab-button:focus {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.continue-button
+{
+    width: 100%;
+    font-size: 1.2rem;
+}

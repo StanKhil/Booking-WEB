@@ -1,4 +1,5 @@
 using Booking_WEB.Data;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 
 namespace Booking_WEB
@@ -26,6 +27,7 @@ namespace Booking_WEB
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
             app.UseRouting();
 
             app.UseAuthorization();
@@ -35,6 +37,7 @@ namespace Booking_WEB
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
+
 
             app.Run();
         }
