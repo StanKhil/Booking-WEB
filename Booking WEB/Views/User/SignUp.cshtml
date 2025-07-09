@@ -13,6 +13,7 @@
 		<div class="mt-5">
 			<h4>Sign in or create an account</h4>
 			<p>You can sign in using your Booking.com account to access out services.</p>
+
 			<form action="/User/Register" method="post" enctype="application/x-www-form-urlencoded">
 				<div class="mb-3">
 					@{
@@ -25,6 +26,7 @@
 					<input type="text" name="user-name" value="@Model.FormModel?.UserName" class="form-control @classAddon" id="user-name" aria-describedby="Name" placeholder="Enter your name">
 					<div class="invalid-feedback">@errorMessage</div>
 				</div>
+
 				<div class="mb-3">
 					@{
 						classAddon = Model.FormErrors == null ? ""
@@ -36,6 +38,7 @@
 					<input type="email" name="user-email" value="@Model.FormModel?.UserEmail" class="form-control @classAddon" id="user-email" aria-describedby="Email" placeholder="Enter your email address">
 					<div class="invalid-feedback">@errorMessage</div>
 				</div>
+
 				<div class="mb-3">
 					@{
 						classAddon = Model.FormErrors == null ? ""
@@ -47,6 +50,7 @@
 					<input type="text" name="user-login" value="@Model.FormModel?.UserLogin" class="form-control @classAddon" id="user-login" aria-describedby="Login" placeholder="Enter your login">
 					<div class="invalid-feedback">@errorMessage</div>
 				</div>
+
 				<div class="mb-3">
 					@{
 						classAddon = Model.FormErrors == null ? ""
@@ -58,6 +62,7 @@
 					<input type="date" name="birthdate" value="@Model.FormModel?.Birthdate" class="form-control @classAddon" id="user-birthdate" aria-describedby="Birthdate" placeholder="Enter your birthdate">
 					<div class="invalid-feedback">@errorMessage</div>
 				</div>
+
 				<div class="mb-3">
 					@{
 						classAddon = Model.FormErrors == null ? ""
@@ -69,6 +74,7 @@
 					<input type="password" name="user-password" value="@Model.FormModel?.UserPassword" class="form-control @classAddon" id="user-password" aria-describedby="Password" placeholder="Enter your password">
 					<div class="invalid-feedback">@errorMessage</div>
 				</div>
+
 				<div class="mb-3">
 					@{
 						classAddon = Model.FormErrors == null ? ""
@@ -80,14 +86,15 @@
 					<input type="password" name="user-repeat" value="@Model.FormModel?.UserRepeat" class="form-control @classAddon" id="user-repeat" aria-describedby="Repeat Password" placeholder="Repeat your password">
 					<div class="invalid-feedback">@errorMessage</div>
 				</div>
+
 				<div class="form-check mb-3">
 					@{
 						classAddon = Model.FormErrors == null ? ""
-						: (Model.FormErrors.ContainsKey("UserEmail")) ? "is-invalid" : "is-valid";
+						: (Model.FormErrors.ContainsKey("Agree")) ? "is-invalid" : "is-valid";
 						errorMessage = null;
-						Model.FormErrors?.TryGetValue("UserEmail", out errorMessage);
+						Model.FormErrors?.TryGetValue("Agree", out errorMessage);
 					}
-					<input name="agree" value="@Model.FormModel?.Agree" class="form-check-input @classAddon" type="checkbox" value="" id="checkDefault">
+					<input name="agree" value="true" class="form-check-input @classAddon" type="checkbox" id="checkDefault">
 					<label class="form-check-label" for="checkDefault">
 						I agree with policies
 					</label>

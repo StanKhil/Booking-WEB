@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using Booking_WEB.Services.Random;
 using Booking_WEB.Services.Kdf;
+using System.Text.RegularExpressions;
 
 namespace Booking_WEB.Controllers
 {
@@ -13,6 +14,7 @@ namespace Booking_WEB.Controllers
         private readonly IRandomService _randomService = randomService;
         private readonly IKdfService _kdfService = kdfService;
         private readonly DataContext _dataContext = context;
+        private readonly Regex _passwordRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!?@$&*])[A-Za-z\d@$!%*?&]{12,}$"); // For the time being
         public ViewResult SignUp()
         {
             UserSignupPageModel model = new();
@@ -21,8 +23,7 @@ namespace Booking_WEB.Controllers
                 model.FormModel = JsonSerializer.
                     Deserialize<UserSignupFormModel>(
                         HttpContext.Session.
-                        GetString(
-                            "UserSignupFormModel")!);
+                        GetString("UserSignupFormModel")!);
                 model.FormErrors = ProcessSignupData(model.FormModel!);
 
                 HttpContext.Session.Remove("UserSignupFormModel");
@@ -44,31 +45,39 @@ namespace Booking_WEB.Controllers
             Dictionary<String, String> errors = [];
             #region Validation
 
-            if (String.IsNullOrEmpty(model.UserName))
-                errors[nameof(model.UserName)] = "Name must not be empty!";
-
-            if (String.IsNullOrEmpty(model.UserEmail))
-                errors[nameof(model.UserEmail)] = "Email must not be empty!";
-
-            if (String.IsNullOrEmpty(model.UserLogin))
-                errors[nameof(model.UserLogin)] = "Login must not be empty!";
+            if (String.IsNullOrEmpty(model.UserName)) errors[nameof(model.UserName)] = "Name must not be empty!";
+            if (String.IsNullOrEmpty(model.UserEmail)) errors[nameof(model.UserEmail)] = "Email must not be empty!";
+            if (String.IsNullOrEmpty(model.UserLogin)) errors[nameof(model.UserLogin)] = "Login must not be empty!";
             else
             {
-                if (model.UserLogin.Contains(":"))
-                    errors[nameof(model.UserLogin)] = "Login mustn't  contains ':'!";
+                if (model.UserLogin.Contains(":")) errors[nameof(model.UserLogin)] = "Login must not contain ':'!";
             }
-
-            if (String.IsNullOrEmpty(model.UserPassword))
-                errors[nameof(model.UserPassword)] = "Password must not be empty!";
-            else if (model.UserPassword.Length < 6)
-                errors[nameof(model.UserPassword)] = "Password must be over 6 characters!";
-            else if (!model.UserPassword.Any(char.IsUpper))
-                errors[nameof(model.UserPassword)] = "Password must contain at least one uppercase letter!";
-
-            if (String.IsNullOrEmpty(model.UserRepeat))
-                errors[nameof(model.UserRepeat)] = "Repeat password must not be empty!";
-            else if (model.UserRepeat != model.UserPassword)
-                errors[nameof(model.UserRepeat)] = "Repeat password does not match!";
+            if (string.IsNullOrEmpty(model.UserPassword))
+            {
+                errors[nameof(model.UserPassword)] = "Password cannot be empty";
+                errors[nameof(model.UserRepeat)] = "Invalid original password";
+            }
+            else
+            {
+                if (!_passwordRegex.IsMatch(model.UserPassword))
+                {
+                    errors[nameof(model.UserPassword)] = "Password must be at least 12 characters long and contain lower, upper case letters, at least one number and at least one special character";
+                    errors[nameof(model.UserRepeat)] = "Invalid original password";
+                }
+                else
+                {
+                    if (model.UserRepeat != model.UserPassword) errors[nameof(model.UserRepeat)] = "Passwords must match";
+                }
+            }
+            //if (String.IsNullOrEmpty(model.UserPassword)) errors[nameof(model.UserPassword)] = "Password must not be empty!";
+            //else if (model.UserPassword.Length < 6) errors[nameof(model.UserPassword)] = "Password must be over 6 characters!";
+            //else if (!model.UserPassword.Any(char.IsUpper))
+            //    errors[nameof(model.UserPassword)] = "Password must contain at least one uppercase letter!";
+            //
+            //if (String.IsNullOrEmpty(model.UserRepeat))
+            //    errors[nameof(model.UserRepeat)] = "Repeat password must not be empty!";
+            //else if (model.UserRepeat != model.UserPassword)
+            //    errors[nameof(model.UserRepeat)] = "Repeat password does not match!";
 
             if (!model.Agree) errors[nameof(model.Agree)] = "You must agree with policies!";
 
