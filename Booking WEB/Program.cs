@@ -1,5 +1,8 @@
 using Booking_WEB.Data;
-using Microsoft.AspNetCore.Builder;
+using Booking_WEB.Services.Identity;
+using Booking_WEB.Services.Kdf;
+using Booking_WEB.Services.Random;
+using Booking_WEB.Services.Time;
 using Microsoft.EntityFrameworkCore;
 
 namespace Booking_WEB
@@ -10,11 +13,22 @@ namespace Booking_WEB
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddSingleton<IRandomService, DefaultRandomService>();
+            builder.Services.AddSingleton<ITimeService, MilliSecTimeService>();
+            builder.Services.AddSingleton<IIdentityService, DefaultIdentityService>();
+            builder.Services.AddSingleton<IKdfService, PbKdfService>();
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<DataContext>(
                 options => options.UseSqlServer(builder.Configuration.GetConnectionString("LocalDB"))
             );
+
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.Cookie.HttpOnly = true; options.Cookie.IsEssential = true;
+            });
 
             var app = builder.Build();
 
@@ -31,6 +45,7 @@ namespace Booking_WEB
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseSession();
 
             app.MapStaticAssets();
             app.MapControllerRoute(
