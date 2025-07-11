@@ -38,6 +38,20 @@ header {
     width: 10rem;
     height: 3rem;
 }
+.header-banner {
+    padding: 60px 0px 60px 20px;
+    color: white;
+}
+.header-banner h1
+{
+    font-size: 64px;
+    font-weight: 800;
+}
+.header-banner p
+{
+    font-size: 24px;
+}
+
 .tab-nav {
     display: flex;
     gap: 15px;
@@ -47,8 +61,9 @@ header {
 .tab-button {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 25px;
+    justify-content: center;
+    gap: 7px;
+    padding: 7px 15px 7px 15px !important;
     border-radius: 50px;
     text-decoration: none;
     font-size: 16px;
@@ -70,17 +85,18 @@ header {
 .tab-button.active {
     color: white !important;
     background-color: rgba(255, 255, 255, 0.15);
-    border: 1px solid transparent !important;
-}
-
-a[b-0mcryyuvy1] {
-    color: white !important;
+    border: 1px solid white !important;
 }
 
 .tab-button:focus {
     color: white !important;
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
     border-color: white !important;
+}
+
+
+a[b-0mcryyuvy1] {
+    color: white !important;
 }
 
 .continue-button
