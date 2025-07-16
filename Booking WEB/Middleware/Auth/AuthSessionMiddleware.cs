@@ -22,16 +22,13 @@ namespace Booking_WEB.Middleware.Auth
             }
             else if (context.Session.Keys.Contains("userAccess"))
             {
-                var ua = JsonSerializer
-                    .Deserialize<UserAccess>(
-                        context.Session.GetString("userAccess")!);
-                //context.Items["userAccess"] = ua;
+                var ua = JsonSerializer.Deserialize<UserAccess>(context.Session.GetString("userAccess")!)!;
                 context.User = new ClaimsPrincipal(
                     new ClaimsIdentity(
                         new Claim[]
                         {
                             new (ClaimTypes.Name, ua!.UserData.FirstName),
-                            new (ClaimTypes.Name, ua!.UserData.LastName),
+                            new (ClaimTypes.Surname, ua!.UserData.LastName),
                             new (ClaimTypes.Email, ua!.UserData.Email),
                         },
                         nameof(AuthSessionMiddleware)

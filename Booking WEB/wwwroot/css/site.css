@@ -104,3 +104,26 @@ a[b-0mcryyuvy1] {
     width: 100%;
     font-size: 1.2rem;
 }
+
+.login-icon {
+    width: 40px;
+    height: 40px;
+    margin: 0 0 0 5px;
+    opacity: 1 !important;
+    border: 0px solid transparent;
+    border-radius: 50%;
+    font-weight: 700;
+    background: azure;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    cursor: default;
+}
+
+.header-user-name
+{
+    font-weight: 800;
+    color: white;
+
+}

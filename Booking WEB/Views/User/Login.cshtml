@@ -1,0 +1,30 @@
+﻿@{
+	ViewData["Title"] = "Login";
+}
+
+
+<div class="container">
+	<div class="d-flex justify-content-center">
+		<div class="mt-5">
+			<h4>Sign In</h4>
+			<p>You can sign in using your Booking.com account to access out services.</p>
+
+			<form id="sign-in-form">
+				<div class="mb-3">
+					<label for="user-login" class="form-label">Login</label>
+					<input type="text" name="user-login" value="" class="form-control" id="user-login" aria-describedby="Login" placeholder="Enter your login">
+					<div class="invalid-feedback"></div>
+				</div>
+
+				<div class="mb-3">
+					<label for="user-password" class="form-label">Password</label>
+					<input type="password" name="user-password" value="" class="form-control" id="user-password" aria-describedby="Password" placeholder="Enter your password">
+					<div class="invalid-feedback"></div>
+				</div>
+				<div id="login-alert" style="display: none; justify-content:center; text-align:center" class="alert alert-danger mb-3" role="alert"></div>
+				<button form="sign-in-form" value="send" type="submit" class="btn btn-primary continue-button">Continue</button>
+			</form>
+			
+		</div>
+	</div>
+</div>

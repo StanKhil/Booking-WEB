@@ -1,4 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@using Booking_WEB.Data.Entities;
+@using System.Security.Claims;
+@{
+    bool isAuthenticated = Context.User.Identity?.IsAuthenticated ?? false;
+    string fullName = isAuthenticated ? 
+        (Context.User.Claims.First(claim => claim.Type == ClaimTypes.Name).Value + " " +
+        Context.User.Claims.First(claim => claim.Type == ClaimTypes.Surname).Value) : "";
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -22,8 +30,16 @@
                 <div>
                     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light">
                         <div class="container-fluid">
-                            <a class="btn btn-outline-light mx-2" asp-controller="User" asp-action="SignUp">Register</a>
-                            <a class="btn btn-outline-light" asp-controller="User" asp-action="SignIn">Sign In</a>
+                            @if(isAuthenticated)
+                            {
+                                <div class="login-icon mx-2">@fullName[0]</div>
+                                <span class="header-user-name">@fullName</span>
+                            }
+                            else
+                            {
+                                <a class="btn btn-outline-light mx-2" asp-controller="User" asp-action="SignUp">Register</a>
+                                <a class="btn btn-outline-light" asp-controller="User" asp-action="Login">Sign In</a>
+                            }
                         </div>
                     </nav>
                 </div>
