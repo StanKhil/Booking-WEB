@@ -121,29 +121,68 @@ namespace Booking_WEB.Controllers
             return errors;
         }
 
+        //[HttpGet]
+        //public ViewResult SignIn()
+        //{
+        //    UserSignInPageModel model = new();
+        //    if (HttpContext.Session.Keys.Contains("UserSignInFormModel"))
+        //    {
+        //        model.FormModel = JsonSerializer.Deserialize<UserSignInFormModel>(
+        //            HttpContext.Session.GetString("UserSignInFormModel")!);
+        //        model.FormErrors = ProcessSignInData(model.FormModel!);
+
+        //        HttpContext.Session.Remove("UserSignInFormModel");
+        //    }
+
+        //    return View(model);
+        //}
+
+        //[HttpPost]
+        //public async Task<RedirectToActionResult> SignIn(UserSignInFormModel model)
+        //{
+        //    HttpContext.Session.SetString("UserSignInFormModel",
+        //        JsonSerializer.Serialize(model));
+        //    return RedirectToAction(nameof(SignIn));
+        //}
+
         [HttpGet]
         public ViewResult SignIn()
         {
             UserSignInPageModel model = new();
-            if (HttpContext.Session.Keys.Contains("UserSignInFormModel"))
-            {
-                model.FormModel = JsonSerializer.Deserialize<UserSignInFormModel>(
-                    HttpContext.Session.GetString("UserSignInFormModel")!);
-                model.FormErrors = ProcessSignInData(model.FormModel!);
 
+            if (HttpContext.Session.TryGetValue("UserSignInFormModel", out byte[]? formBytes))
+            {
+                var formJson = System.Text.Encoding.UTF8.GetString(formBytes);
+                model.FormModel = JsonSerializer.Deserialize<UserSignInFormModel>(formJson);
                 HttpContext.Session.Remove("UserSignInFormModel");
+            }
+
+            if (HttpContext.Session.TryGetValue("UserSignInFormErrors", out byte[]? errorBytes))
+            {
+                var errorsJson = System.Text.Encoding.UTF8.GetString(errorBytes);
+                model.FormErrors = JsonSerializer.Deserialize<Dictionary<string, string>>(errorsJson);
+                HttpContext.Session.Remove("UserSignInFormErrors");
             }
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<RedirectToActionResult> SignIn(UserSignInFormModel model)
+        public IActionResult SignIn(UserSignInFormModel model)
         {
-            HttpContext.Session.SetString("UserSignInFormModel",
-                JsonSerializer.Serialize(model));
-            return RedirectToAction(nameof(SignIn));
+            var errors = ProcessSignInData(model);
+
+            if (errors.Count > 0)
+            {
+                HttpContext.Session.SetString("UserSignInFormModel", JsonSerializer.Serialize(model));
+                HttpContext.Session.SetString("UserSignInFormErrors", JsonSerializer.Serialize(errors));
+
+                return RedirectToAction(nameof(SignIn));
+            }
+
+            return RedirectToAction("Index", "Home");
         }
+
 
         private Dictionary<string, string> ProcessSignInData(UserSignInFormModel model)
         {
@@ -174,7 +213,7 @@ namespace Booking_WEB.Controllers
                 }
                 else
                 {
-                    Console.WriteLine("Authorized " + userAccess.Login);
+                    _logger.LogError("User {Login} signed in", userAccess.Login);
                     HttpContext.Session.SetString("userAccess",
                         JsonSerializer.Serialize(userAccess));
                 }

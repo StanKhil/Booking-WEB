@@ -38,7 +38,14 @@
 					<input type="password" name="user-password" value="@Model.FormModel?.UserPassword" class="form-control @classAddon" id="user-password" aria-describedby="Password" placeholder="Enter your password">
 					<div class="invalid-feedback">@errorMessage</div>
 				</div>
-
+				@{
+					errorMessage = null;
+					Model.FormErrors?.TryGetValue("Authorization", out errorMessage);
+				}
+				@if (!string.IsNullOrEmpty(errorMessage))
+				{
+					<div class="alert alert-danger mt-3">@errorMessage</div>
+				}
 				<button value="send" type="submit" class="btn btn-primary continue-button">Continue</button>
 			</form>
 
