@@ -6,15 +6,19 @@ using System.Text.Json;
 using Booking_WEB.Services.Random;
 using Booking_WEB.Services.Kdf;
 using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Booking_WEB.Controllers
 {
-    public class UserController(IRandomService randomService, IKdfService kdfService, DataContext context) : Controller
+    public class UserController(IRandomService randomService, IKdfService kdfService, DataContext context, ILogger<UserController> logger) : Controller
     {
         private readonly IRandomService _randomService = randomService;
         private readonly IKdfService _kdfService = kdfService;
         private readonly DataContext _dataContext = context;
+        private readonly ILogger<UserController> _logger = logger;
         private readonly Regex _passwordRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!?@$&*])[A-Za-z\d@$!%*?&]{12,}$"); // For the time being
+
         public ViewResult SignUp()
         {
             UserSignupPageModel model = new();
@@ -45,7 +49,8 @@ namespace Booking_WEB.Controllers
             Dictionary<String, String> errors = [];
             #region Validation
 
-            if (String.IsNullOrEmpty(model.UserName)) errors[nameof(model.UserName)] = "Name must not be empty!";
+            if (String.IsNullOrEmpty(model.UserFirstName)) errors[nameof(model.UserFirstName)] = "First Name must not be empty!";
+            if (String.IsNullOrEmpty(model.UserLastName)) errors[nameof(model.UserLastName)] = "Last Name must not be empty!";
             if (String.IsNullOrEmpty(model.UserEmail)) errors[nameof(model.UserEmail)] = "Email must not be empty!";
             if (String.IsNullOrEmpty(model.UserLogin)) errors[nameof(model.UserLogin)] = "Login must not be empty!";
             else
@@ -89,7 +94,8 @@ namespace Booking_WEB.Controllers
                 UserData user = new()
                 {
                     Id = userId,
-                    Name = model.UserName,
+                    FirstName = model.UserFirstName,
+                    LastName = model.UserLastName,
                     Email = model.UserEmail,
                     BirthDate = model.Birthdate,
                     RegisteredAt = DateTime.Now,
@@ -114,5 +120,68 @@ namespace Booking_WEB.Controllers
             }
             return errors;
         }
+
+        [HttpGet]
+        public ViewResult SignIn()
+        {
+            UserSignInPageModel model = new();
+            if (HttpContext.Session.Keys.Contains("UserSignInFormModel"))
+            {
+                model.FormModel = JsonSerializer.Deserialize<UserSignInFormModel>(
+                    HttpContext.Session.GetString("UserSignInFormModel")!);
+                model.FormErrors = ProcessSignInData(model.FormModel!);
+
+                HttpContext.Session.Remove("UserSignInFormModel");
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<RedirectToActionResult> SignIn(UserSignInFormModel model)
+        {
+            HttpContext.Session.SetString("UserSignInFormModel",
+                JsonSerializer.Serialize(model));
+            return RedirectToAction(nameof(SignIn));
+        }
+
+        private Dictionary<string, string> ProcessSignInData(UserSignInFormModel model)
+        {
+            Dictionary<string, string> errors = [];
+
+            if (string.IsNullOrWhiteSpace(model.UserLogin))
+            {
+                errors[nameof(model.UserLogin)] = "Login is required";
+            }
+
+            if (string.IsNullOrWhiteSpace(model.UserPassword))
+            {
+                errors[nameof(model.UserPassword)] = "Password is required";
+            }
+
+            if (errors.Count == 0)
+            {
+                var userAccess = _dataContext
+                    .UserAccesses
+                    .AsNoTracking()
+                    .Include(ua => ua.UserData)
+                    .Include(ua => ua.UserRole)
+                    .FirstOrDefault(ua => ua.Login == model.UserLogin);
+
+                if (userAccess == null || _kdfService.Dk(model.UserPassword, userAccess.Salt) != userAccess.Dk)
+                {
+                    errors["Authorization"] = "Invalid login or password";
+                }
+                else
+                {
+                    Console.WriteLine("Authorized " + userAccess.Login);
+                    HttpContext.Session.SetString("userAccess",
+                        JsonSerializer.Serialize(userAccess));
+                }
+            }
+
+            return errors;
+        }
+
     }
 }

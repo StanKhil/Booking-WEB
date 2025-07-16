@@ -4,8 +4,11 @@ namespace Booking_WEB.Models.User
 {
     public class UserSignupFormModel
     {
-        [FromForm(Name = "user-name")]
-        public String UserName { get; set; } = null!;
+        [FromForm(Name = "user-first-name")]
+        public String UserFirstName { get; set; } = null!;
+
+        [FromForm(Name = "user-last-name")]
+        public String UserLastName { get; set; } = null!;
 
         [FromForm(Name = "user-email")]
         public String UserEmail { get; set; } = null!;

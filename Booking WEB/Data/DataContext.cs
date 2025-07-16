@@ -161,7 +161,8 @@ namespace Booking_WEB.Data
                 new UserData
                 {
                     Id = Guid.Parse("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"),
-                    Name = "Палійчук Яків",
+                    FirstName = "Палійчук",
+                    LastName = "Яків",
                     Email = "jakiv@ukr.net",
                     BirthDate = new DateTime(1998, 3, 15),
                     RegisteredAt = new DateTime(2025, 3, 10)
@@ -169,7 +170,8 @@ namespace Booking_WEB.Data
                 new UserData
                 {
                     Id = Guid.Parse("bdf41cd9-c0f1-4349-8a44-4e67755d0415"),
-                    Name = "Сторож Чеслава",
+                    FirstName = "Сторож",
+                    LastName = "Чеслава",
                     Email = "storozh@ukr.net",
                     BirthDate = new DateTime(1999, 5, 11),
                     RegisteredAt = new DateTime(2025, 3, 15)
@@ -177,7 +179,8 @@ namespace Booking_WEB.Data
                 new UserData
                 {
                     Id = Guid.Parse("03767d46-aab3-4cc4-989c-a696a7fdd434"),
-                    Name = "Дністрянський Збоїслав",
+                    FirstName = "Дністрянський",
+                    LastName = "Збоїслав",
                     Email = "dnistr@ukr.net",
                     BirthDate = new DateTime(1989, 7, 10),
                     RegisteredAt = new DateTime(2024, 8, 5)
@@ -185,7 +188,8 @@ namespace Booking_WEB.Data
                 new UserData
                 {
                     Id = Guid.Parse("0d156354-89f1-4d58-a735-876b7add59d2"),
-                    Name = "Гординська Діна",
+                    FirstName = "Гординська",
+                    LastName = "Діна",
                     Email = "dina@ukr.net",
                     BirthDate = new DateTime(2005, 2, 15),
                     RegisteredAt = new DateTime(2024, 12, 20)
@@ -193,7 +197,8 @@ namespace Booking_WEB.Data
                 new UserData
                 {
                     Id = Guid.Parse("a3c55a79-05ea-4053-ad3c-7301f3b7a7e2"),
-                    Name = "Ромашко Жадан",
+                    FirstName = "Ромашко",
+                    LastName = "Жадан",
                     Email = "romashko@ukr.net",
                     BirthDate = new DateTime(2005, 2, 15),
                     RegisteredAt = new DateTime(2024, 12, 20)
@@ -201,7 +206,8 @@ namespace Booking_WEB.Data
                 new UserData
                 {
                     Id = Guid.Parse("eadb0b3b-523e-478b-88ee-b6cf57cbc05d"),
-                    Name = "Ерстенюк Вікторія",
+                    FirstName = "Ерстенюк",
+                    LastName = "Вікторія",
                     Email = "erstenuk@ukr.net",
                     BirthDate = new DateTime(2001, 12, 21),
                     RegisteredAt = new DateTime(2025, 1, 21)
@@ -209,7 +215,8 @@ namespace Booking_WEB.Data
                 new UserData
                 {
                     Id = Guid.Parse("a0f7b463-6eef-4a70-8444-789bbea23369"),
-                    Name = "Бондарко Юрій",
+                    FirstName = "Бондарко",
+                    LastName = "Юрій",
                     Email = "bondarko@ukr.net",
                     BirthDate = new DateTime(1999, 10, 21),
                     RegisteredAt = new DateTime(2025, 2, 2)

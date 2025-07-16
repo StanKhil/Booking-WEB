@@ -18,12 +18,24 @@
 				<div class="mb-3">
 					@{
 						classAddon = Model.FormErrors == null ? ""
-						: (Model.FormErrors.ContainsKey("UserName")) ? "is-invalid" : "is-valid";
+						: (Model.FormErrors.ContainsKey("UserFirstName")) ? "is-invalid" : "is-valid";
 						errorMessage = null;
-						Model.FormErrors?.TryGetValue("UserName", out errorMessage);
+						Model.FormErrors?.TryGetValue("UserFirstName", out errorMessage);
 					}
-					<label for="user-name" class="form-label">Name</label>
-					<input type="text" name="user-name" value="@Model.FormModel?.UserName" class="form-control @classAddon" id="user-name" aria-describedby="Name" placeholder="Enter your name">
+					<label for="user-first-name" class="form-label">First Name</label>
+					<input type="text" name="user-first-name" value="@Model.FormModel?.UserFirstName" class="form-control @classAddon" id="user-first-name" aria-describedby="FirstName" placeholder="Enter your first name">
+					<div class="invalid-feedback">@errorMessage</div>
+				</div>
+				
+				<div class="mb-3">
+					@{
+						classAddon = Model.FormErrors == null ? ""
+						: (Model.FormErrors.ContainsKey("UserLastName")) ? "is-invalid" : "is-valid";
+						errorMessage = null;
+						Model.FormErrors?.TryGetValue("UserLastName", out errorMessage);
+					}
+					<label for="user-last-name" class="form-label">Last Name</label>
+					<input type="text" name="user-last-name" value="@Model.FormModel?.UserLastName" class="form-control @classAddon" id="user-last-name" aria-describedby="LastName" placeholder="Enter your last name">
 					<div class="invalid-feedback">@errorMessage</div>
 				</div>
 

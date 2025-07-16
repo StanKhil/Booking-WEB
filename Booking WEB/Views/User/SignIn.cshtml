@@ -1,0 +1,47 @@
+﻿@model Booking_WEB.Models.User.UserSignInPageModel
+@{
+	ViewData["Title"] = "SignIp";
+}
+
+@{
+	String classAddon = "";
+	String? errorMessage = null;
+}
+
+<div class="container">
+	<div class="d-flex justify-content-center">
+		<div class="mt-5">
+			<h4>Sign In</h4>
+			<p>You can sign in using your Booking.com account to access out services.</p>
+
+			<form action="/User/SignIn" method="post" enctype="application/x-www-form-urlencoded">
+				<div class="mb-3">
+					@{
+						classAddon = Model.FormErrors == null ? ""
+						: (Model.FormErrors.ContainsKey("UserLogin")) ? "is-invalid" : "is-valid";
+						errorMessage = null;
+						Model.FormErrors?.TryGetValue("UserLogin", out errorMessage);
+					}
+					<label for="user-login" class="form-label">Login</label>
+					<input type="text" name="user-login" value="@Model.FormModel?.UserLogin" class="form-control @classAddon" id="user-login" aria-describedby="Login" placeholder="Enter your login">
+					<div class="invalid-feedback">@errorMessage</div>
+				</div>
+
+				<div class="mb-3">
+					@{
+						classAddon = Model.FormErrors == null ? ""
+						: (Model.FormErrors.ContainsKey("UserPassword")) ? "is-invalid" : "is-valid";
+						errorMessage = null;
+						Model.FormErrors?.TryGetValue("UserPassword", out errorMessage);
+					}
+					<label for="user-password" class="form-label">Password</label>
+					<input type="password" name="user-password" value="@Model.FormModel?.UserPassword" class="form-control @classAddon" id="user-password" aria-describedby="Password" placeholder="Enter your password">
+					<div class="invalid-feedback">@errorMessage</div>
+				</div>
+
+				<button value="send" type="submit" class="btn btn-primary continue-button">Continue</button>
+			</form>
+
+		</div>
+	</div>
+</div>
