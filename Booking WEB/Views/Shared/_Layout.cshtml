@@ -30,6 +30,7 @@
                 <div>
                     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light">
                         <div class="container-fluid">
+                            <button class="list-property-button">List your property</button>
                             @if(isAuthenticated)
                             {
                                 <div class="login-icon mx-2">@fullName[0]</div>
@@ -49,10 +50,22 @@
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                             <li class="nav-item mx-2">
-                                <button class="nav-link tab-button active" aria-current="page" onclick="deleteTestMethod()"><i class="bi bi-house"></i> Stays</button>
+                                <a class="nav-link active" asp-area="" asp-controller="Home" asp-action="Index"><i class="bi bi-house"></i> Stays</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link tab-button" aria-current="page" href="#"><i class="bi bi-airplane"></i> Flights</a>
+                            <li class="nav-item mx-2">
+                                <a class="nav-link " asp-area="" asp-controller="Home" asp-action="Search"><i class="bi bi-search"></i> Search</a>
+                            </li>
+                            <li class="nav-item mx-2">
+                                <a class="nav-link " asp-area="" asp-controller="Home" asp-action="BookingsAndTrips"><i class="bi bi-journal-bookmark"></i> Bookings & Trips</a>
+                            </li>
+                            @if (Context.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Role)?.Value == "Administrator")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link " asp-area="" asp-controller="Home" asp-action="Administrator"><i class="bi bi-feather"></i> Administrator</a>
+                                </li>
+                            }
+                            <li class="nav-item mx-2">
+                                <button class="nav-link " onclick="deleteTestMethod()"><i class="bi bi-pen"></i> Test Method</button>
                             </li>
                         </ul>
                     </div>
@@ -83,11 +96,68 @@
             </main>
         </div>
     </main>
-    
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - Booking-WEB - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="footer-booking mt-5">
+        <div class="container py-4">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <h5 class="text-white mb-3">Support</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="footer-link">Coronavirus (COVID-19) FAQs</a></li>
+                        <li><a href="#" class="footer-link">Manage your trips</a></li>
+                        <li><a href="#" class="footer-link">Contact Customer Service</a></li>
+                        <li><a href="#" class="footer-link">Safety resource centre</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <h5 class="text-white mb-3">Discover</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="footer-link">Genius loyalty programme</a></li>
+                        <li><a href="#" class="footer-link">Seasonal and holiday deals</a></li>
+                        <li><a href="#" class="footer-link">Travel articles</a></li>
+                        <li><a href="#" class="footer-link">Booking.com for Business</a></li>
+                        <li><a href="#" class="footer-link">Traveller Review Awards</a></li>
+                        <li><a href="#" class="footer-link">Car hire</a></li>
+                        <li><a href="#" class="footer-link">Flight finder</a></li>
+                        <li><a href="#" class="footer-link">Restaurant reservations</a></li>
+                        <li><a href="#" class="footer-link">Booking.com for Travel Agents</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <h5 class="text-white mb-3">Terms and settings</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="footer-link">Privacy & cookies</a></li>
+                        <li><a href="#" class="footer-link">Terms and conditions</a></li>
+                        <li><a href="#" class="footer-link">Accessibility Statement</a></li>
+                        <li><a href="#" class="footer-link">Partner dispute</a></li>
+                        <li><a href="#" class="footer-link">Modern Slavery Statement</a></li>
+                        <li><a href="#" class="footer-link">Human Rights Statement</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <h5 class="text-white mb-3">Partners</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="footer-link">Extranet login</a></li>
+                        <li><a href="#" class="footer-link">Partner help</a></li>
+                        <li><a href="#" class="footer-link">List your property</a></li>
+                        <li><a href="#" class="footer-link">Become an affiliate</a></li>
+                    </ul>
+                    <h5 class="text-white mt-4 mb-3">About</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="footer-link">About Booking.com</a></li>
+                        <li><a href="#" class="footer-link">How we work</a></li>
+                        <li><a href="#" class="footer-link">Sustainability</a></li>
+                        <li><a href="#" class="footer-link">Press centre</a></li>
+                        <li><a href="#" class="footer-link">Careers</a></li>
+                        <li><a href="#" class="footer-link">Investor relations</a></li>
+                        <li><a href="#" class="footer-link">Corporate contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="border-light opacity-25 my-4">
+            <div class="text-center text-muted">
+                <small>&copy; 2025 Booking.com. All rights reserved.</small>
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

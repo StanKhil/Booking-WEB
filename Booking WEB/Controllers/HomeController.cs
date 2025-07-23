@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Booking_WEB.Models;
 using Microsoft.AspNetCore.Mvc;
+using Booking_WEB.Models.Realty;
 
 namespace Booking_WEB.Controllers
 {
@@ -18,9 +19,18 @@ namespace Booking_WEB.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult Search()
         {
             return View();
+        }
+        public IActionResult BookingsAndTrips()
+        {
+            return View();
+        }
+        public IActionResult Item()
+        {
+            RealtyModel model = new(); // TO DO: fill in the data
+            return View(model);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

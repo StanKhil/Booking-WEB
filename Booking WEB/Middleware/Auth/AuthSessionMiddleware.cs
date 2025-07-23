@@ -30,6 +30,7 @@ namespace Booking_WEB.Middleware.Auth
                             new (ClaimTypes.Name, ua!.UserData.FirstName),
                             new (ClaimTypes.Surname, ua!.UserData.LastName),
                             new (ClaimTypes.Email, ua!.UserData.Email),
+                            new (ClaimTypes.Role, ua!.UserRole.Id)
                         },
                         nameof(AuthSessionMiddleware)
                     )

@@ -8,6 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\resources\images\Countries\Ukraine\chernivtsi.jpg" />
+    <Content Remove="wwwroot\resources\images\Countries\Ukraine\dnipro.jpg" />
+    <Content Remove="wwwroot\resources\images\Countries\Ukraine\ivanoFr.jpg" />
+    <Content Remove="wwwroot\resources\images\Countries\Ukraine\kharkiv.jpg" />
+    <Content Remove="wwwroot\resources\images\Countries\Ukraine\poltava.jpg" />
+    <Content Remove="wwwroot\resources\images\Countries\Ukraine\sumy.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\resources\images\text.svg" />
   </ItemGroup>
 
@@ -21,6 +30,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="wwwroot\resources\images\Countries\Ukraine\chernivtsi.jpg" />
+    <Resource Include="wwwroot\resources\images\Countries\Ukraine\dnipro.jpg" />
+    <Resource Include="wwwroot\resources\images\Countries\Ukraine\ivanoFr.jpg" />
+    <Resource Include="wwwroot\resources\images\Countries\Ukraine\kharkiv.jpg" />
+    <Resource Include="wwwroot\resources\images\Countries\Ukraine\poltava.jpg" />
+    <Resource Include="wwwroot\resources\images\Countries\Ukraine\sumy.jpg" />
     <Resource Include="wwwroot\resources\images\text.svg" />
   </ItemGroup>
 

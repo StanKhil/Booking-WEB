@@ -1,8 +1,259 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Booking.com";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<main class="container my-5">
+
+    <section class="mb-5">
+        <h2 class="section-title">Offers</h2>
+        <p class="mb-4">Promotions, deals and special offers for you</p>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card card-custom offer-card p-4 d-flex flex-row align-items-center">
+                    <div class="flex-grow-1">
+                        <h3 class="card-title fw-bold">Quick escape, quality time</h3>
+                        <p class="card-text">Save up to 20% with a Getaway Deal</p>
+                        <a href="#" class="btn btn-primary-booking rounded-pill mt-3">Save on stays</a>
+                    </div>
+                    <img src="https://placehold.co/150x150/e0f7fa/003580?text=Offer" class="img-fluid rounded-circle ms-4" alt="Offer Image">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card card-custom holiday-home-card p-4 d-flex flex-row align-items-center">
+                    <div class="flex-grow-1">
+                        <h3 class="card-title fw-bold">Live the dream in a holiday home</h3>
+                        <p class="card-text">Choose from houses, villas, chalets and more</p>
+                        <a href="#" class="btn btn-primary-booking rounded-pill mt-3">Book yours</a>
+                    </div>
+                    <img src="https://placehold.co/150x150/fff3e0/003580?text=Home" class="img-fluid rounded-circle ms-4" alt="Holiday Home Image">
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="mb-5">
+        <h2 class="section-title">Quick and easy trip planner</h2>
+        <p class="mb-4">Pick a vibe and explore the top destinations in Ukraine</p>
+
+        <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active rounded-pill me-2 btn-outline-primary-booking" id="pills-cultural-tab" data-bs-toggle="pill" data-bs-target="#pills-cultural" type="button" role="tab" aria-controls="pills-cultural" aria-selected="true">Cultural Exploration</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill me-2 btn-outline-primary-booking" id="pills-festivals-tab" data-bs-toggle="pill" data-bs-target="#pills-festivals" type="button" role="tab" aria-controls="pills-festivals" aria-selected="false">Festivals</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill me-2 btn-outline-primary-booking" id="pills-urban-tab" data-bs-toggle="pill" data-bs-target="#pills-urban" type="button" role="tab" aria-controls="pills-urban" aria-selected="false">Urban Escapes</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill me-2 btn-outline-primary-booking" id="pills-nature-tab" data-bs-toggle="pill" data-bs-target="#pills-nature" type="button" role="tab" aria-controls="pills-nature" aria-selected="false">Nature & Hiking</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill me-2 btn-outline-primary-booking" id="pills-historical-tab" data-bs-toggle="pill" data-bs-target="#pills-historical" type="button" role="tab" aria-controls="pills-historical" aria-selected="false">Historical Tours</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill me-2 btn-outline-primary-booking" id="pills-wine-tab" data-bs-toggle="pill" data-bs-target="#pills-wine" type="button" role="tab" aria-controls="pills-wine" aria-selected="false">Wine & Dine</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill btn-outline-primary-booking" id="pills-romantic-tab" data-bs-toggle="pill" data-bs-target="#pills-romantic" type="button" role="tab" aria-controls="pills-romantic" aria-selected="false">Romantic Getaways</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-cultural" role="tabpanel" aria-labelledby="pills-cultural-tab">
+                <div class="row g-4">
+                    <div class="col-md-4 col-lg-2">
+                        <div class="card card-custom">
+                            <img src="~/resources/images/Countries/Ukraine/poltava.jpg" class="card-img-top-custom" alt="Poltava">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold">Poltava</h5>
+                                <p class="card-text text-muted">303 km from Kyiv</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-lg-2">
+                        <div class="card card-custom">
+                            <img src="~/resources/images/Countries/Ukraine/sumy.jpg" class="card-img-top-custom" alt="Sumy">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold">Sumy</h5>
+                                <p class="card-text text-muted">305 km from Kyiv</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-lg-2">
+                        <div class="card card-custom">
+                            <img src="~/resources/images/Countries/Ukraine/dnipro.jpg" class="card-img-top-custom" alt="Dnipro">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold">Dnipro</h5>
+                                <p class="card-text text-muted">394 km from Kyiv</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-lg-2">
+                        <div class="card card-custom">
+                            <img src="~/resources/images/Countries/Ukraine/kharkiv.jpg" class="card-img-top-custom" alt="Kharkiv">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold">Kharkiv</h5>
+                                <p class="card-text text-muted">409 km from Kyiv</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-lg-2">
+                        <div class="card card-custom">
+                            <img src="~/resources/images/Countries/Ukraine/chernivtsi.jpg" class="card-img-top-custom" alt="Chernivtsi">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold">Chernivtsi</h5>
+                                <p class="card-text text-muted">410 km from Kyiv</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-lg-2">
+                        <div class="card card-custom">
+                            <img src="~/resources/images/Countries/Ukraine/ivanoFr.jpg" class="card-img-top-custom" alt="Ivano-Frankivsk">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold">Ivano-Frankivsk</h5>
+                                <p class="card-text text-muted">451 km from Kyiv</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* Other tab panes would go here, structured similarly *@
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h2 class="section-title">Browse by property type in Kyiv</h2>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card card-custom">
+                    <img src="https://placehold.co/300x200/F0F8FF/003580?text=Hotels" class="card-img-top-custom" alt="Hotels">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">Hotels</h5>
+                        <p class="card-text text-muted">27 Jul-28 Jul, 2 adults</p>
+                        <p class="card-text text-muted">276 available</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card card-custom">
+                    <img src="https://placehold.co/300x200/F0F8FF/003580?text=Apartments" class="card-img-top-custom" alt="Apartments">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">Apartments</h5>
+                        <p class="card-text text-muted">27 Jul-28 Jul, 2 adults</p>
+                        <p class="card-text text-muted">664 available</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card card-custom">
+                    <img src="https://placehold.co/300x200/F0F8FF/003580?text=Villas" class="card-img-top-custom" alt="Villas">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">Villas</h5>
+                        <p class="card-text text-muted">27 Jul-28 Jul, 2 adults</p>
+                        <p class="card-text text-muted">1 available</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card card-custom">
+                    <img src="https://placehold.co/300x200/F0F8FF/003580?text=Holiday+Homes" class="card-img-top-custom" alt="Holiday Homes">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">Holiday homes</h5>
+                        <p class="card-text text-muted">27 Jul-28 Jul, 2 adults</p>
+                        <p class="card-text text-muted">2 available</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="mb-5">
+        <h2 class="section-title">Popular with travellers from Ukraine</h2>
+        <ul class="nav nav-pills mb-3" id="popular-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active rounded-pill me-2 btn-outline-primary-booking" id="popular-cities-tab" data-bs-toggle="pill" data-bs-target="#popular-cities" type="button" role="tab" aria-controls="popular-cities" aria-selected="true">Domestic cities</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill me-2 btn-outline-primary-booking" id="popular-international-tab" data-bs-toggle="pill" data-bs-target="#popular-international" type="button" role="tab" aria-controls="popular-international" aria-selected="false">International cities</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill me-2 btn-outline-primary-booking" id="popular-regions-tab" data-bs-toggle="pill" data-bs-target="#popular-regions" type="button" role="tab" aria-controls="popular-regions" aria-selected="false">Regions</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill me-2 btn-outline-primary-booking" id="popular-countries-tab" data-bs-toggle="pill" data-bs-target="#popular-countries" type="button" role="tab" aria-controls="popular-countries" aria-selected="false">Countries</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill btn-outline-primary-booking" id="popular-places-tab" data-bs-toggle="pill" data-bs-target="#popular-places" type="button" role="tab" aria-controls="popular-places" aria-selected="false">Places to stay</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="popular-tabs-content">
+            <div class="tab-pane fade show active tab-pane-scroll" id="popular-cities" role="tabpanel" aria-labelledby="popular-cities-tab">
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
+                    <div class="col">
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="text-decoration-none text-dark">Lviv hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Kyiv hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Odesa hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Kharkiv hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Dnipro hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Zaporizhzhia hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Vinnytsia hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Mykolaiv hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Poltava hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Chernihiv hotels</a></li>
+                        </ul>
+                    </div>
+                    <div class="col">
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="text-decoration-none text-dark">Chernivtsi hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Uzhhorod hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Ivano-Frankivsk hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Lutsk hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Rivne hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Ternopil hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Sumy hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Zhytomyr hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Kremenchuk hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Kryvyi Rih hotels</a></li>
+                        </ul>
+                    </div>
+                    <div class="col">
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="text-decoration-none text-dark">Mariupol hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Kherson hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Kamianets-Podilskyi hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Mukachevo hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Yaremche hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Bukovel hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Slavske hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Truskavets hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Vorokhta hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Berdyansk hotels</a></li>
+                        </ul>
+                    </div>
+                    <div class="col">
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="text-decoration-none text-dark">Chornomorsk hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Enerhodar hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Kamianske hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Kovel hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Lubny hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Mirhorod hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Novovolynsk hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Pereiaslav hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Smila hotels</a></li>
+                            <li><a href="#" class="text-decoration-none text-dark">Uman hotels</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <a href="#" class="text-decoration-none text-primary fw-bold mt-3 d-inline-block">+ Show more</a>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+
+
