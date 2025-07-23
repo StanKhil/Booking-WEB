@@ -99,3 +99,80 @@ document.addEventListener('submit', e =>
             })
     }
 })
+
+//Method for test RealtyController.Create()
+function createTestMethod() {
+    //example data
+    const testData = {
+        "name": "Luxury Villa",
+        "description": "Sea view villa with pool",
+        "slug": "luxury-villa2",
+        "imageUrl": "villa.jpg",
+        "price": 1999.99,
+        "cityId": "0d156354-89f1-4d58-a735-876b7add59d2",
+        "countryId": "bdf41cd9-c0f1-4349-8a44-4e67755d0415",
+        "groupId": "6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"
+    }
+
+    try {
+        fetch('/Realty/Create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(testData)
+        });
+        console.log('Test realty created successfully');
+    }
+    catch (e) {
+        console.error('Error creating test realty:', e);
+    }
+}
+
+function updateTestMethod() {
+    const updatedData = {
+        "id": "072b79fe-3c89-44d8-90f8-6d0ad54a91d4",
+        "name": "Luxury Villa (Updated)",
+        "description": "Updated description: Sea view villa with sauna",
+        "slug": "luxury-villa2",
+        "imageUrl": "villa-updated.jpg",
+        "price": 2199.99,
+        "cityId": "0d156354-89f1-4d58-a735-876b7add59d2",
+        "countryId": "bdf41cd9-c0f1-4349-8a44-4e67755d0415",
+        "groupId": "6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"
+    };
+
+    fetch('/Realty/Update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedData)
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Update response:', data);
+        })
+        .catch(error => {
+            console.error('Error updating realty:', error);
+        });
+}
+
+function deleteTestMethod() {
+    const idToDelete = "072b79fe-3c89-44d8-90f8-6d0ad54a91d4";
+
+    fetch('/Realty/Delete', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: idToDelete })
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Delete response:', data);
+        })
+        .catch(error => {
+            console.error('Error deleting realty:', error);
+        });
+}
