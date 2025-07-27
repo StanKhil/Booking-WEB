@@ -1,5 +1,41 @@
 ﻿@{
     ViewData["Title"] = "Administrator";
 }
-<h1>@ViewData["Title"]</h1>
 
+<div class="container mt-3" >
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="filter-section">
+                <div class="d-flex justify-content-center">
+                    <h5>Administrator</h5>
+                </div>
+                
+                <div class="dropdown" data-bs-theme="dark">
+                    <button class="btn btn-dark dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">Users</button>
+                    <ul class="dropdown-menu">
+                        <li><button class="dropdown-item" data-nav="user-create">Create</button></li>
+                        <li><button class="dropdown-item" data-nav="user-update-delete">Update/Delete</button></li>
+                        <li><button class="dropdown-item" data-nav="view-user-database">View database</button></li>
+                    </ul>
+                </div>
+                <hr/>
+                <div class="dropdown mt-2" data-bs-theme="dark">
+                    <button class="btn btn-dark dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">Realties</button>
+                    <ul class="dropdown-menu">
+                        <li><button class="dropdown-item" data-nav="realty-create">Create</button></li>
+                        <li><button class="dropdown-item" data-nav="realty-update-delete">Update/Delete</button></li>
+                        <li><button class="dropdown-item" data-nav="view-realty-database">View database</button></li>
+                    </ul>
+                </div>
+                
+            </div>
+
+        </div>
+           @*FILLER*@
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="w-100" id="spa-container"></div>
+            </div>
+        </div>
+    </div>
+</div>

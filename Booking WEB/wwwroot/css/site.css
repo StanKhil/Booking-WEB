@@ -18,7 +18,7 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+  
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -51,6 +51,10 @@ header {
 {
     font-size: 24px;
 }
+.header-bottom-filler
+{
+    height: 25px;
+}
 
 .tab-nav {
     display: flex;
@@ -76,23 +80,23 @@ header {
     transition: background-color 0s ease, border-color 0s ease, color 0s ease, box-shadow 0s ease;
 }
 
-    .nav-link:not(.active):hover {
-        color: white !important;
-        background-color: rgba(255, 255, 255, 0.15);
-        border: 1px solid transparent !important;
-    }
+.nav-link:not(.active):hover {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px solid transparent !important;
+}
 
-    .nav-link.active {
-        color: white !important;
-        background-color: rgba(255, 255, 255, 0.15);
-        border: 1px solid white !important;
-    }
+.nav-link.active {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px solid white !important;
+}
 
-    .nav-link:focus {
-        color: white !important;
-        border: 1px solid rgba(255, 255, 255, 0.15) !important;
-        border-color: white !important;
-    }
+.nav-link:focus {
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-color: white !important;
+}
 
 
 a[b-0mcryyuvy1] {
@@ -202,10 +206,10 @@ a[b-0mcryyuvy1] {
     border-color: #0071c2;
 }
 
-    .btn-primary-booking:hover {
-        background-color: #0056b3;
-        border-color: #0056b3;
-    }
+.btn-primary-booking:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
 
 .btn-outline-primary-booking {
     color: #0071c2;
@@ -220,4 +224,234 @@ a[b-0mcryyuvy1] {
 .tab-pane-scroll {
     max-height: 400px;
     overflow-y: auto;
+}
+
+.search-bar-container {
+    background-color: #febb02;
+    padding: 5px 0;
+    border-radius: 5px;
+    position: relative;
+    top: -25px;
+    margin-bottom: -25px;
+}
+
+.search-input-group {
+    border: 2px solid #2a64b5;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.search-input-group .form-control,
+.search-input-group .input-group-text {
+    border: none;
+    box-shadow: none;
+    padding: .375rem .75rem;
+}
+
+.search-input-group .form-control {
+    flex: 1;
+}
+
+.search-input-group .input-group-text {
+    background-color: white;
+    color: #6c757d;
+}
+
+.search-button {
+    background-color: #0071c2; 
+    border-color: #0071c2;
+    color: white;
+    font-weight: bold;
+    padding: .375rem 1.5rem;
+}
+
+.search-button:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.filter-section {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: white;
+}
+
+.filter-section h5 {
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.filter-section .form-check-label {
+    margin-left: 5px;
+}
+
+.filter-section .form-check {
+    margin-bottom: 8px;
+}
+
+.range-slider {
+    margin-top: 15px;
+}
+
+.results-count {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.sort-options {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.sort-options label {
+    font-weight: 600;
+    color: #555;
+}
+
+.property-card {
+    display: flex;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.property-card-image {
+    flex: 0 0 300px; 
+    height: 250px;
+    overflow: hidden;
+}
+
+.property-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.property-card-body {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.property-card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #0071c2;
+    margin-bottom: 5px;
+}
+
+.property-card-location {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.property-card-features {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.property-card-rating {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.rating-badge {
+    background-color: #003b95;
+    color: white;
+    font-weight: bold;
+    padding: 5px 8px;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.review-text {
+    font-weight: bold;
+    color: #333;
+    margin-right: 5px;
+}
+
+.number-of-reviews {
+    font-size: 0.85rem;
+    color: #777;
+}
+
+.property-card-price-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+}
+
+.original-price {
+    font-size: 0.9rem;
+    color: #888;
+    text-decoration: line-through;
+}
+
+.current-price {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #cc2b5e;
+    margin-top: 5px;
+}
+
+.price-details {
+    font-size: 0.8rem;
+    color: #777;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.view-availability-button {
+    background-color: #0071c2;
+    border-color: #0071c2;
+    color: white;
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.view-availability-button:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    color: white;
+}
+
+.no-prepayment, .free-cancellation {
+    color: #008009;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.special-offer {
+    color: #dc3545;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+
+.getting-around {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 5px;
 }

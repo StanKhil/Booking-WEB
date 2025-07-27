@@ -50,35 +50,42 @@
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                             <li class="nav-item mx-2">
-                                <a class="nav-link active" asp-area="" asp-controller="Home" asp-action="Index"><i class="bi bi-house"></i> Stays</a>
+                                <a class="nav-link" name="header-nav-button" asp-area="" asp-controller="Home" asp-action="Index"><i class="bi bi-house"></i> Stays</a>
                             </li>
                             <li class="nav-item mx-2">
-                                <a class="nav-link " asp-area="" asp-controller="Home" asp-action="Search"><i class="bi bi-search"></i> Search</a>
+                                <a class="nav-link" name="header-nav-button" asp-area="" asp-controller="Home" asp-action="Search"><i class="bi bi-search"></i> Search</a>
                             </li>
                             <li class="nav-item mx-2">
-                                <a class="nav-link " asp-area="" asp-controller="Home" asp-action="BookingsAndTrips"><i class="bi bi-journal-bookmark"></i> Bookings & Trips</a>
+                                <a class="nav-link" name="header-nav-button" asp-area="" asp-controller="Home" asp-action="BookingsAndTrips"><i class="bi bi-journal-bookmark"></i> Bookings & Trips</a>
                             </li>
-                            @if (Context.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Role)?.Value == "Administrator")
+                            @if (true || Context.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Role)?.Value == "Administrator")
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link " asp-area="" asp-controller="Home" asp-action="Administrator"><i class="bi bi-feather"></i> Administrator</a>
+                                    <a class="nav-link" name="header-nav-button" asp-area="" asp-controller="Home" asp-action="Administrator"><i class="bi bi-feather"></i> Administrator</a>
                                 </li>
                             }
                             <li class="nav-item mx-2">
-                                <button class="nav-link " onclick="deleteTestMethod()"><i class="bi bi-pen"></i> Test Method</button>
+                                <button class="nav-link" name="header-nav-button" onclick="deleteTestMethod()"><i class="bi bi-pen"></i> Test Method</button>
                             </li>
                         </ul>
                     </div>
                 </nav>
             </nav>
         </div>
-        <div>
-            <div class="container header-banner">
-                <h1>
-                    <span>Find your next stay</span>
-                </h1>
-                <p>Search deals on hotels, homes, and much more...</p>
-            </div>
+        <div id="header-bottom">
+            @if (ViewData["Title"]?.ToString() == "Booking.com")
+            {
+                <div class="container header-banner">
+                    <h1>
+                        <span>Find your next stay</span>
+                    </h1>
+                    <p>Search deals on hotels, homes, and much more...</p>
+                </div>
+            }
+            else
+            {
+                <div class="header-bottom-filler"></div>
+            }
         </div>
     </header>
     <main>
@@ -162,7 +169,7 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script type="module" src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

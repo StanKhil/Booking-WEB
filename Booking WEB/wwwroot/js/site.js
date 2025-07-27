@@ -1,31 +1,22 @@
-﻿class Base64 {
-    static #textEncoder = new TextEncoder();
-    static #textDecoder = new TextDecoder();
-
-    // https://datatracker.ietf.org/doc/html/rfc4648#section-4
-    encode = (str) => btoa(String.fromCharCode(...Base64.#textEncoder.encode(str)));
-    decode = (str) => Base64.#textDecoder.decode(Uint8Array.from(atob(str), c => c.charCodeAt(0)));
-    // https://datatracker.ietf.org/doc/html/rfc4648#section-5
-    encodeUrl = (str) => this.encode(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-    decodeUrl = (str) => this.decode(str.replace(/\-/g, '+').replace(/\_/g, '/'));
-
-    jwtEncodeBody = (header, payload) => this.encodeUrl(JSON.stringify(header)) + '.' + this.encodeUrl(JSON.stringify(payload));
-    jwtDecodePayload = (jwt) => JSON.parse(this.decodeUrl(jwt.split('.')[1]));
-}
-
+﻿import Base64 from "./Base64.js";
 
 document.addEventListener('DOMContentLoaded', function ()
 {
-    const tabButtons = document.querySelectorAll('.tab-nav .tab-button');
-    tabButtons.forEach(button =>
+    for (let button of document.querySelectorAll('[data-nav]'))
     {
-        button.addEventListener('click', function (event)
-        {
-            event.preventDefault(); 
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
+        button.onclick = navigate;
+    }
+
+    //const tabButtons = document.getElementsByName('header-nav-button');
+    //tabButtons.forEach(button =>
+    //{
+    //    button.addEventListener('click', function (event)
+    //    {
+    //        tabButtons.forEach(btn => btn.classList.remove('active'));
+    //        button.classList.add('active');
+    //        console.log(button);
+    //    });
+    //});
 });
 
 document.addEventListener('submit', e =>
@@ -100,79 +91,83 @@ document.addEventListener('submit', e =>
     }
 })
 
-//Method for test RealtyController.Create()
-function createTestMethod() {
-    //example data
-    const testData = {
-        "name": "Luxury Villa",
-        "description": "Sea view villa with pool",
-        "slug": "luxury-villa2",
-        "imageUrl": "villa.jpg",
-        "price": 1999.99,
-        "cityId": "0d156354-89f1-4d58-a735-876b7add59d2",
-        "countryId": "bdf41cd9-c0f1-4349-8a44-4e67755d0415",
-        "groupId": "6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"
-    }
+function navigate(e)
+{
+    const targetButton = e.target.closest('[data-nav]');
+    const route = targetButton.getAttribute('data-nav');
+    if (!route) throw `Route was not found`;
+    showPage(route);
+}
 
-    try {
-        fetch('/Realty/Create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(testData)
-        });
-        console.log('Test realty created successfully');
-    }
-    catch (e) {
-        console.error('Error creating test realty:', e);
+function showPage(page)
+{
+    window.activePage = page;
+    const spaContainer = document.getElementById('spa-container');
+    if (!spaContainer) throw "Element #spa-container was not found";
+    switch (page) {
+        case 'user-create': spaContainer.innerHTML = userCreate; break;
+        case 'user-update-delete': spaContainer.innerHTML = `<b>Privacy</b>`; break;
+        case 'view-user-database': spaContainer.innerHTML = `<b>Settings</b>`; break;
+        case 'realty-create': spaContainer.innerHTML = `<b>Home1</b>`; break;
+        case 'realty-update-delete': spaContainer.innerHTML = `<b>Privacy1</b>`; break;
+        case 'view-realty-database': spaContainer.innerHTML = `<b>Settings1</b>`; break;
+        default: spaContainer.innerHTML = `<div class="alert alert-danger" role="alert">Something went wrong!</div>`;
     }
 }
 
-function updateTestMethod() {
-    const updatedData = {
-        "id": "072b79fe-3c89-44d8-90f8-6d0ad54a91d4",
-        "name": "Luxury Villa (Updated)",
-        "description": "Updated description: Sea view villa with sauna",
-        "slug": "luxury-villa2",
-        "imageUrl": "villa-updated.jpg",
-        "price": 2199.99,
-        "cityId": "0d156354-89f1-4d58-a735-876b7add59d2",
-        "countryId": "bdf41cd9-c0f1-4349-8a44-4e67755d0415",
-        "groupId": "6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"
-    };
+// ------------ COLLECTION OF PAGES ------------
 
-    fetch('/Realty/Update', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updatedData)
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Update response:', data);
-        })
-        .catch(error => {
-            console.error('Error updating realty:', error);
-        });
-}
+const userCreate = `<div>
 
-function deleteTestMethod() {
-    const idToDelete = "072b79fe-3c89-44d8-90f8-6d0ad54a91d4";
+<form>
+<div class="mb-3">
+	<label for="user-first-name" class="form-label">First Name</label>
+	<input type="text" name="user-first-name" class="form-control @classAddon" id="user-first-name" aria-describedby="FirstName" placeholder="Enter your first name">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
 
-    fetch('/Realty/Delete', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id: idToDelete })
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Delete response:', data);
-        })
-        .catch(error => {
-            console.error('Error deleting realty:', error);
-        });
-}
+<div class="mb-3">
+	
+	<label for="user-last-name" class="form-label">Last Name</label>
+	<input type="text" name="user-last-name" class="form-control @classAddon" id="user-last-name" aria-describedby="LastName" placeholder="Enter your last name">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<div class="mb-3">
+	
+	<label for="user-email" class="form-label">Email address</label>
+	<input type="email" name="user-email"  class="form-control @classAddon" id="user-email" aria-describedby="Email" placeholder="Enter your email address">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<div class="mb-3">
+	
+	<label for="user-login" class="form-label">Login</label>
+	<input type="text" name="user-login"  class="form-control @classAddon" id="user-login" aria-describedby="Login" placeholder="Enter your login">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<div class="mb-3">
+
+	<label for="user-birthdate" class="form-label">Date of birth</label>
+	<input type="date" name="birthdate"  class="form-control @classAddon" id="user-birthdate" aria-describedby="Birthdate" placeholder="Enter your birthdate">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<div class="mb-3">
+	
+	<label for="user-password" class="form-label">Password</label>
+	<input type="password" name="user-password" class="form-control @classAddon" id="user-password" aria-describedby="Password" placeholder="Enter your password">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+</form>
+
+</div>`
+
+
+
+
+
+
+// ------------ ------------------- ------------

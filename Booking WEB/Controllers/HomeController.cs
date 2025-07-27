@@ -27,6 +27,10 @@ namespace Booking_WEB.Controllers
         {
             return View();
         }
+        public IActionResult Administrator()
+        {
+            return View();
+        }
         public IActionResult Item()
         {
             RealtyModel model = new(); // TO DO: fill in the data
