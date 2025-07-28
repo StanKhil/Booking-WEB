@@ -117,53 +117,53 @@ function showPage(page)
 
 // ------------ COLLECTION OF PAGES ------------
 
-const userCreate = `<div>
+//const userCreate = `<div>
 
-<form>
-<div class="mb-3">
-	<label for="user-first-name" class="form-label">First Name</label>
-	<input type="text" name="user-first-name" class="form-control @classAddon" id="user-first-name" aria-describedby="FirstName" placeholder="Enter your first name">
-	<div class="invalid-feedback">@errorMessage</div>
-</div>
+//<form>
+//<div class="mb-3">
+//	<label for="user-first-name" class="form-label">First Name</label>
+//	<input type="text" name="user-first-name" class="form-control @classAddon" id="user-first-name" aria-describedby="FirstName" placeholder="Enter your first name">
+//	<div class="invalid-feedback">@errorMessage</div>
+//</div>
 
-<div class="mb-3">
-	
-	<label for="user-last-name" class="form-label">Last Name</label>
-	<input type="text" name="user-last-name" class="form-control @classAddon" id="user-last-name" aria-describedby="LastName" placeholder="Enter your last name">
-	<div class="invalid-feedback">@errorMessage</div>
-</div>
+//<div class="mb-3">
 
-<div class="mb-3">
-	
-	<label for="user-email" class="form-label">Email address</label>
-	<input type="email" name="user-email"  class="form-control @classAddon" id="user-email" aria-describedby="Email" placeholder="Enter your email address">
-	<div class="invalid-feedback">@errorMessage</div>
-</div>
+//	<label for="user-last-name" class="form-label">Last Name</label>
+//	<input type="text" name="user-last-name" class="form-control @classAddon" id="user-last-name" aria-describedby="LastName" placeholder="Enter your last name">
+//	<div class="invalid-feedback">@errorMessage</div>
+//</div>
 
-<div class="mb-3">
-	
-	<label for="user-login" class="form-label">Login</label>
-	<input type="text" name="user-login"  class="form-control @classAddon" id="user-login" aria-describedby="Login" placeholder="Enter your login">
-	<div class="invalid-feedback">@errorMessage</div>
-</div>
+//<div class="mb-3">
 
-<div class="mb-3">
+//	<label for="user-email" class="form-label">Email address</label>
+//	<input type="email" name="user-email"  class="form-control @classAddon" id="user-email" aria-describedby="Email" placeholder="Enter your email address">
+//	<div class="invalid-feedback">@errorMessage</div>
+//</div>
 
-	<label for="user-birthdate" class="form-label">Date of birth</label>
-	<input type="date" name="birthdate"  class="form-control @classAddon" id="user-birthdate" aria-describedby="Birthdate" placeholder="Enter your birthdate">
-	<div class="invalid-feedback">@errorMessage</div>
-</div>
+//<div class="mb-3">
 
-<div class="mb-3">
-	
-	<label for="user-password" class="form-label">Password</label>
-	<input type="password" name="user-password" class="form-control @classAddon" id="user-password" aria-describedby="Password" placeholder="Enter your password">
-	<div class="invalid-feedback">@errorMessage</div>
-</div>
+//	<label for="user-login" class="form-label">Login</label>
+//	<input type="text" name="user-login"  class="form-control @classAddon" id="user-login" aria-describedby="Login" placeholder="Enter your login">
+//	<div class="invalid-feedback">@errorMessage</div>
+//</div>
 
-</form>
+//<div class="mb-3">
 
-</div>`
+//	<label for="user-birthdate" class="form-label">Date of birth</label>
+//	<input type="date" name="birthdate"  class="form-control @classAddon" id="user-birthdate" aria-describedby="Birthdate" placeholder="Enter your birthdate">
+//	<div class="invalid-feedback">@errorMessage</div>
+//</div>
+
+//<div class="mb-3">
+
+//	<label for="user-password" class="form-label">Password</label>
+//	<input type="password" name="user-password" class="form-control @classAddon" id="user-password" aria-describedby="Password" placeholder="Enter your password">
+//	<div class="invalid-feedback">@errorMessage</div>
+//</div>
+
+//</form>
+
+//</div>`
 
 
 
@@ -171,3 +171,15 @@ const userCreate = `<div>
 
 
 // ------------ ------------------- ------------
+
+const getHtml = async (fileName) => {
+    const response = await fetch(`/Resources/GetHtmlPage?fileName=${fileName}`);
+    return await response.text();
+};
+
+const userCreate = await getHtml('UserCreatePage.txt');
+//console.log(userCreate);
+
+
+
+
