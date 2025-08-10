@@ -1,0 +1,63 @@
+﻿<div class="container">
+
+<h3>Create Realties</h3>
+<hr>
+
+<form>
+<div class="mb-3">
+	<label for="realty-name" class="form-label">Name</label>
+	<input type="text" name="realty-name" class="form-control @classAddon" id="realty-name" aria-describedby="RealtyName" placeholder="Enter name">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<div class="mb-3">
+	<label for="realty-description" class="form-label">Description</label>
+	<input type="text" name="realty-description" class="form-control @classAddon" id="realty-description" aria-describedby="RealtyDescription" placeholder="Enter description">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<div class="mb-3">
+	<label for="realty-slug" class="form-label">Slug</label>
+	<input type="text" name="realty-slug" class="form-control @classAddon" id="realty-slug" aria-describedby="Slug" placeholder="Enter slug">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<div class="mb-3">
+	<label for="realty-price" class="form-label">Price</label>
+	<input type="number" name="realty-price" class="form-control @classAddon" id="realty-price" aria-describedby="Price" placeholder="Enter price">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<div class="mb-3">
+	<label for="realty-country" class="form-label">Country</label>
+	<input type="text" name="realty-country" class="form-control @classAddon" id="realty-country" aria-describedby="Country" placeholder="Enter country">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<div class="mb-3">
+	<label for="realty-city" class="form-label">City</label>
+	<input type="tex" name="realty-city" class="form-control @classAddon" id="realty-city" aria-describedby="City" placeholder="Enter city">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<div class="mb-3">
+	<label for="realty-group" class="form-label">Group</label>
+	<select class="form-select" aria-label="Group form select">
+		<option value="Apartments">Apartments</option>
+		<option value="Villas">Villas</option>
+		<option value="Houses">Houses</option>
+		<option value="Hotels">Hotels</option>
+	</select>
+</div>
+
+<div class="mb-3">
+  <label for="realty-main-image" class="form-label">Main image</label>
+  <input type="file" name="realty-main-image" class="form-control" id="realty-main-image" aria-describedby="Main Image">
+</div>
+
+</form>
+
+<button data-action="create-realty" class="btn btn-success w-100" id="admin-create-realty-button">Create</button>
+<div role="alert" class="alert" style="display: none" id="admin-realty-create-alert"></div>
+
+</div>

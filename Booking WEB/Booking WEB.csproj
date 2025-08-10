@@ -14,6 +14,7 @@
     <Content Remove="wwwroot\resources\images\Countries\Ukraine\kharkiv.jpg" />
     <Content Remove="wwwroot\resources\images\Countries\Ukraine\poltava.jpg" />
     <Content Remove="wwwroot\resources\images\Countries\Ukraine\sumy.jpg" />
+    <Content Remove="wwwroot\resources\pages\UpdateDeleteUserPage.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,6 +38,7 @@
     <Resource Include="wwwroot\resources\images\Countries\Ukraine\poltava.jpg" />
     <Resource Include="wwwroot\resources\images\Countries\Ukraine\sumy.jpg" />
     <Resource Include="wwwroot\resources\images\text.svg" />
+    <Resource Include="wwwroot\resources\pages\UpdateDeleteUserPage.txt" />
   </ItemGroup>
 
 </Project>

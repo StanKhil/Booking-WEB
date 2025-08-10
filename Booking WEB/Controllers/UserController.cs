@@ -7,7 +7,6 @@ using Booking_WEB.Services.Random;
 using Booking_WEB.Services.Kdf;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Booking_WEB.Dto.User;
 
 namespace Booking_WEB.Controllers

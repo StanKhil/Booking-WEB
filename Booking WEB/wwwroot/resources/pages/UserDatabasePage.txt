@@ -1,0 +1,24 @@
+﻿<div class="container">
+
+<h1>HAIL TO YOU</h1>
+<h5>Fortune be with you</h5>
+
+<table id="admin-user-table" class="table table-light table-striped table-bordered">
+	<thead class="table-dark">
+		<tr>
+			<th>First Name</th>
+			<th>Last Name</th>
+			<th>Email</th>
+			<th>Login</th>
+			<th>Birthdate</th>
+			<th>Role</th>
+		</tr>
+	</thead>
+	<tbody>
+		
+
+	</tbody>
+</table>
+
+
+</div>

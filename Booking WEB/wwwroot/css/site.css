@@ -21,6 +21,8 @@ body {
   
 }
 
+
+
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
   text-align: end;
@@ -188,7 +190,7 @@ a[b-0mcryyuvy1] {
 .footer-booking {
     background-color: #002244; 
     color: white;
-    padding: 40px 0;
+    padding-bottom: 0;
 }
 
 .footer-link {

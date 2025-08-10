@@ -1,0 +1,90 @@
+﻿<div class="container">
+
+<h3>Update Users</h3>
+<hr>
+
+<form>
+
+<div class="mb-3">
+	<label for="realty-former-slug" class="form-label">Slug</label>
+	<input type="text" name="realty-former-slug"  class="form-control @classAddon" id="realty-former-slug" aria-describedby="Former slug" placeholder="Enter realty's current slug">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<hr>
+
+<div class="mb-3">
+	<label for="realty-name" class="form-label">New name</label>
+	<input type="text" name="realty-name" class="form-control @classAddon" id="realty-name" aria-describedby="RealtyName" placeholder="New name">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<div class="mb-3">
+	<label for="realty-description" class="form-label">New description</label>
+	<input type="text" name="realty-description" class="form-control @classAddon" id="realty-description" aria-describedby="RealtyDescription" placeholder="New description">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<div class="mb-3">
+	<label for="realty-slug" class="form-label">New slug</label>
+	<input type="text" name="realty-slug" class="form-control @classAddon" id="realty-slug" aria-describedby="Slug" placeholder="New slug">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<div class="mb-3">
+	<label for="realty-price" class="form-label">New price</label>
+	<input type="number" name="realty-price" class="form-control @classAddon" id="realty-price" aria-describedby="Price" placeholder="New price">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<div class="mb-3">
+	<label for="realty-country" class="form-label">New country</label>
+	<input type="text" name="realty-country" class="form-control @classAddon" id="realty-country" aria-describedby="Country" placeholder="New country">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<div class="mb-3">
+	<label for="realty-city" class="form-label">New city</label>
+	<input type="tex" name="realty-city" class="form-control @classAddon" id="realty-city" aria-describedby="City" placeholder="New city">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<div class="mb-3">
+	<label for="realty-group" class="form-label">Group</label>
+	<select class="form-select" aria-label="Group form select">
+		<option value="Apartments">Apartments</option>
+		<option value="Villas">Villas</option>
+		<option value="Houses">Houses</option>
+		<option value="Hotels">Hotels</option>
+	</select>
+</div>
+
+<div class="mb-3">
+  <label for="realty-main-image" class="form-label">New main image</label>
+  <input type="file" name="realty-main-image" class="form-control" id="realty-main-image" aria-describedby="New main Image">
+</div>
+
+<div class="mb-3">
+  <label for="realty-secondary-images" class="form-label">Secondary images</label>
+  <input type="file" name="realty-secondary-images" class="form-control" id="realty-secondary-images" aria-describedby="Secondary images" data-show-upload="false" data-show-caption="true" multiple>
+</div>
+
+</form>
+
+<button data-action="update-user" class="btn btn-info w-100" id="admin-realty-update-button">Update</button>
+<div role="alert" class="alert" style="display: none" id="admin-realty-update-alert"></div>
+
+<hr>
+<h3 class="mt-5">Delete Users</h3>
+<hr>
+
+<div class="mb-3">
+	<label for="realty-delete-slug" class="form-label">Login</label>
+	<input type="text" name="realty-delete-slug"  class="form-control @classAddon" id="realty-delete-slug" aria-describedby="Delete slug" placeholder="Enter realty's current slug">
+	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<button data-action="delete-realty" class="btn btn-danger w-100" id="admin-realty-delete-button">Delete</button>
+<div role="alert" class="alert mb-3" style="display:none" id="admin-realty-delete-alert"></div>
+
+</div>

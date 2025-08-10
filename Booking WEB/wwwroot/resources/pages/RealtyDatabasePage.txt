@@ -1,0 +1,22 @@
+﻿<div class="container">
+
+<table id="admin-realty-table" class="table table-light table-striped table-bordered">
+	<thead class="table-dark">
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Slug</th>
+			<th>Price</th>
+			<th>Country</th>
+			<th>City</th>
+			<th>Group</th>
+		</tr>
+	</thead>
+	<tbody>
+		
+
+	</tbody>
+</table>
+
+
+</div>

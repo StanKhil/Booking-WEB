@@ -1,47 +1,58 @@
-﻿<div>
+﻿<div class="container">
+
+<h3>Create Users</h3>
+<hr>
 
 <form>
 <div class="mb-3">
 	<label for="user-first-name" class="form-label">First Name</label>
-	<input type="text" name="user-first-name" class="form-control @classAddon" id="user-first-name" aria-describedby="FirstName" placeholder="Enter your first name">
+	<input type="text" name="user-first-name" class="form-control @classAddon" id="user-first-name" aria-describedby="FirstName" placeholder="Enter first name">
 	<div class="invalid-feedback">@errorMessage</div>
 </div>
 
 <div class="mb-3">
-	
 	<label for="user-last-name" class="form-label">Last Name</label>
-	<input type="text" name="user-last-name" class="form-control @classAddon" id="user-last-name" aria-describedby="LastName" placeholder="Enter your last name">
+	<input type="text" name="user-last-name" class="form-control @classAddon" id="user-last-name" aria-describedby="LastName" placeholder="Enter last name">
 	<div class="invalid-feedback">@errorMessage</div>
 </div>
 
 <div class="mb-3">
-	
 	<label for="user-email" class="form-label">Email address</label>
-	<input type="email" name="user-email"  class="form-control @classAddon" id="user-email" aria-describedby="Email" placeholder="Enter your email address">
+	<input type="email" name="user-email"  class="form-control @classAddon" id="user-email" aria-describedby="Email" placeholder="Enter email">
 	<div class="invalid-feedback">@errorMessage</div>
 </div>
 
 <div class="mb-3">
-	
 	<label for="user-login" class="form-label">Login</label>
-	<input type="text" name="user-login"  class="form-control @classAddon" id="user-login" aria-describedby="Login" placeholder="Enter your login">
+	<input type="text" name="user-login"  class="form-control @classAddon" id="user-login" aria-describedby="Login" placeholder="Enter login">
 	<div class="invalid-feedback">@errorMessage</div>
 </div>
 
 <div class="mb-3">
-
 	<label for="user-birthdate" class="form-label">Date of birth</label>
-	<input type="date" name="birthdate"  class="form-control @classAddon" id="user-birthdate" aria-describedby="Birthdate" placeholder="Enter your birthdate">
+	<input type="date" name="birthdate"  class="form-control @classAddon" id="user-birthdate" aria-describedby="Birthdate" placeholder="Enter birthdate">
 	<div class="invalid-feedback">@errorMessage</div>
 </div>
 
 <div class="mb-3">
-	
 	<label for="user-password" class="form-label">Password</label>
-	<input type="password" name="user-password" class="form-control @classAddon" id="user-password" aria-describedby="Password" placeholder="Enter your password">
+	<input type="password" name="user-password" class="form-control @classAddon" id="user-password" aria-describedby="Password" placeholder="Enter password">
 	<div class="invalid-feedback">@errorMessage</div>
+</div>
+
+<div class="mb-3">
+	<label for="user-role" class="form-label">Role</label>
+	<select class="form-select" aria-label="Role form select">
+		<option value="SelfRegistered">Self-Registered</option>
+		<option value="Employee">Employee</option>
+		<option value="Moderator">Moderator</option>
+		<option value="Administrator">Administrator</option>
+	</select>
 </div>
 
 </form>
+
+<button data-action="create-user" class="btn btn-success w-100" id="admin-create-user-button">Create</button>
+<div role="alert" class="alert" style="display: none" id="admin-user-create-alert"></div>
 
 </div>

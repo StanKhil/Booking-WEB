@@ -77,7 +77,6 @@ document.addEventListener('submit', e =>
             }
         }).then(r => r.json())
             .then(j => {
-                console.log(j);
                 if (j.status == 200) {
                     window.location.reload();
                 }
@@ -106,71 +105,34 @@ function showPage(page)
     if (!spaContainer) throw "Element #spa-container was not found";
     switch (page) {
         case 'user-create': spaContainer.innerHTML = userCreate; break;
-        case 'user-update-delete': spaContainer.innerHTML = `<b>Privacy</b>`; break;
-        case 'view-user-database': spaContainer.innerHTML = `<b>Settings</b>`; break;
-        case 'realty-create': spaContainer.innerHTML = `<b>Home1</b>`; break;
-        case 'realty-update-delete': spaContainer.innerHTML = `<b>Privacy1</b>`; break;
-        case 'view-realty-database': spaContainer.innerHTML = `<b>Settings1</b>`; break;
+        case 'user-update-delete': spaContainer.innerHTML = userUpdateDelete; break;
+        case 'view-user-database': spaContainer.innerHTML = userDatabase; adminFillInUserTable(); break;
+        case 'realty-create': spaContainer.innerHTML = realtyCreate; break;
+        case 'realty-update-delete': spaContainer.innerHTML = realtyUpdateDelete; break;
+        case 'view-realty-database': spaContainer.innerHTML = realtyDatabase; adminFillInRealtyTable(); break;
         default: spaContainer.innerHTML = `<div class="alert alert-danger" role="alert">Something went wrong!</div>`;
+    }
+    setupActions();
+}
+
+function setupActions()
+{
+    for (let button of document.querySelectorAll('[data-action]'))
+    {
+        switch (button.dataset.action)
+        {
+            case "create-user": button.onclick = adminCreateUser; break;
+            case "update-user": button.onclick = adminUpdateUser; break;
+            case "delete-user": button.onclick = adminDeleteUser; break;
+            case "create-realty": button.onclick = adminCreateRealty; break;
+            case "update-realty": button.onclick = adminUpdateRealty; break;
+            case "delete-realty": button.onclick = adminDeleteRealty; break;
+        }
     }
 }
 
+
 // ------------ COLLECTION OF PAGES ------------
-
-//const userCreate = `<div>
-
-//<form>
-//<div class="mb-3">
-//	<label for="user-first-name" class="form-label">First Name</label>
-//	<input type="text" name="user-first-name" class="form-control @classAddon" id="user-first-name" aria-describedby="FirstName" placeholder="Enter your first name">
-//	<div class="invalid-feedback">@errorMessage</div>
-//</div>
-
-//<div class="mb-3">
-
-//	<label for="user-last-name" class="form-label">Last Name</label>
-//	<input type="text" name="user-last-name" class="form-control @classAddon" id="user-last-name" aria-describedby="LastName" placeholder="Enter your last name">
-//	<div class="invalid-feedback">@errorMessage</div>
-//</div>
-
-//<div class="mb-3">
-
-//	<label for="user-email" class="form-label">Email address</label>
-//	<input type="email" name="user-email"  class="form-control @classAddon" id="user-email" aria-describedby="Email" placeholder="Enter your email address">
-//	<div class="invalid-feedback">@errorMessage</div>
-//</div>
-
-//<div class="mb-3">
-
-//	<label for="user-login" class="form-label">Login</label>
-//	<input type="text" name="user-login"  class="form-control @classAddon" id="user-login" aria-describedby="Login" placeholder="Enter your login">
-//	<div class="invalid-feedback">@errorMessage</div>
-//</div>
-
-//<div class="mb-3">
-
-//	<label for="user-birthdate" class="form-label">Date of birth</label>
-//	<input type="date" name="birthdate"  class="form-control @classAddon" id="user-birthdate" aria-describedby="Birthdate" placeholder="Enter your birthdate">
-//	<div class="invalid-feedback">@errorMessage</div>
-//</div>
-
-//<div class="mb-3">
-
-//	<label for="user-password" class="form-label">Password</label>
-//	<input type="password" name="user-password" class="form-control @classAddon" id="user-password" aria-describedby="Password" placeholder="Enter your password">
-//	<div class="invalid-feedback">@errorMessage</div>
-//</div>
-
-//</form>
-
-//</div>`
-
-
-
-
-
-
-// ------------ ------------------- ------------
 
 const getHtml = async (fileName) => {
     const response = await fetch(`/Resources/GetHtmlPage?fileName=${fileName}`);
@@ -178,8 +140,64 @@ const getHtml = async (fileName) => {
 };
 
 const userCreate = await getHtml('UserCreatePage.txt');
-//console.log(userCreate);
+const userUpdateDelete = await getHtml('UpdateDeleteUserPage.txt');
+const userDatabase = await getHtml('UserDatabasePage.txt');
+
+const realtyCreate = await getHtml('RealtyCreatePage.txt');
+const realtyUpdateDelete = await getHtml('UpdateDeleteRealtyPage.txt');
+const realtyDatabase = await getHtml('RealtyDatabasePage.txt');
+
+// ---------------------------------------------
 
 
 
 
+
+
+// --------------- ADMINISTRATOR ---------------
+
+const getUserTableData = async (actionName) => {
+    const response = await fetch(`/Administrator/${actionName}`, { method: "GET" });
+    return await response.text();
+}
+
+
+function adminCreateUser() {
+    console.log("USER CREATE");
+}
+function adminUpdateUser() {
+    console.log("USER UPDATE");
+}
+function adminDeleteUser() {
+    console.log("USER DELETE");
+}
+function adminFillInUserTable() {
+    const table = document.getElementById('admin-user-table');
+    if (!table) throw "Element 'admin-user-table' was not found";
+    getUserTableData("GetUsersTable").then(s =>
+    {
+        const userData = s;
+        table.querySelector('tbody').innerHTML = userData;
+    });
+}
+
+
+function adminCreateRealty() {
+    console.log("REALTY CREATE");
+}
+function adminUpdateRealty() {
+    console.log("REALTY UPDATE");
+}
+function adminDeleteRealty() {
+    console.log("REALTY DELETE");
+}
+function adminFillInRealtyTable() {
+    const table = document.getElementById('admin-realty-table');
+    if (!table) throw "Element 'admin-realty-table' was not found";
+    getUserTableData("GetRealtiesTable").then(s => {
+        const userData = s;
+        table.querySelector('tbody').innerHTML = userData;
+    });
+}
+
+// ---------------------------------------------

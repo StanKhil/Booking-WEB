@@ -9,7 +9,6 @@ namespace Booking_WEB.Controllers
             return View();
         }
 
-
         //Example of request
         //GET//Resources/GetHtmlPage?fileName=${fileName}
 
