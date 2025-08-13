@@ -8,16 +8,26 @@ using Booking_WEB.Services.Kdf;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Booking_WEB.Dto.User;
+using Booking_WEB.Services.Time;
+using Booking_WEB.Services.Jwt;
 
 namespace Booking_WEB.Controllers
 {
-    public class UserController(IRandomService randomService, IKdfService kdfService, DataContext context, ILogger<UserController> logger) : Controller
+    public class UserController(
+        IRandomService randomService, 
+        IKdfService kdfService, 
+        DataContext context, 
+        ILogger<UserController> logger,
+        ITimeService timeService,
+        IJwtService jwtService) : Controller
     {
         private readonly IRandomService _randomService = randomService;
         private readonly IKdfService _kdfService = kdfService;
         private readonly DataContext _context = context;
         private readonly ILogger<UserController> _logger = logger;
-        private readonly Regex _passwordRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!?@$&*])[A-Za-z\d@$!%*?&]{12,}$"); // For the time being
+        private readonly Regex _passwordRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!?@$&*])[A-Za-z\d@$!%*?&]{12,}$");
+        private readonly ITimeService _timeService = timeService;
+        private readonly IJwtService _jwtService = jwtService;
 
         // ============= REGISTRATION ============= //
         public ViewResult SignUp()
@@ -132,18 +142,17 @@ namespace Booking_WEB.Controllers
 
 
         // ============= LOGIN =============
-        [HttpGet]
-        public JsonResult SignIn()
+        private UserAccess Authenticate()
         {
             string authorizationHeader = Request.Headers.Authorization.ToString();
             if (string.IsNullOrEmpty(authorizationHeader))
             {
-                return Json(new { Status = 401, Data = "Missing 'Authorization' header" });
+                throw new Exception("Missing 'Authorization' header");
             }
             string authorizationScheme = "Basic ";
-            if(!authorizationHeader.StartsWith(authorizationScheme))
+            if (!authorizationHeader.StartsWith(authorizationScheme))
             {
-                return Json(new { Status = 401, Data = $"Authorization scheme error: '{authorizationScheme}' only" });
+                throw new Exception($"Authorization scheme error: '{authorizationScheme}' only");
             }
             string credentials = authorizationHeader[authorizationScheme.Length..];
             string decoded;
@@ -151,15 +160,15 @@ namespace Booking_WEB.Controllers
             {
                 decoded = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(credentials));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 _logger.LogError("SignIn: {e}", e.Message);
-                return Json(new { Status = 401, Data = $"Authorization credentials decode error" });
+                throw new Exception($"Authorization credentials decode error");
             }
             string[] parts = decoded.Split(':', 2);
-            if(parts.Length != 2)
+            if (parts.Length != 2)
             {
-                return Json(new { Status = 401, Data = $"Authorization credentials decompose error" });
+                throw new Exception($"Authorization credentials decompose error");
             }
             string login = parts[0];
             string password = parts[1];
@@ -169,34 +178,69 @@ namespace Booking_WEB.Controllers
                      .Include(ua => ua.UserData)
                      .Include(ua => ua.UserRole)
                      .FirstOrDefault(ua => ua.Login == login);
-            if(userAccess == null)
+            if (userAccess == null)
             {
-                return Json(new { Status = 401, Data = $"Authorization credentials rejected: invalid login" });
+                throw new Exception($"Authorization credentials rejected: invalid login");
             }
-            if(_kdfService.Dk(password, userAccess.Salt) != userAccess.Dk)
+            if (_kdfService.Dk(password, userAccess.Salt) != userAccess.Dk)
             {
-                return Json(new { Status = 401, Data = $"Authorization credentials rejected: invalid password" });
+                throw new Exception($"Authorization credentials rejected: invalid password");
             }
+            return userAccess;
+        }
+
+        [HttpGet]
+        public JsonResult LogIn()
+        {
+            UserAccess userAccess;
+            try
+            {
+                userAccess = Authenticate();
+            }
+            catch(Exception e)
+            {
+                return Json(new 
+                { 
+                    Status = 401,
+                    Data = e.Message 
+                });
+            }
+
+            AccessToken accessToken = new()
+            {
+                Jti = Guid.NewGuid().ToString(),
+                Sub = userAccess.Id,
+                Iat = _timeService.Timestamp().ToString(),
+                Exp = (_timeService.Timestamp() + (long)1e1).ToString(),
+                Iss = nameof(Booking_WEB),
+                Aud = userAccess.RoleId
+            };
+
+            _context.AccessTokens.Add(accessToken);
+            _context.SaveChanges();
+
+            var jwt = new
+            {
+                accessToken.Jti,
+                accessToken.Sub,
+                accessToken.Iat,
+                accessToken.Exp,
+                accessToken.Iss,
+                accessToken.Aud,
+                userAccess.UserData.FirstName,
+                userAccess.UserData.LastName,
+                userAccess.UserData.Email,
+                userAccess.UserRole.Id
+            };
             HttpContext.Session.SetString("userAccess", JsonSerializer.Serialize(userAccess));
             return Json(new
             {
                 Status = 200,
-                Data = "Ok"
+                Data = _jwtService.EncodeJwt(jwt)
             });
         }
-
-
-        public IActionResult Login()
+        public IActionResult LoginView()
         {
-            //UserSignInPageModel model = new();
-            //if (HttpContext.Session.Keys.Contains("UserSignInFormModel"))
-            //{
-            //    model.FormModel = JsonSerializer.Deserialize<UserSignInFormModel>(
-            //        HttpContext.Session.GetString("UserSignInFormModel")!);
-            //    model.FormErrors = ProcessSignInData(model.FormModel!);
-            //
-            //    HttpContext.Session.Remove("UserSignInFormModel");
-            //}
             if(HttpContext.Session.Keys.Contains("userAccess"))
             {
                 return RedirectToAction("Index", "Home");
@@ -204,87 +248,8 @@ namespace Booking_WEB.Controllers
             return View();
         }
 
-        //[HttpPost]
-        //public async Task<RedirectToActionResult> SignIn(UserSignInFormModel model)
-        //{
-        //    HttpContext.Session.SetString("UserSignInFormModel",
-        //        JsonSerializer.Serialize(model));
-        //    return RedirectToAction(nameof(SignIn));
-        //}
-
-        //[HttpGet]
-        //public ViewResult SignIn()
-        //{
-        //    UserSignInPageModel model = new();
-
-        //    if (HttpContext.Session.TryGetValue("UserSignInFormModel", out byte[]? formBytes))
-        //    {
-        //        var formJson = System.Text.Encoding.UTF8.GetString(formBytes);
-        //        model.FormModel = JsonSerializer.Deserialize<UserSignInFormModel>(formJson);
-        //        HttpContext.Session.Remove("UserSignInFormModel");
-        //    }
-
-        //    if (HttpContext.Session.TryGetValue("UserSignInFormErrors", out byte[]? errorBytes))
-        //    {
-        //        var errorsJson = System.Text.Encoding.UTF8.GetString(errorBytes);
-        //        model.FormErrors = JsonSerializer.Deserialize<Dictionary<string, string>>(errorsJson);
-        //        HttpContext.Session.Remove("UserSignInFormErrors");
-        //    }
-        //    return View(model);
-        //}
-
-        //[HttpPost]
-        //public IActionResult SignIn(UserSignInFormModel model)
-        //{
-        //    var errors = ProcessSignInData(model);
-
-        //    if (errors.Count > 0)
-        //    {
-        //        HttpContext.Session.SetString("UserSignInFormModel", JsonSerializer.Serialize(model));
-        //        HttpContext.Session.SetString("UserSignInFormErrors", JsonSerializer.Serialize(errors));
-
-        //        return RedirectToAction(nameof(SignIn));
-        //    }
-
-        //    return RedirectToAction("Index", "Home");
-        //}
 
 
-        //private Dictionary<string, string> ProcessSignInData(UserSignInFormModel model)
-        //{
-        //    Dictionary<string, string> errors = [];
-
-        //    if (string.IsNullOrWhiteSpace(model.UserLogin))
-        //    {
-        //        errors[nameof(model.UserLogin)] = "Login is required";
-        //    }
-
-        //    if (string.IsNullOrWhiteSpace(model.UserPassword))
-        //    {
-        //        errors[nameof(model.UserPassword)] = "Password is required";
-        //    }
-
-        //    if (errors.Count == 0)
-        //    {
-        //        var userAccess = _context
-        //            .UserAccesses
-        //            .AsNoTracking()
-        //            .Include(ua => ua.UserData)
-        //            .Include(ua => ua.UserRole)
-        //            .FirstOrDefault(ua => ua.Login == model.UserLogin);
-
-        //        if (userAccess == null || _kdfService.Dk(model.UserPassword, userAccess.Salt) != userAccess.Dk)
-        //        {
-        //            errors["Authorization"] = "Invalid login or password";
-        //        }
-        //        else
-        //        {
-        //            _logger.LogInformation("User {Login} signed in", userAccess.Login);
-        //            HttpContext.Session.SetString("userAccess", JsonSerializer.Serialize(userAccess));
-        //        }
-        //    }
-        //    return errors;
-        //}
 
         [HttpPost]
         public async Task<JsonResult> Create()

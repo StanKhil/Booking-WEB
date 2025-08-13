@@ -6,17 +6,6 @@ document.addEventListener('DOMContentLoaded', function ()
     {
         button.onclick = navigate;
     }
-
-    //const tabButtons = document.getElementsByName('header-nav-button');
-    //tabButtons.forEach(button =>
-    //{
-    //    button.addEventListener('click', function (event)
-    //    {
-    //        tabButtons.forEach(btn => btn.classList.remove('active'));
-    //        button.classList.add('active');
-    //        console.log(button);
-    //    });
-    //});
 });
 
 document.addEventListener('submit', e =>
@@ -70,15 +59,18 @@ document.addEventListener('submit', e =>
             }
         }
         const credentials = new Base64().encode(`${loginInput.value}:${passwordInput.value}`);
-        fetch('/User/SignIn', {
+        fetch('/User/LogIn', {
             method: 'GET',
             headers: {
                 'Authorization': `Basic ${credentials}`
             }
         }).then(r => r.json())
             .then(j => {
-                if (j.status == 200) {
-                    window.location.reload();
+                if (j.status == 200)
+                {
+                    window.accessToken = j.data;
+                    console.log(window.accessToken);
+                    window.location.href = "/Home/Index";
                 }
                 else {
                     const alertDiv = document.getElementById('login-alert');

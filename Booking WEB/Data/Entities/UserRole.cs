@@ -15,6 +15,7 @@ namespace Booking_WEB.Data.Entities
         public bool CanRead { get; set; }
         public bool CanUpdate { get; set; }
         public bool CanDelete { get; set; }
+
         [JsonIgnore]
         public List<UserAccess> UserAccesses { get; set; } = [];
     }

@@ -5,6 +5,7 @@ using Booking_WEB.Services.Random;
 using Booking_WEB.Services.Time;
 using Microsoft.EntityFrameworkCore;
 using Booking_WEB.Middleware.Auth;
+using Booking_WEB.Services.Jwt;
 
 namespace Booking_WEB
 {
@@ -17,9 +18,10 @@ namespace Booking_WEB
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddSingleton<IRandomService, DefaultRandomService>();
-            builder.Services.AddSingleton<ITimeService, MilliSecTimeService>();
+            builder.Services.AddSingleton<ITimeService, SecTimeService>();
             builder.Services.AddSingleton<IIdentityService, DefaultIdentityService>();
             builder.Services.AddSingleton<IKdfService, PbKdfService>();
+            builder.Services.AddSingleton<IJwtService, JwtService>();
 
             builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("LocalDB")));
 
@@ -48,6 +50,7 @@ namespace Booking_WEB
             app.UseSession();
 
             app.UseAuthSession();
+            app.UseAuthJwt();
 
             app.MapControllerRoute(
                 name: "default",

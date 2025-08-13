@@ -15,6 +15,7 @@ namespace Booking_WEB.Data
         public DbSet<Entities.UserData> Users { get; set; } = null!;
         public DbSet<Entities.UserRole> UserRoles { get; set; } = null!;
         public DbSet<Entities.UserAccess> UserAccesses { get; set; } = null!;
+        public DbSet<Entities.AccessToken> AccessTokens { get; set; }
 
         public DbSet<Entities.RealtyGroup> RealtyGroups { get; set; }
         public DbSet<Entities.Realty> Realties { get; set; }
@@ -65,20 +66,14 @@ namespace Booking_WEB.Data
                 .WithMany()
                 .HasForeignKey(rg => rg.ParentId);
 
-            modelBuilder.Entity<UserAccess>()
-                .HasIndex(ua => ua.Login)
-                .IsUnique();
+            modelBuilder.Entity<UserAccess>().HasIndex(ua => ua.Login).IsUnique();
+            modelBuilder.Entity<UserAccess>().HasOne(ua => ua.UserData).WithMany(ud => ud.UserAccesses).HasForeignKey(ua => ua.UserId);
+            modelBuilder.Entity<UserAccess>().HasOne(ua => ua.UserRole).WithMany(ur => ur.UserAccesses).HasForeignKey(ua => ua.RoleId);
 
-            modelBuilder.Entity<UserAccess>()
-                .HasOne(ua => ua.UserData)
-                .WithMany(ud => ud.UserAccesses)
-                .HasForeignKey(ua => ua.UserId);
+            modelBuilder.Entity<AccessToken>().HasKey(at => at.Jti);
+            modelBuilder.Entity<AccessToken>().HasOne(at => at.UserAccess).WithMany().HasForeignKey(at => at.Sub);
 
-            modelBuilder.Entity<UserAccess>()
-                .HasOne(ua => ua.UserRole)
-                .WithMany(ur => ur.UserAccesses)
-                .HasForeignKey(ua => ua.RoleId);
-
+            modelBuilder.ApplyConfiguration(new Configurations.RoleConfiguration());
 
             modelBuilder.Entity<Entities.Realty>()
                 .HasOne(r => r.City)
@@ -118,45 +113,6 @@ namespace Booking_WEB.Data
 
         private void SeedData(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<UserRole>().HasData(
-                new UserRole
-                {
-                    Id = "SelfRegistered",
-                    Description = "Самостійно зареєстрований користувач",
-                    CanCreate = false,
-                    CanRead = false,
-                    CanUpdate = false,
-                    CanDelete = false
-                },
-                new UserRole
-                {
-                    Id = "Employee",
-                    Description = "Співробітник компанії",
-                    CanCreate = true,
-                    CanRead = true,
-                    CanUpdate = false,
-                    CanDelete = false
-                },
-                new UserRole
-                {
-                    Id = "Moderator",
-                    Description = "Редактор контенту",
-                    CanCreate = false,
-                    CanRead = true,
-                    CanUpdate = true,
-                    CanDelete = true
-                },
-                new UserRole
-                {
-                    Id = "Administrator",
-                    Description = "Системний адміністратор",
-                    CanCreate = true,
-                    CanRead = true,
-                    CanUpdate = true,
-                    CanDelete = true
-                }
-            );
-
             modelBuilder.Entity<UserData>().HasData(
                 new UserData
                 {
