@@ -59,7 +59,7 @@ document.addEventListener('submit', e =>
             }
         }
         const credentials = new Base64().encode(`${loginInput.value}:${passwordInput.value}`);
-        fetch('/User/LogIn', {
+        fetch('/Auth/LogIn', {
             method: 'GET',
             headers: {
                 'Authorization': `Basic ${credentials}`
