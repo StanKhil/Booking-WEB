@@ -34,3 +34,10 @@ export function adminFillInRealtyTable() {
         table.querySelector('tbody').innerHTML = userData;
     });
 }
+
+
+
+const getUserTableData = async (actionName) => {
+    const response = await fetch(`/Administrator/${actionName}`, { method: "GET" });
+    return await response.text();
+}

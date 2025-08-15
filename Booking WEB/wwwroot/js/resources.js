@@ -1,4 +1,4 @@
-﻿const getHtml = async (fileName) => {
+﻿const getHtml = async (fileName, path) => {
     const response = await fetch(`/Resources/GetHtmlPage?fileName=${fileName}`);
     return await response.text();
 };
@@ -10,3 +10,4 @@ export const userDatabase = await getHtml('UserDatabasePage.txt');
 export const realtyCreate = await getHtml('RealtyCreatePage.txt');
 export const realtyUpdateDelete = await getHtml('UpdateDeleteRealtyPage.txt');
 export const realtyDatabase = await getHtml('RealtyDatabasePage.txt');
+

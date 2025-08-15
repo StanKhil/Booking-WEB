@@ -1,9 +1,118 @@
 ﻿@model Booking_WEB.Models.User.UserProfilePageModel
+@using System.Security.Claims;
 @{
     ViewData["Title"] = "Profile";
 }
 
-<div class="text-center">
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="card shadow-sm rounded-3 mx-auto">
+                <button class="profile-button"><div class="d-flex align-items-center"><i class="bi bi-person-circle profile-options-icon mx-2"></i><span class="align-middle mx-3">Personal details</span></div></button>
+                <button class="profile-button"><div class="d-flex align-items-center"><i class="bi bi-credit-card-fill profile-options-icon mx-2"></i><span class="align-middle mx-3">Payment methods</span></div></button>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="card shadow-sm rounded-3 p-4 p-md-5 mx-auto" style="max-width: 900px;">
+                <div class="d-flex align-items-start justify-content-between mb-2 mb-md-2">
+                    <div>
+                        <h1 class="h3 fw-bold text-dark-emphasis">Personal details</h1>
+                        <p class="text-secondary mb-0">Update your info and find out how it's used.</p>
+                    </div>
+                </div>
+                <hr />
+
+                <div class="divide-y divide-light">
+                    <div id="name-field" class="profile-field-item py-4">
+                        <div class="row">
+                            <div class="col-12 col-md-8">
+                                <h3 class="h6 fw-semibold text-dark mb-1">Name</h3>
+                                <div class="static-view">
+                                    <span class="text-secondary" data-value-name><span data-editable="FirstName">@Model.FirstName</span> <span data-editable="LastName">@Model.LastName</span></span>
+                                </div>
+                                <div class="edit-view d-none">
+                                    <div class="row g-3 mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label text-secondary-emphasis small">First name(s) <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" data-input-first-name value="@Model.FirstName">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label text-secondary-emphasis small">Last name(s) <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" data-input-last-name value="@Model.LastName">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
+                                <button class="btn btn-outline-primary edit-btn" data-field="name" id="edit-profile-btn">Edit</button>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="email-field" class="profile-field-item py-4">
+                        <div class="row">
+                            <div class="col-12 col-md-8">
+                                <h3 class="h6 fw-semibold text-dark mb-1">Email address</h3>
+                                <div class="static-view">
+                                    <span class="text-secondary" data-value-email><span data-editable="Email">@Model.Email</span></span>
+                                </div>
+                                <p class="text-secondary small mt-1 mb-0">This is the email address you use to sign in. It's also where we send your booking confirmations.</p>
+                                <div class="edit-view d-none mt-2">
+                                    <input type="email" class="form-control" data-input-email value="@Model.Email">
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="dob-field" class="profile-field-item py-4">
+                        <div class="row">
+                            <div class="col-12 col-md-8">
+                                <h3 class="h6 fw-semibold text-dark mb-1">Date of birth</h3>
+                                <div class="static-view">
+                                    @if (Model.Birthdate != null)
+                                    {
+                                        <span class="text-secondary fst-italic" data-value-dob>@Model.Birthdate</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-secondary fst-italic" data-value-dob>Enter your date of birth</span>
+                                    }
+                                </div>
+                                <div class="edit-view d-none mt-2">
+                                    <input type="date" class="form-control" data-input-dob>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="member-since-field" class="profile-field-item py-4">
+                        <div class="row">
+                            <div class="col-12 col-md-8">
+                                <h3 class="h6 fw-semibold text-dark mb-1">Member since</h3>
+                                <div class="static-view">
+                                    <span class="text-secondary fst-italic" data-value-phone>@Model.RegisteredAt</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+
+@{
+    /*
+     <div class="text-center">
     <h1 class="display-4">User Profile</h1>
 </div>
 
@@ -47,5 +156,51 @@
 
     </div>
 </div>
+     <div class="text-center">
+    <h1 class="display-4">User Profile</h1>
+</div>
 
+
+<div class="row">
+    <div class="col col-xxl-6 offset-xxl-3 col-xl-8 offset-xl-2 col-md-10 offset-md-1 col-sm-13">
+        @if (Model.IsPersonal == null)
+        {
+            <div class="alert alert-danger" role="alert">Profile not Found</div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col">First Name</div>
+                <div class="col" data-editable="FirstName">@Model.FirstName</div>
+            </div>
+            <div class="row">
+                <div class="col">Last Name</div>
+                <div class="col" data-editable="LastName">@Model.LastName</div>
+            </div>
+            <div class="row">
+                <div class="col">Registered:</div>
+                <div class="col">@Model.RegisteredAt</div>
+            </div>
+            <div class="row">
+                <div class="col">Email:</div>
+                <div class="col">
+                    <span data-editable="Email">@Model.Email </span>
+                    *only with auth
+                </div>
+            </div>
+            if (Model.IsPersonal ?? false)
+            {
+                <div class="row">
+                    <div class="col">Birthdate</div>
+                    <div class="col">@Model.Birthdate</div>
+                </div>
+                <button id="edit-profile-btn" class="btn btn-outline-warning"><i class="bi bi-pen"></i></button>
+            }
+        }
+
+    </div>
+</div> 
+      
+     */
+}
 

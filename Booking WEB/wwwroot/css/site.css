@@ -451,3 +451,41 @@ a[b-0mcryyuvy1] {
     color: #666;
     margin-top: 5px;
 }
+
+.profile-field-item:not(:last-child)
+{
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.verified-label{
+    display: inline-block;
+    background-color: #e0f2f1;
+    color: #00796b;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.2rem;
+    border-radius: 9999px;
+    margin-left: 0.5rem;
+}
+
+.profile-button {
+    background-color: white;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border: 1px solid transparent;
+    border-bottom: 1px solid lightgray;
+    transition: color 0s ease;
+    text-align: left;
+    display: inline-block;
+    vertical-align: middle;
+}
+.profile-button:hover 
+{
+    color: cornflowerblue !important;
+    text-decoration: underline;
+}
+
+.profile-options-icon
+{
+    font-size: 36px;
+}

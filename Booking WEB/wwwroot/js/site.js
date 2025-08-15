@@ -1,7 +1,7 @@
 ﻿import Base64 from "./Base64.js";
-import { userCreate, userUpdateDelete, userDatabase, realtyCreate, realtyUpdateDelete, realtyDatabase } from "./resources.js";
-import { adminFillInUserTable, adminCreateUser, adminUpdateUser, adminDeleteUser } from "./admin.js";
-import { adminFillInRealtyTable, adminCreateRealty, adminUpdateRealty, adminDeleteRealty } from "./admin.js";
+//import { userCreate, userUpdateDelete, userDatabase, realtyCreate, realtyUpdateDelete, realtyDatabase } from "./resources.js";
+//import { adminFillInUserTable, adminCreateUser, adminUpdateUser, adminDeleteUser } from "./admin.js";
+//import { adminFillInRealtyTable, adminCreateRealty, adminUpdateRealty, adminDeleteRealty } from "./admin.js";
 
 document.addEventListener('DOMContentLoaded', function ()
 {
@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function ()
     if (editProfileBtn) {
         editProfileBtn.onclick = editProfileBtnClick;
     }
+
 });
 
 document.addEventListener('submit', e =>
@@ -77,7 +78,6 @@ document.addEventListener('submit', e =>
                 if (j.status == 200)
                 {
                     window.accessToken = j.data;
-                    console.log(window.accessToken);
                     window.location.href = "/Home/Index";
                 }
                 else {
@@ -103,12 +103,15 @@ function showPage(page)
     const spaContainer = document.getElementById('spa-container');
     if (!spaContainer) throw "Element #spa-container was not found";
     switch (page) {
+        // ========== ADMIN ==========
         case 'user-create': spaContainer.innerHTML = userCreate; break;
         case 'user-update-delete': spaContainer.innerHTML = userUpdateDelete; break;
         case 'view-user-database': spaContainer.innerHTML = userDatabase; adminFillInUserTable(); break;
         case 'realty-create': spaContainer.innerHTML = realtyCreate; break;
         case 'realty-update-delete': spaContainer.innerHTML = realtyUpdateDelete; break;
         case 'view-realty-database': spaContainer.innerHTML = realtyDatabase; adminFillInRealtyTable(); break;
+
+        // ========== PROFILE ==========
         default: spaContainer.innerHTML = `<div class="alert alert-danger" role="alert">Something went wrong!</div>`;
     }
     setupActions();
@@ -129,16 +132,73 @@ function setupActions()
     }
 }
 
+// ----------------TO REMOVE LATER--------------------
+
+export function adminCreateUser() {
+    console.log("USER CREATE");
+}
+export function adminUpdateUser() {
+    console.log("USER UPDATE");
+}
+export function adminDeleteUser() {
+    console.log("USER DELETE");
+}
+export function adminFillInUserTable() {
+    const table = document.getElementById('admin-user-table');
+    if (!table) throw "Element 'admin-user-table' was not found";
+    getUserTableData("GetUsersTable").then(s => {
+        const userData = s;
+        table.querySelector('tbody').innerHTML = userData;
+    });
+}
+
+
+export function adminCreateRealty() {
+    console.log("REALTY CREATE");
+}
+export function adminUpdateRealty() {
+    console.log("REALTY UPDATE");
+}
+export function adminDeleteRealty() {
+    console.log("REALTY DELETE");
+}
+export function adminFillInRealtyTable() {
+    const table = document.getElementById('admin-realty-table');
+    if (!table) throw "Element 'admin-realty-table' was not found";
+    getUserTableData("GetRealtiesTable").then(s => {
+        const userData = s;
+        table.querySelector('tbody').innerHTML = userData;
+    });
+}
 const getUserTableData = async (actionName) => {
     const response = await fetch(`/Administrator/${actionName}`, { method: "GET" });
     return await response.text();
 }
 
+
+
+const getHtml = async (fileName, path) => {
+    const response = await fetch(`/Resources/GetHtmlPage?fileName=${fileName}`);
+    return await response.text();
+};
+
+const userCreate = await getHtml('UserCreatePage.txt');
+const userUpdateDelete = await getHtml('UpdateDeleteUserPage.txt');
+const userDatabase = await getHtml('UserDatabasePage.txt');
+
+const realtyCreate = await getHtml('RealtyCreatePage.txt');
+const realtyUpdateDelete = await getHtml('UpdateDeleteRealtyPage.txt');
+const realtyDatabase = await getHtml('RealtyDatabasePage.txt');
+
+
 // ---------------------------------------------
+
 function editProfileBtnClick() {
-    for (let elem of document.querySelectorAll('[data-editable]')) {
-        if (elem.getAttribute('contenteditable')) {
-            elem.removeAttribute('contenteditable');
+    for (let elem of document.querySelectorAll('[data-editable]'))
+    {
+        if (elem.getAttribute('contenteditable'))
+        {
+            elem.setAttribute('contenteditable', false);
         }
         elem.setAttribute('contenteditable', true);
     }

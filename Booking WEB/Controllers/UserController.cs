@@ -231,6 +231,7 @@ namespace Booking_WEB.Controllers
             }
         }
 
+        // ============== PROFILE ==============
         public ViewResult Profile(String id)
         {
             UserProfilePageModel model = new();
