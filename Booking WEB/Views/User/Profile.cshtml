@@ -1,0 +1,51 @@
+﻿@model Booking_WEB.Models.User.UserProfilePageModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="text-center">
+    <h1 class="display-4">User Profile</h1>
+</div>
+
+
+<div class="row">
+    <div class="col col-xxl-6 offset-xxl-3 col-xl-8 offset-xl-2 col-md-10 offset-md-1 col-sm-13">
+        @if (Model.IsPersonal == null)
+        {
+            <div class="alert alert-danger" role="alert">Profile not Found</div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col">First Name</div>
+                <div class="col" data-editable="FirstName">@Model.FirstName</div>
+            </div>
+            <div class="row">
+                <div class="col">Last Name</div>
+                <div class="col" data-editable="LastName">@Model.LastName</div>
+            </div>
+            <div class="row">
+                <div class="col">Registered:</div>
+                <div class="col">@Model.RegisteredAt</div>
+            </div>
+            <div class="row">
+                <div class="col">Email:</div>
+                <div class="col">
+                    <span data-editable="Email">@Model.Email </span>
+                    *only with auth
+                </div>
+            </div>
+            if (Model.IsPersonal ?? false)
+            {
+                <div class="row">
+                    <div class="col">Birthdate</div>
+                    <div class="col">@Model.Birthdate</div>
+                </div>
+                <button id="edit-profile-btn" class="btn btn-outline-warning"><i class="bi bi-pen"></i></button>
+            }
+        }
+
+    </div>
+</div>
+
+

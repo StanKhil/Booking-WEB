@@ -10,6 +10,7 @@ using Booking_WEB.Services.Jwt;
 using Booking_WEB.Data;
 using Booking_WEB.Services.Kdf;
 using System.Text.RegularExpressions;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Booking_WEB.Controllers
 {
@@ -220,7 +221,7 @@ namespace Booking_WEB.Controllers
             _context.AccessTokens.Add(accessToken);
             _context.SaveChanges();
 
-            var jwt = new
+            var jwtPayload = new
             {
                 accessToken.Jti,
                 accessToken.Sub,
@@ -231,8 +232,17 @@ namespace Booking_WEB.Controllers
                 userAccess.UserData.FirstName,
                 userAccess.UserData.LastName,
                 userAccess.UserData.Email,
-                userAccess.UserRole.Id
+                userAccess.UserRole.Id,
+                userAccess.Login,
             };
+            string jwt = _jwtService.EncodeJwt(jwtPayload);
+            Response.Cookies.Append("AuthToken", jwt, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddDays(7)
+            });
             HttpContext.Session.SetString("userAccess", JsonSerializer.Serialize(userAccess));
             return Json(new
             {

@@ -1,10 +1,18 @@
 ﻿import Base64 from "./Base64.js";
+import { userCreate, userUpdateDelete, userDatabase, realtyCreate, realtyUpdateDelete, realtyDatabase } from "./resources.js";
+import { adminFillInUserTable, adminCreateUser, adminUpdateUser, adminDeleteUser } from "./admin.js";
+import { adminFillInRealtyTable, adminCreateRealty, adminUpdateRealty, adminDeleteRealty } from "./admin.js";
 
 document.addEventListener('DOMContentLoaded', function ()
 {
     for (let button of document.querySelectorAll('[data-nav]'))
     {
         button.onclick = navigate;
+    }
+
+    const editProfileBtn = document.getElementById("edit-profile-btn");
+    if (editProfileBtn) {
+        editProfileBtn.onclick = editProfileBtnClick;
     }
 });
 
@@ -89,7 +97,6 @@ function navigate(e)
     if (!route) throw `Route was not found`;
     showPage(route);
 }
-
 function showPage(page)
 {
     window.activePage = page;
@@ -106,7 +113,6 @@ function showPage(page)
     }
     setupActions();
 }
-
 function setupActions()
 {
     for (let button of document.querySelectorAll('[data-action]'))
@@ -123,73 +129,17 @@ function setupActions()
     }
 }
 
-
-// ------------ COLLECTION OF PAGES ------------
-
-const getHtml = async (fileName) => {
-    const response = await fetch(`/Resources/GetHtmlPage?fileName=${fileName}`);
-    return await response.text();
-};
-
-const userCreate = await getHtml('UserCreatePage.txt');
-const userUpdateDelete = await getHtml('UpdateDeleteUserPage.txt');
-const userDatabase = await getHtml('UserDatabasePage.txt');
-
-const realtyCreate = await getHtml('RealtyCreatePage.txt');
-const realtyUpdateDelete = await getHtml('UpdateDeleteRealtyPage.txt');
-const realtyDatabase = await getHtml('RealtyDatabasePage.txt');
-
-// ---------------------------------------------
-
-
-
-
-
-
-// --------------- ADMINISTRATOR ---------------
-
 const getUserTableData = async (actionName) => {
     const response = await fetch(`/Administrator/${actionName}`, { method: "GET" });
     return await response.text();
 }
 
-
-function adminCreateUser() {
-    console.log("USER CREATE");
-}
-function adminUpdateUser() {
-    console.log("USER UPDATE");
-}
-function adminDeleteUser() {
-    console.log("USER DELETE");
-}
-function adminFillInUserTable() {
-    const table = document.getElementById('admin-user-table');
-    if (!table) throw "Element 'admin-user-table' was not found";
-    getUserTableData("GetUsersTable").then(s =>
-    {
-        const userData = s;
-        table.querySelector('tbody').innerHTML = userData;
-    });
-}
-
-
-function adminCreateRealty() {
-    console.log("REALTY CREATE");
-}
-function adminUpdateRealty() {
-    console.log("REALTY UPDATE");
-}
-function adminDeleteRealty() {
-    console.log("REALTY DELETE");
-}
-function adminFillInRealtyTable() {
-    const table = document.getElementById('admin-realty-table');
-    if (!table) throw "Element 'admin-realty-table' was not found";
-    getUserTableData("GetRealtiesTable").then(s => {
-        const userData = s;
-        table.querySelector('tbody').innerHTML = userData;
-    });
-}
-
 // ---------------------------------------------
+function editProfileBtnClick() {
+    for (let elem of document.querySelectorAll('[data-editable]')) {
+        if (elem.getAttribute('contenteditable')) {
+            elem.removeAttribute('contenteditable');
+        }
+        elem.setAttribute('contenteditable', true);
+    }
+}

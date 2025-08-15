@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Booking_WEB.Dto.User;
 using Booking_WEB.Services.Time;
 using Booking_WEB.Services.Jwt;
+using System.Security.Claims;
 
 namespace Booking_WEB.Controllers
 {
@@ -228,6 +229,52 @@ namespace Booking_WEB.Controllers
             {
                 return Json(new { Status = 500, Error = ex.Message });
             }
+        }
+
+        public ViewResult Profile(String id)
+        {
+            UserProfilePageModel model = new();
+            var ua = _context
+                .UserAccesses
+                .AsNoTracking()
+                .Include(ua => ua.UserData)
+                .Include(ua => ua.UserRole)
+                .FirstOrDefault(ua => ua.Login == id);
+            if (ua == null)
+            {
+                model.IsPersonal = null;
+            }
+            else
+            {
+                model.FirstName = ua.UserData.FirstName;
+                model.LastName = ua.UserData.LastName;
+                model.RegisteredAt = ua.UserData.RegisteredAt;
+
+                bool isAuthenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+                if (isAuthenticated)
+                {
+                    model.Email = ua.UserData.Email;
+                    String userLogin = HttpContext
+                        .User
+                        .Claims
+                        .First(c => c.Type == ClaimTypes.Sid)
+                        .Value;
+                    if (ua.Login == userLogin)
+                    {
+                        model.IsPersonal = true;
+                        model.Birthdate = ua.UserData.BirthDate;
+                    }
+                    else
+                    {
+                        model.IsPersonal = false;
+                    }
+                }
+                else
+                {
+                    model.IsPersonal = false;
+                }
+            }
+            return View(model);
         }
 
     }

@@ -2,10 +2,15 @@
 @using System.Security.Claims;
 @{
     bool isAuthenticated = Context.User.Identity?.IsAuthenticated ?? false;
-    string fullName = isAuthenticated ? 
-        (Context.User.Claims.First(claim => claim.Type == ClaimTypes.Name).Value + " " +
-        Context.User.Claims.First(claim => claim.Type == ClaimTypes.Surname).Value) : "";
+
+    var nameClaim = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value ?? "";
+    var surnameClaim = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value ?? "";
+    var sidClaim = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value ?? "";
+
+    string fullName = isAuthenticated ? $"{nameClaim} {surnameClaim}".Trim() : "";
+    string userLogin = isAuthenticated ? sidClaim : "";
 }
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,8 +38,11 @@
                             <button class="list-property-button">List your property</button>
                             @if(isAuthenticated)
                             {
-                                <div class="login-icon mx-2">@fullName[0]</div>
-                                <span class="header-user-name">@fullName</span>
+                                <a asp-controller="User" asp-action="Profile" asp-route-id="@userLogin">
+                                    <div class="login-icon mx-2">@fullName[0]</div>
+                                    <span class="header-user-name">@fullName</span>
+                                </a>
+                                
                             }
                             else
                             {
