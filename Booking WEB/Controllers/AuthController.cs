@@ -11,6 +11,7 @@ using Booking_WEB.Data;
 using Booking_WEB.Services.Kdf;
 using System.Text.RegularExpressions;
 using System.IdentityModel.Tokens.Jwt;
+using Booking_WEB.Data.DataAccessors;
 
 namespace Booking_WEB.Controllers
 {
@@ -20,7 +21,10 @@ namespace Booking_WEB.Controllers
         DataContext context,
         ILogger<UserController> logger,
         ITimeService timeService,
-        IJwtService jwtService) : Controller
+        IJwtService jwtService,
+        UserAccessAccessor userAccessAccessor,
+        UserDataAccessor userDataAccessor,
+        AccessTokenAccessor accessTokenAccessor) : Controller
     {
 
         private readonly IRandomService _randomService = randomService;
@@ -30,9 +34,12 @@ namespace Booking_WEB.Controllers
         private readonly Regex _passwordRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!?@$&*])[A-Za-z\d@$!%*?&]{12,}$");
         private readonly ITimeService _timeService = timeService;
         private readonly IJwtService _jwtService = jwtService;
+        private readonly UserAccessAccessor _userAccessAccessor = userAccessAccessor;
+        private readonly UserDataAccessor _userDataAccessor = userDataAccessor;
+        private readonly AccessTokenAccessor _accessTokenAccessor = accessTokenAccessor;
 
         // ============= REGISTRATION ============= //
-        public ViewResult SignUp()
+        public async Task<ViewResult> SignUp()
         {
             UserSignupPageModel model = new();
             if (HttpContext.Session.Keys.Contains("UserSignupFormModel"))
@@ -41,7 +48,7 @@ namespace Booking_WEB.Controllers
                     Deserialize<UserSignupFormModel>(
                         HttpContext.Session.
                         GetString("UserSignupFormModel")!);
-                model.FormErrors = ProcessSignupData(model.FormModel!);
+                model.FormErrors = await ProcessSignupData(model.FormModel!);
 
                 HttpContext.Session.Remove("UserSignupFormModel");
             }
@@ -51,7 +58,7 @@ namespace Booking_WEB.Controllers
         [HttpPost]
         public async Task<RedirectToActionResult> Register(UserSignupFormModel model)
         {
-            var errors = ProcessSignupData(model);
+            var errors = await ProcessSignupData(model);
             if (errors.Count > 0)
             {
                 HttpContext.Session.SetString(
@@ -65,7 +72,7 @@ namespace Booking_WEB.Controllers
             }
         }
 
-        private Dictionary<String, String> ProcessSignupData(UserSignupFormModel model)
+        private async Task<Dictionary<String, String>> ProcessSignupData(UserSignupFormModel model)
         {
             Dictionary<String, String> errors = [];
             #region Validation
@@ -134,17 +141,25 @@ namespace Booking_WEB.Controllers
                     Dk = _kdfService.Dk(model.UserPassword, salt),
                     RoleId = "SelfRegistered"
                 };
-                _context.Users.Add(user);
-                _context.UserAccesses.Add(userAccess);
-                _context.SaveChanges();
 
+                try
+                {
+                    await _userDataAccessor.CreateAsync(user);
+                    await _userAccessAccessor.CreateAsync(userAccess);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError("SignUp: {e}", e.Message);
+                    errors[nameof(model.UserLogin)] = "Login already exists";
+                    return errors;
+                }
             }
             return errors;
         }
 
 
         // ============= LOGIN =============
-        private UserAccess Authenticate()
+        private async Task<UserAccess> Authenticate()
         {
             string authorizationHeader = Request.Headers.Authorization.ToString();
             if (string.IsNullOrEmpty(authorizationHeader))
@@ -174,12 +189,9 @@ namespace Booking_WEB.Controllers
             }
             string login = parts[0];
             string password = parts[1];
-            var userAccess = _context
-                     .UserAccesses
-                     .AsNoTracking()
-                     .Include(ua => ua.UserData)
-                     .Include(ua => ua.UserRole)
-                     .FirstOrDefault(ua => ua.Login == login);
+
+            UserAccess? userAccess = await _userAccessAccessor.GerUserAccessByLoginAsync(login, false);
+
             if (userAccess == null)
             {
                 throw new Exception($"Authorization credentials rejected: invalid login");
@@ -192,12 +204,12 @@ namespace Booking_WEB.Controllers
         }
 
         [HttpGet]
-        public JsonResult LogIn()
+        public async Task<JsonResult> LogIn()
         {
             UserAccess userAccess;
             try
             {
-                userAccess = Authenticate();
+                userAccess = await Authenticate();
             }
             catch (Exception e)
             {
@@ -218,8 +230,7 @@ namespace Booking_WEB.Controllers
                 Aud = userAccess.RoleId
             };
 
-            _context.AccessTokens.Add(accessToken);
-            _context.SaveChanges();
+            await _accessTokenAccessor.CreateAsync(accessToken);
 
             var jwtPayload = new
             {

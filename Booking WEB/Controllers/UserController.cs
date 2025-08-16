@@ -11,6 +11,7 @@ using Booking_WEB.Dto.User;
 using Booking_WEB.Services.Time;
 using Booking_WEB.Services.Jwt;
 using System.Security.Claims;
+using Booking_WEB.Data.DataAccessors;
 
 namespace Booking_WEB.Controllers
 {
@@ -18,13 +19,16 @@ namespace Booking_WEB.Controllers
         IRandomService randomService, 
         IKdfService kdfService, 
         DataContext context, 
-        ILogger<UserController> logger) : Controller
+        ILogger<UserController> logger,
+        UserAccessAccessor userAccessAccessor,
+        UserDataAccessor userDataAccessor) : Controller
     {
         private readonly IRandomService _randomService = randomService;
         private readonly IKdfService _kdfService = kdfService;
         private readonly DataContext _context = context;
         private readonly ILogger<UserController> _logger = logger;
-
+        private readonly UserAccessAccessor _userAccessAccessor = userAccessAccessor;
+        private readonly UserDataAccessor _userDataAccessor = userDataAccessor;
 
         [HttpPost]
         public async Task<JsonResult> Create()
@@ -41,20 +45,17 @@ namespace Booking_WEB.Controllers
 
                 var model = JsonSerializer.Deserialize<UserDto>(body, options);
 
-                if (model == null || string.IsNullOrWhiteSpace(model.FirstName) ||
-                    string.IsNullOrWhiteSpace(model.LastName) || string.IsNullOrWhiteSpace(model.Email) ||
-                    string.IsNullOrWhiteSpace(model.Login) || string.IsNullOrWhiteSpace(model.Password))
+                if (model == null ||
+                    string.IsNullOrWhiteSpace(model.FirstName) ||
+                    string.IsNullOrWhiteSpace(model.LastName) ||
+                    string.IsNullOrWhiteSpace(model.Email) ||
+                    string.IsNullOrWhiteSpace(model.Login) ||
+                    string.IsNullOrWhiteSpace(model.Password))
                 {
-                    return Json(new
-                    {
-                        Status = 400,
-                        Error = "FirstName, LastName, Email, Login and Password are required"
-                    });
+                    return Json(new { Status = 400, Error = "FirstName, LastName, Email, Login and Password are required" });
                 }
 
-                var loginExists = await _context.UserAccesses
-                    .AnyAsync(a => a.Login == model.Login);
-                if (loginExists)
+                if (await _userAccessAccessor.LoginExistsAsync(model.Login))
                 {
                     return Json(new { Status = 409, Error = "Login already exists" });
                 }
@@ -66,11 +67,11 @@ namespace Booking_WEB.Controllers
                     LastName = model.LastName,
                     Email = model.Email,
                     BirthDate = model.BirthDate,
-                    RegisteredAt = DateTime.UtcNow,
+                    RegisteredAt = DateTime.UtcNow
                 };
 
-                String salt = _randomService.Otp(12);
-                var dk = _kdfService.Dk(model.Password, salt);
+                string salt = _randomService.Otp(12);
+                string dk = _kdfService.Dk(model.Password, salt);
 
                 var access = new UserAccess
                 {
@@ -82,10 +83,8 @@ namespace Booking_WEB.Controllers
                     RoleId = model.RoleId
                 };
 
-                user.UserAccesses.Add(access);
-
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
+                await _userDataAccessor.CreateAsync(user);
+                await _userAccessAccessor.CreateAsync(access);
 
                 return Json(new
                 {
@@ -101,11 +100,7 @@ namespace Booking_WEB.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new
-                {
-                    Status = 500,
-                    Error = ex.Message
-                });
+                return Json(new { Status = 500, Error = ex.Message });
             }
         }
 
@@ -121,6 +116,7 @@ namespace Booking_WEB.Controllers
                 {
                     PropertyNameCaseInsensitive = true
                 };
+
                 var model = JsonSerializer.Deserialize<UserUpdateDto>(body, options);
 
                 if (model == null || model.Id == Guid.Empty)
@@ -128,10 +124,7 @@ namespace Booking_WEB.Controllers
                     return Json(new { Status = 400, Error = "Invalid input" });
                 }
 
-                var user = await _context.Users
-                    .Include(u => u.UserAccesses)
-                    .FirstOrDefaultAsync(u => u.Id == model.Id && u.DeletedAt == null);
-
+                var user = await _userDataAccessor.GetByIdAsync(model.Id);
                 if (user == null)
                 {
                     return Json(new { Status = 404, Error = "User not found" });
@@ -143,20 +136,16 @@ namespace Booking_WEB.Controllers
                     return Json(new { Status = 500, Error = "User access not found" });
                 }
 
-                var loginExists = await _context.UserAccesses
-                    .AnyAsync(ua => ua.Login == model.Login && ua.UserId != model.Id);
-
-                if (loginExists)
+                if (!string.IsNullOrWhiteSpace(model.Login) &&
+                    await _userAccessAccessor.LoginExistsAsync(model.Login))
                 {
                     return Json(new { Status = 409, Error = "Login already exists" });
                 }
-
 
                 if (!string.IsNullOrWhiteSpace(model.FirstName)) user.FirstName = model.FirstName;
                 if (!string.IsNullOrWhiteSpace(model.LastName)) user.LastName = model.LastName;
                 if (!string.IsNullOrWhiteSpace(model.Email)) user.Email = model.Email;
                 if (model.BirthDate.HasValue) user.BirthDate = model.BirthDate;
-
 
                 if (!string.IsNullOrWhiteSpace(model.Login)) access.Login = model.Login;
                 if (!string.IsNullOrWhiteSpace(model.RoleId)) access.RoleId = model.RoleId;
@@ -169,7 +158,7 @@ namespace Booking_WEB.Controllers
                     access.Dk = dk;
                 }
 
-                await _context.SaveChangesAsync();
+                await _userDataAccessor.SaveChangesAsync();
 
                 return Json(new
                 {
@@ -200,9 +189,7 @@ namespace Booking_WEB.Controllers
                     return Json(new { Status = 400, Error = "Invalid ID" });
                 }
 
-                var user = await _context.Users
-                    .Include(u => u.UserAccesses)
-                    .FirstOrDefaultAsync(u => u.Id == id && u.DeletedAt == null);
+                var user = await _userDataAccessor.GetByIdAsync(id);
 
                 if (user == null)
                 {
@@ -215,8 +202,7 @@ namespace Booking_WEB.Controllers
                 user.BirthDate = null;
                 user.DeletedAt = DateTime.UtcNow;
 
-
-                await _context.SaveChangesAsync();
+                await _userDataAccessor.SaveChangesAsync();
 
                 return Json(new
                 {
@@ -232,15 +218,12 @@ namespace Booking_WEB.Controllers
         }
 
         // ============== PROFILE ==============
-        public ViewResult Profile(String id)
+        public async Task<ViewResult> Profile(String id)
         {
             UserProfilePageModel model = new();
-            var ua = _context
-                .UserAccesses
-                .AsNoTracking()
-                .Include(ua => ua.UserData)
-                .Include(ua => ua.UserRole)
-                .FirstOrDefault(ua => ua.Login == id);
+
+            var ua = await _userAccessAccessor.GerUserAccessByLoginAsync(id, isEditable: false);
+
             if (ua == null)
             {
                 model.IsPersonal = null;
@@ -266,14 +249,10 @@ namespace Booking_WEB.Controllers
                         model.Birthdate = ua.UserData.BirthDate;
                     }
                     else
-                    {
                         model.IsPersonal = false;
-                    }
                 }
                 else
-                {
                     model.IsPersonal = false;
-                }
             }
             return View(model);
         }

@@ -1,4 +1,5 @@
 ﻿using Booking_WEB.Data;
+using Booking_WEB.Data.DataAccessors;
 using Booking_WEB.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +8,11 @@ using System.Text.Json;
 
 namespace Booking_WEB.Controllers
 {
-    public class RealtyController(DataContext context) : Controller
+    public class RealtyController(DataContext context,
+        RealtyAccessor realtyAccessor) : Controller
     {
         private readonly DataContext _context = context;
+        private readonly RealtyAccessor _realtyAccessor = realtyAccessor;
 
         public IActionResult Index()
         {
@@ -48,7 +51,8 @@ namespace Booking_WEB.Controllers
                     });
                 }
 
-                var exists = await _context.Realties.AnyAsync(r => r.Slug == model.Slug && r.DeletedAt == null);
+                var exists = await _realtyAccessor.SlugExistsAsync(model.Slug);
+
                 if (exists)
                 {
                     return Json(new
@@ -72,8 +76,7 @@ namespace Booking_WEB.Controllers
                     DeletedAt = null
                 };
 
-                _context.Realties.Add(realty);
-                await _context.SaveChangesAsync();
+                await _realtyAccessor.CreateAsync(realty);
 
                 return Json(new
                 {
@@ -116,14 +119,15 @@ namespace Booking_WEB.Controllers
                     return Json(new { Status = 400, Error = "Invalid input" });
                 }
 
-                var realty = await _context.Realties.FirstOrDefaultAsync(r => r.Id == model.Id && r.DeletedAt == null);
+                var realty = await _realtyAccessor.GetByIdAsync(model.Id, true);
+
                 if (realty == null)
                 {
                     return Json(new { Status = 404, Error = "Realty not found" });
                 }
 
-                var slugExists = await _context.Realties
-                    .AnyAsync(r => r.Slug == model.Slug && r.Id != model.Id && r.DeletedAt == null);
+                var slugExists = await _realtyAccessor.SlugExistsAsync(model.Slug!, model.Id);
+
                 if (slugExists)
                 {
                     return Json(new { Status = 409, Error = "Slug already exists" });
@@ -140,7 +144,7 @@ namespace Booking_WEB.Controllers
                 realty.CountryId = model.CountryId;
                 realty.GroupId = model.GroupId;
 
-                await _context.SaveChangesAsync();
+                await _realtyAccessor.UpdateAsync(realty);
 
                 return Json(new
                 {
@@ -170,14 +174,14 @@ namespace Booking_WEB.Controllers
                     return Json(new { Status = 400, Error = "Invalid ID" });
                 }
 
-                var realty = await _context.Realties.FirstOrDefaultAsync(r => r.Id == id && r.DeletedAt == null);
+                var realty = await _realtyAccessor.GetByIdAsync(id, true);
+
                 if (realty == null)
                 {
                     return Json(new { Status = 404, Error = "Realty not found" });
                 }
 
-                realty.DeletedAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
+                await _realtyAccessor.SoftDeleteAsync(realty);
 
                 return Json(new
                 {
