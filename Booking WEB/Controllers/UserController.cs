@@ -12,6 +12,7 @@ using Booking_WEB.Services.Time;
 using Booking_WEB.Services.Jwt;
 using System.Security.Claims;
 using Booking_WEB.Data.DataAccessors;
+using System.Text;
 
 namespace Booking_WEB.Controllers
 {
@@ -257,5 +258,84 @@ namespace Booking_WEB.Controllers
             return View(model);
         }
 
+        public async Task<JsonResult> EditAsync() // In general ASP-project it is UpdateAsync
+        {
+            bool isAuthenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if(!isAuthenticated)
+            {
+                return Json(new
+                {
+                    Status = 401,
+                    Data = "Unauthorized"
+                });
+            }
+            var userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
+            var userAccess = await _userAccessAccessor.GerUserAccessByLoginAsync(userLogin, isEditable: true);
+
+            if(userAccess == null)
+            {
+                return Json(new
+                {
+                    Status = 403,
+                    Data = "Forbidden"
+                });
+            }
+
+            using StreamReader reader = new(Request.Body, Encoding.UTF8);
+            var requestBody = await reader.ReadToEndAsync();
+            if(requestBody == null)
+            {
+                return Json(new
+                {
+                    Status = 400,
+                    Data = "Body must not be empty"
+                });
+            }
+            JsonElement json;
+            try
+            {
+                json = JsonSerializer.Deserialize<JsonElement>(requestBody);
+            }
+            catch(Exception e)
+            {
+                _logger.LogInformation("JSON decode error {e}", e.Message);
+                return Json(new
+                {
+                    Status = 400,
+                    Data = "Body must be a valid JSON string"
+                });
+            }
+            if(json.ValueKind != JsonValueKind.Array)
+            {
+                return Json(new
+                {
+                    Status = 422,
+                    Data = "Body must be a JSON array"
+                });
+            }
+            foreach(var element in json.EnumerateArray())
+            {
+                string value = element.GetProperty("value").GetString()!;
+                string field = element.GetProperty("field").GetString()!;
+                switch(field)
+                {
+                    case "FirstName": userAccess.UserData.FirstName = value; break;
+                    case "LastName": userAccess.UserData.LastName = value; break;
+                    case "Email": userAccess.UserData.Email = value; break;
+                    default:
+                        return Json(new
+                        {
+                            Status = 409,
+                            Data = $"Conflict: undefined field '{field}'"
+                        });
+                }
+            }
+            await _context.SaveChangesAsync();
+            return Json(new
+            {
+                Status = 202,
+                Data = "Accepted"
+            });
+        }
     }
 }

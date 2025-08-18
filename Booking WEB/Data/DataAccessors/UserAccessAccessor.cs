@@ -25,7 +25,7 @@ namespace Booking_WEB.Data.DataAccessors
             return access;
         }
 
-        public async Task<UserAccess?> GerUserAccessByLoginAsync(String userLogin, bool isEditable = false)
+        public async Task<UserAccess?> GerUserAccessByLoginAsync(string userLogin, bool isEditable = false)
         {
             IQueryable<UserAccess> source = _context.UserAccesses
                 .Include(ua => ua.UserData)

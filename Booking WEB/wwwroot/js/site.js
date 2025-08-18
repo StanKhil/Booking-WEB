@@ -11,9 +11,15 @@ document.addEventListener('DOMContentLoaded', function ()
     }
 
     const editProfileBtn = document.getElementById("edit-profile-btn");
-    if (editProfileBtn) {
+    if (editProfileBtn)
+    {
         editProfileBtn.onclick = editProfileBtnClick;
     }
+
+    for (let button of document.querySelectorAll('[data-profile]'))
+    {
+        button.onclick = navigateProfile;
+    } 
 
 });
 
@@ -89,6 +95,22 @@ document.addEventListener('submit', e =>
             })
     }
 })
+
+function navigateProfile(e)
+{
+    const targetButton = e.target.closest('[data-profile]');
+    for (let page of document.querySelectorAll('[data-page]'))
+    {
+        if (targetButton.getAttribute('data-profile') == page.getAttribute('data-page'))
+        {
+            page.classList.remove('d-none');
+        }
+        else
+        {
+            page.classList.add('d-none');
+        }
+    }
+}
 
 function navigate(e)
 {
@@ -193,13 +215,41 @@ const realtyDatabase = await getHtml('RealtyDatabasePage.txt');
 
 // ---------------------------------------------
 
-function editProfileBtnClick() {
-    for (let elem of document.querySelectorAll('[data-editable]'))
+function editProfileBtnClick()
+{
+    let changes = [];
+    for (let element of document.querySelectorAll('[data-editable]'))
     {
-        if (elem.getAttribute('contenteditable'))
+        if (element.getAttribute('contenteditable'))
         {
-            elem.setAttribute('contenteditable', false);
+            element.removeAttribute('contenteditable');
+            if (element.originalData != element.innerText)
+            {
+                changes.push({
+                    field: element.getAttribute('data-editable'),
+                    value: element.innerText
+                });
+            }
         }
-        elem.setAttribute('contenteditable', true);
+        else
+        {
+            element.setAttribute('contenteditable', true);
+            element.originalData = element.innerText;
+        }
+        if (changes.length > 0)
+        {
+            const message = changes.map(c => `${c.field}=${c.value}`).join(', ');
+            if (confirm(`Confirm changes ${message}`))
+            {
+                fetch("/User/Edit", {
+                    method: 'PATCH',
+                    header: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(changes)
+                }).then(r => r.json()).then(console.log);
+                
+            }
+        }
     }
 }

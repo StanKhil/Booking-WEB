@@ -6,6 +6,7 @@ using Booking_WEB.Services.Time;
 using Microsoft.EntityFrameworkCore;
 using Booking_WEB.Middleware.Auth;
 using Booking_WEB.Services.Jwt;
+using Booking_WEB.Data.DataAccessors;
 
 namespace Booking_WEB
 {
@@ -24,6 +25,11 @@ namespace Booking_WEB
             builder.Services.AddSingleton<IJwtService, JwtService>();
 
             builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("LocalDB")));
+
+            builder.Services.AddScoped<UserAccessAccessor>();
+            builder.Services.AddScoped<AccessTokenAccessor>();
+            builder.Services.AddScoped<RealtyAccessor>();
+            builder.Services.AddScoped<UserDataAccessor>();
 
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options => 
