@@ -19,6 +19,7 @@ namespace Booking_WEB.Data.Entities
 
         [JsonIgnore]
         public List<UserAccess> UserAccesses { get; set; } = [];
+        public List<Cards> Cards { get; set; } = [];
 
     }
 }

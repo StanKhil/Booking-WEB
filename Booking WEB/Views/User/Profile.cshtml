@@ -117,8 +117,8 @@
                     </div>
 
                     <hr />
-                    <div id="add-card-field" class="profile-field-item py-4">
-                        <div class="d-flex d-flex flex-row justify-content-between">
+                    <div class="profile-field-item py-4">
+                        <div id="add-card-field" class="d-flex d-flex flex-row justify-content-between">
                             <div class="w-50">
                                 <h3 class="h6 fw-semibold text-dark ">Payment cards</h3>
                             </div>
@@ -131,7 +131,66 @@
                                 <button class="btn btn-outline-primary edit-btn" id="add-card-button">Add card</button>
                             </div>
                         </div>
+
+                        <form class="container d-none" id="add-card-form">
+
+                            <div>
+                                <div class="d-flex justify-content-between align-items-start mb-4">
+                                    <h1 class="h5 fw-medium text-gray-800">Payment cards</h1>
+                                    <button id="cancel-add-card-button" class="btn btn-link text-decoration-none p-0">Cancel</button>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2 mb-4">
+                                    <img src="https://placehold.co/60x38/e0e0e0/ffffff?text=VISA" alt="Visa" class="card-logo shadow-sm">
+                                    <img src="https://placehold.co/60x38/e0e0e0/ffffff?text=Amex" alt="Amex" class="card-logo shadow-sm">
+                                    <img src="https://placehold.co/60x38/e0e0e0/ffffff?text=Disc" alt="Discover" class="card-logo shadow-sm">
+                                    <img src="https://placehold.co/60x38/e0e0e0/ffffff?text=MC" alt="Mastercard" class="card-logo shadow-sm">
+                                    <img src="https://placehold.co/60x38/e0e0e0/ffffff?text=Diners" alt="Diners Club" class="card-logo shadow-sm">
+                                </div>
+
+
+                                <div class="mb-3">
+                                    <label for="cardholder-name" class="form-label text-sm fw-medium">Cardholder's name <span class="text-danger">*</span></label>
+                                    <input type="text" id="cardholder-name" name="cardholder-name" class="form-control rounded-lg shadow-sm" placeholder="Enter cardholder's name" />
+                                    <div class="invalid-feedback"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="card-number" class="form-label text-sm fw-medium">Card number <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-credit-card-2-front "></i></span>
+                                        <input type="text" id="card-number" name="card-number" class="form-control rounded-lg shadow-sm form-control-icon" placeholder="0000 0000 0000 0000" />
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3 w-50">
+                                    <label for="exp-date" class="form-label text-sm fw-medium">Expiration date <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" id="exp-date" name="exp-date" class="form-control rounded-lg shadow-sm" placeholder="MM/YY" />
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                                <div class="d-flex justify-content-end pt-3">
+                                    <button value="send" type="submit" class="btn btn-primary rounded-lg shadow-sm">Save</button>
+                                </div>
+                            </div>
+                        </form>
+
                         <hr />
+
+                        @foreach(var card in Model.Cards)
+                        {
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-around">
+                                        <i class="bi bi-credit-card-2-front"></i>
+                                        <h5>@card.Number</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+
                     </div>
                    
                 </div>

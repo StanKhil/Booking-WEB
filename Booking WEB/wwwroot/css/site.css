@@ -489,3 +489,25 @@ a[b-0mcryyuvy1] {
 {
     font-size: 36px;
 }
+
+.card-logo {
+    height: 38px;
+    width: 60px;
+    border-radius: 8px;
+}
+
+.input-icon-container {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    top: 50%;
+    left: 0.75rem;
+    transform: translateY(-50%);
+    color: #6c757d; /* Gray color for the icon */
+}
+
+.form-control-icon {
+    padding-left: 2.5rem; /* Make space for the icon */
+}

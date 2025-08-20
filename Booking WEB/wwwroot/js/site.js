@@ -26,53 +26,54 @@ document.addEventListener('DOMContentLoaded', function ()
         button.onclick = navigateProfile;
     } 
 
+    const addCardButton = document.getElementById('add-card-button');
+    if (addCardButton) {
+        addCardButton.onclick = openAddCardForm;
+    }
+    const cancelAddCardButton = document.getElementById('cancel-add-card-button');
+    if (cancelAddCardButton) {
+        cancelAddCardButton.onclick = closeAddCardForm;
+    }
+
 });
 
-document.addEventListener('submit', e =>
-{
+document.addEventListener('submit', e => {
     const form = e.target;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!?@$&*])[A-Za-z\d@$!%*?&]{12,}$/;
-    if (form.id == 'sign-in-form')
-    {
+    //const cardRegex = /^(?:4[0-9]{12}(?:[0-9]{3})?|[25][1-7][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0 - 5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11}) $/; // Visa, MasterCard, American Express, Diners Club, Discover, and JCB cards
+    const expDateRegex = /^(0[1-9]|1[0-2])\/?([0-9]{4}|[0-9]{2})$/;
+    if (form.id == 'sign-in-form') {
         e.preventDefault();
 
         const loginInput = form.querySelector('[name="user-login"]');
-        if (!loginInput)
-        {
+        if (!loginInput) {
             throw `Element [name="user-login"] was not found`;
         }
         const passwordInput = form.querySelector('[name="user-password"]');
-        if (!passwordInput)
-        {
+        if (!passwordInput) {
             throw `Element [name="user-password"] was not found`;
         }
-        if (loginInput.value.length == 0)
-        {
+        if (loginInput.value.length == 0) {
             loginInput.classList.add('is-invalid');
             loginInput.nextElementSibling.innerHTML = 'Login cannot be empty';
         }
-        else
-        {
+        else {
             loginInput.classList.remove('is-invalid');
             loginInput.classList.add('is-valid');
             loginInput.nextElementSibling.innerHTML = '';
         }
 
 
-        if (passwordInput.value.length == 0)
-        {
+        if (passwordInput.value.length == 0) {
             passwordInput.classList.add('is-invalid');
             passwordInput.nextElementSibling.innerHTML = 'Password cannot be empty';
         }
-        else
-        {
-            if (!(passwordRegex.test(passwordInput.value)))
-            {
+        else {
+            if (!(passwordRegex.test(passwordInput.value))) {
                 passwordInput.classList.add('is-invalid');
                 passwordInput.nextElementSibling.innerHTML = 'Password must be at least 12 characters long and contain lower, upper case letters, at least one number and at least one special character';
             }
-            else
-            {
+            else {
                 passwordInput.classList.remove('is-invalid');
                 passwordInput.classList.add('is-valid');
                 passwordInput.nextElementSibling.innerHTML = '';
@@ -86,8 +87,7 @@ document.addEventListener('submit', e =>
             }
         }).then(r => r.json())
             .then(j => {
-                if (j.status == 200)
-                {
+                if (j.status == 200) {
                     window.accessToken = j.data;
                     window.location.href = "/Home/Index";
                 }
@@ -99,7 +99,97 @@ document.addEventListener('submit', e =>
                 }
             })
     }
-})
+    if (form.id == 'add-card-form')
+    {
+        e.preventDefault();
+        const cardholderInput = form.querySelector('[name="cardholder-name"]');
+        if (!cardholderInput) throw "Element with name 'cardholder-name' was not found";
+
+        const numberInput = form.querySelector('[name="card-number"]');
+        if (!numberInput) throw "Element with name 'card-number' was not found";
+
+        const expDateInput = form.querySelector('[name="exp-date"]');
+        if (!expDateInput) throw "Element with name 'exp-date' was not found";
+
+        if (cardholderInput.value.length == 0) {
+            cardholderInput.classList.add('is-invalid');
+            cardholderInput.nextElementSibling.innerHTML = "Cardholder's name cannot be empty";
+        }
+        else
+        {
+            cardholderInput.classList.remove('is-invalid');
+            cardholderInput.classList.add('is-valid');
+            cardholderInput.nextElementSibling.innerHTML = "";
+        }
+
+        if (numberInput.value.length != 16 || numberInput.value.length == 0)
+        {
+            numberInput.classList.add('is-invalid');
+            numberInput.nextElementSibling.innerHTML = "Invalid card number";
+        }
+        else
+        {
+            numberInput.classList.remove('is-invalid');
+            numberInput.classList.add('is-valid');
+            numberInput.nextElementSibling.innerHTML = "";
+        }
+
+        if (expDateInput.value.length == 0)
+        {
+            expDateInput.classList.add('is-invalid');
+            expDateInput.nextElementSibling.innerHTML = "Expiration date cannot be empty";
+        }
+        else
+        {
+            if (!(expDateRegex.test(expDateInput.value)))
+            {
+                expDateInput.classList.add('is-invalid');
+                expDateInput.nextElementSibling.innerHTML = "Invalid expiration date format";
+            }
+            else
+            {
+                expDateInput.classList.remove('is-invalid');
+                expDateInput.classList.add('is-valid');
+                expDateInput.nextElementSibling.innerHTML = "";
+            }
+           
+        }
+
+
+
+        // ------- SOME BANK VALIDATION -------
+        // ...
+        // ...
+        // ...
+
+
+
+      
+    }
+});
+
+function openAddCardForm(e)
+{
+    e.preventDefault();
+    const form = document.getElementById('add-card-form');
+    if (!form) throw "Element 'add-card-form' was not found";
+    const field = document.getElementById('add-card-field');
+    if (!field) throw "Element 'add-card-field' was not found";
+    form.classList.remove('d-none');
+    field.classList.add('d-none');
+}
+
+function closeAddCardForm(e)
+{
+    e.preventDefault();
+    const form = document.getElementById('add-card-form');
+    if (!form) throw "Element 'add-card-form' was not found";
+    const field = document.getElementById('add-card-field');
+    if (!field) throw "Element 'add-card-field' was not found";
+    form.reset();
+    form.classList.add('d-none');
+    field.classList.remove('d-none');
+}
 
 function navigateProfile(e)
 {

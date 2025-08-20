@@ -30,6 +30,7 @@ namespace Booking_WEB.Data
         public DbSet<Entities.Feedback> Feedbacks { get; set; } = null!;
 
         public DbSet<Entities.AccRates> AccRates { get; set; } = null!;
+        public DbSet<Entities.Cards> Cards { get; set; } = null!;
 
         public DataContext(DbContextOptions options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -72,6 +73,8 @@ namespace Booking_WEB.Data
 
             modelBuilder.Entity<AccessToken>().HasKey(at => at.Jti);
             modelBuilder.Entity<AccessToken>().HasOne(at => at.UserAccess).WithMany().HasForeignKey(at => at.Sub);
+
+            modelBuilder.Entity<Cards>().HasOne(c => c.User).WithMany(ud => ud.Cards).HasForeignKey(ua => ua.UserId);
 
             modelBuilder.ApplyConfiguration(new Configurations.RoleConfiguration());
 

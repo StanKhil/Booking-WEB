@@ -248,6 +248,7 @@ namespace Booking_WEB.Controllers
                     {
                         model.IsPersonal = true;
                         model.Birthdate = ua.UserData.BirthDate;
+                        model.Cards = ua.UserData.Cards;
                     }
                     else
                         model.IsPersonal = false;
@@ -342,8 +343,8 @@ namespace Booking_WEB.Controllers
         [HttpDelete]
         public async Task<JsonResult> DeleteProfileAsync()
         {
-            String authControl = HttpContext.Request.Headers["Authentication-Control"].ToString();
-            if (String.IsNullOrEmpty(authControl))
+            string authControl = HttpContext.Request.Headers["Authentication-Control"].ToString();
+            if (string.IsNullOrEmpty(authControl))
             {
                 return Json(new
                 {
@@ -362,7 +363,7 @@ namespace Booking_WEB.Controllers
                     Data = "Unauthorized"
                 });
             }
-            String userLogin = HttpContext
+            string userLogin = HttpContext
                 .User
                 .Claims
                 .First(c => c.Type == ClaimTypes.Sid)
@@ -395,6 +396,14 @@ namespace Booking_WEB.Controllers
                     Data = "User deletion conflict"
                 });
             }
+        }
+        public async Task<JsonResult> AddCardAsync()
+        {
+            return new JsonResult(new
+            {
+                Status = 418,
+                Data = "I'm a teapot"
+            });
         }
 
         private bool IsAuthenticated()
