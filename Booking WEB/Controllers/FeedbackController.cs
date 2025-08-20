@@ -1,4 +1,5 @@
 ﻿using Booking_WEB.Data;
+using Booking_WEB.Data.DataAccessors;
 using Booking_WEB.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,9 +7,15 @@ using System.Text.Json;
 
 namespace Booking_WEB.Controllers
 {
-    public class FeedbackController(DataContext context) : Controller
+    public class FeedbackController(
+        UserAccessAccessor userAccessAccessor,
+        RealtyAccessor realtyAccessor,
+        FeedbackAccessor feedbackAccessor) : Controller
     {
-        private readonly DataContext _context = context ?? throw new Exception("context not found");
+
+        private readonly UserAccessAccessor _userAccessAccessor = userAccessAccessor ?? throw new ArgumentNullException(nameof(userAccessAccessor));
+        private readonly RealtyAccessor _realtyAccessor = realtyAccessor ?? throw new ArgumentNullException(nameof(realtyAccessor));
+        private readonly FeedbackAccessor _feedbackAccessor = feedbackAccessor ?? throw new ArgumentNullException(nameof(feedbackAccessor));
 
         public IActionResult Index()
         {
@@ -40,18 +47,14 @@ namespace Booking_WEB.Controllers
                     return Json(new { Status = 400, Error = "Rate must be between 1 and 5" });
                 }
 
-                var realty = await _context.Realties
-                    .Include(r => r.Feedbacks)
-                    .FirstOrDefaultAsync(r => r.Id == model.RealtyId && r.DeletedAt == null);
+                var realty = await _realtyAccessor.GetByIdAsync(model.RealtyId, isEditable: false);
 
                 if (realty == null)
                 {
                     return Json(new { Status = 404, Error = "Realty not found" });
                 }
 
-                var userAccess = await _context.UserAccesses
-                    .Include(u => u.Feedbacks)
-                    .FirstOrDefaultAsync(u => u.Id == model.UserAccessId);
+                var userAccess = await _userAccessAccessor.GetByIdAsync(model.UserAccessId, isEditable: false);
 
                 if (userAccess == null)
                 {
@@ -72,8 +75,7 @@ namespace Booking_WEB.Controllers
                     UserAccess = userAccess
                 };
 
-                _context.Feedbacks.Add(feedback);
-                await _context.SaveChangesAsync();
+                await _feedbackAccessor.CreateAsync(feedback);
 
                 return Json(new
                 {
@@ -104,8 +106,7 @@ namespace Booking_WEB.Controllers
                     return Json(new { Status = 400, Error = "Invalid feedback data" });
                 }
 
-                var feedback = await _context.Feedbacks
-                    .FirstOrDefaultAsync(f => f.Id == model.Id && f.DeletedAt == null);
+                var feedback = await _feedbackAccessor.GetByIdAsync(model.Id, isEditable: true);
 
                 if (feedback == null)
                 {
@@ -121,7 +122,7 @@ namespace Booking_WEB.Controllers
                 feedback.Rate = model.Rate;
                 feedback.UpdatedAt = DateTime.UtcNow;
 
-                await _context.SaveChangesAsync();
+                await _feedbackAccessor.UpdateAsync(feedback);
 
                 return Json(new { Status = 200, Message = "Feedback updated", Data = new { feedback.Id } });
             }
@@ -146,17 +147,14 @@ namespace Booking_WEB.Controllers
                     return Json(new { Status = 400, Error = "Invalid ID" });
                 }
 
-                var feedback = await _context.Feedbacks
-                    .FirstOrDefaultAsync(f => f.Id == feedbackId && f.DeletedAt == null);
+                var feedback = await _feedbackAccessor.GetByIdAsync(feedbackId, isEditable: true);
 
                 if (feedback == null)
                 {
                     return Json(new { Status = 404, Error = "Feedback not found" });
                 }
 
-                feedback.DeletedAt = DateTime.UtcNow;
-
-                await _context.SaveChangesAsync();
+                await _feedbackAccessor.SoftDeleteAsync(feedback);
 
                 return Json(new { Status = 200, Message = "Feedback deleted", Data = new { feedback.Id } });
             }

@@ -16,6 +16,11 @@ document.addEventListener('DOMContentLoaded', function ()
         editProfileBtn.onclick = editProfileBtnClick;
     }
 
+    const deleteProfileBtn = document.getElementById("delete-profile-btn");
+    if (deleteProfileBtn) {
+        deleteProfileBtn.onclick = deleteProfileBtnClick;
+    }
+
     for (let button of document.querySelectorAll('[data-profile]'))
     {
         button.onclick = navigateProfile;
@@ -251,5 +256,29 @@ function editProfileBtnClick()
                 
             }
         }
+    }
+}
+
+function deleteProfileBtnClick() {
+    if (confirm(`Delete profile:`)) {
+        let login = prompt("Enter your login to confirm deletion:");
+        if (login == null || login.trim() == "") {
+            alert("Deletion cancelled.");
+            return;
+        }
+        fetch("/User/DeleteProfile", {
+            method: 'DELETE',
+            headers: {
+                'Authentication-Control': new Base64().encodeUrl(login)
+            },
+        }).then(r => r.json()).then(j => {
+            console.log(j);
+            if (j.status == 200) {
+                alert("Profile deleted successfully.");
+                window.location = '/';
+            } else {
+                alert("Error deleting profile: " + j.data);
+            }
+        });
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Booking_WEB.Data;
+using Booking_WEB.Data.DataAccessors;
 using Booking_WEB.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,9 +9,14 @@ using System.Text.Json;
 
 namespace Booking_WEB.Controllers
 {
-    public class BookingItemController(DataContext context) : Controller
+    public class BookingItemController(
+        BookingItemAccessor bookingItemAccessor,
+        RealtyAccessor realtyAccessor,
+        UserAccessAccessor userAccessAccessor) : Controller
     {
-        private readonly DataContext _context = context ?? throw new Exception("context not found");
+        private readonly BookingItemAccessor bookingItemAccessor = bookingItemAccessor;
+        private readonly RealtyAccessor realtyAccessor = realtyAccessor;
+        private readonly UserAccessAccessor userAccessAccessor = userAccessAccessor;
 
         public IActionResult Index()
         {
@@ -58,10 +64,7 @@ namespace Booking_WEB.Controllers
                     });
                 }
 
-
-                var realty = await context.Realties
-                    .Include(r => r.BookingItems)
-                    .FirstOrDefaultAsync(r => r.Id == model.RealtyId && r.DeletedAt == null);
+                var realty = await realtyAccessor.GetByIdAsync(model.RealtyId, true);
 
                 if (realty == null)
                 {
@@ -100,9 +103,7 @@ namespace Booking_WEB.Controllers
                     UserAccessId = model.UserAccessId
                 };
 
-                var userAccess = await context.UserAccesses
-                    .Include(ua => ua.BookingItems)
-                    .FirstOrDefaultAsync(ua => ua.Id == model.UserAccessId);
+                var userAccess = await userAccessAccessor.GetByIdAsync(model.UserAccessId, true);
 
                 if (userAccess == null)
                     throw new InvalidOperationException("UserAccess not found.");
@@ -110,8 +111,7 @@ namespace Booking_WEB.Controllers
                 bookingItem.UserAccess = userAccess;
                 bookingItem.Realty = realty;
 
-                context.BookingItems.Add(bookingItem);
-                await context.SaveChangesAsync();
+                await bookingItemAccessor.CreateAsync(bookingItem);
 
                 return Json(new
                 {
@@ -157,8 +157,9 @@ namespace Booking_WEB.Controllers
                     return Json(new { Status = 400, Error = "Invalid input" });
                 }
 
-                var bookingItem = await _context.BookingItems
-                    .FirstOrDefaultAsync(b => b.Id == model.Id && b.DeletedAt == null);
+                //var bookingItem = await _context.BookingItems
+                //    .FirstOrDefaultAsync(b => b.Id == model.Id && b.DeletedAt == null);
+                var bookingItem = await bookingItemAccessor.GetByIdAsync(model.Id, true);
 
                 if (bookingItem == null)
                 {
@@ -170,16 +171,8 @@ namespace Booking_WEB.Controllers
                     return Json(new { Status = 400, Error = "StartDate must be before EndDate" });
                 }
 
-                bool hasOverlap = await _context.BookingItems
-                    .AnyAsync(b =>
-                        b.Id != model.Id &&
-                        b.RealtyId == model.RealtyId &&
-                        b.DeletedAt == null &&
-                        (
-                            (model.StartDate >= b.StartDate && model.StartDate < b.EndDate) ||
-                            (model.EndDate > b.StartDate && model.EndDate <= b.EndDate) ||
-                            (model.StartDate <= b.StartDate && model.EndDate >= b.EndDate)
-                        ));
+                bool hasOverlap = await bookingItemAccessor.HasOverlapAsync(
+                    model.RealtyId, model.StartDate, model.EndDate, model.Id);
 
                 if (hasOverlap)
                 {
@@ -195,7 +188,7 @@ namespace Booking_WEB.Controllers
                 bookingItem.RealtyId = model.RealtyId;
                 bookingItem.UserAccessId = model.UserAccessId;
 
-                await _context.SaveChangesAsync();
+                await bookingItemAccessor.UpdateAsync(bookingItem);
 
                 return Json(new
                 {
@@ -227,16 +220,14 @@ namespace Booking_WEB.Controllers
                     return Json(new { Status = 400, Error = "Invalid ID" });
                 }
 
-                var bookingItem = await _context.BookingItems
-                    .FirstOrDefaultAsync(b => b.Id == id && b.DeletedAt == null);
+                var bookingItem = await bookingItemAccessor.GetByIdAsync(id, true);
 
                 if (bookingItem == null)
                 {
                     return Json(new { Status = 404, Error = "BookingItem not found" });
                 }
 
-                bookingItem.DeletedAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
+                await bookingItemAccessor.SoftDeleteAsync(bookingItem);
 
                 return Json(new
                 {

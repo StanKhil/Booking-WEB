@@ -1,4 +1,5 @@
 ﻿using Booking_WEB.Data;
+using Booking_WEB.Data.DataAccessors;
 using Booking_WEB.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,9 +7,9 @@ using System.Text.Json;
 
 namespace Booking_WEB.Controllers
 {
-    public class ItemImageController(DataContext context) : Controller
+    public class ItemImageController(ItemImageAccessor itemImageAccessor) : Controller
     {
-        private readonly DataContext _context = context ?? throw new Exception("context not found");
+        private readonly ItemImageAccessor _itemImageAccessor = itemImageAccessor ?? throw new Exception("ItemImageAccessor not found");
 
         public IActionResult Index()
         {
@@ -39,28 +40,17 @@ namespace Booking_WEB.Controllers
                     });
                 }
 
-                var existingUrls = await _context.ItemImages
-                    .Where(i => i.ItemId == data.RealtyId)
-                    .Select(i => i.ImageUrl)
-                    .ToListAsync();
+                var existingUrls = await _itemImageAccessor.GetUrlsByItemIdAsync(data.RealtyId);
 
                 var newUrls = data.Urls
                     .Where(url => !existingUrls.Contains(url))
                     .Distinct()
                     .ToList();
 
-                foreach (var url in newUrls)
+                if (newUrls.Count > 0)
                 {
-                    var image = new ItemImage
-                    {
-                        ItemId = data.RealtyId,
-                        ImageUrl = url,
-                        Order = 0
-                    };
-                    _context.ItemImages.Add(image);
+                    await _itemImageAccessor.AddRangeAsync(data.RealtyId, newUrls);
                 }
-
-                await _context.SaveChangesAsync();
 
                 return Json(new
                 {
@@ -91,23 +81,18 @@ namespace Booking_WEB.Controllers
                     return Json(new { Status = 400, Error = "Invalid itemId" });
                 }
 
-                var images = await _context.ItemImages
-                    .Where(i => i.ItemId == itemId)
-                    .ToListAsync();
+                var deletedCount = await _itemImageAccessor.DeleteByItemIdAsync(itemId);
 
-                if (!images.Any())
+                if (deletedCount == 0)
                 {
                     return Json(new { Status = 404, Error = "No images found for given itemId" });
                 }
-
-                _context.ItemImages.RemoveRange(images);
-                await _context.SaveChangesAsync();
 
                 return Json(new
                 {
                     Status = 200,
                     Message = "Images deleted",
-                    DeletedCount = images.Count
+                    DeletedCount = deletedCount
                 });
             }
             catch (Exception ex)

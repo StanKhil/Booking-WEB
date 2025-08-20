@@ -35,6 +35,7 @@ namespace Booking_WEB.Data.DataAccessors
 
         public async Task UpdateAsync(Realty realty)
         {
+            _context.Realties.Update(realty);
             await _context.SaveChangesAsync();
         }
 
@@ -48,5 +49,21 @@ namespace Booking_WEB.Data.DataAccessors
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<Realty>> GetAllAsync(bool isEditable = false)
+        {
+            IQueryable<Realty> query = _context.Realties
+                .Include(r => r.City)
+                .Include(r => r.Country)
+                .Include(r => r.RealtyGroup);
+
+            if (!isEditable)
+                query = query.AsNoTracking();
+
+            return await query
+                .Where(r => r.DeletedAt == null)
+                .ToListAsync();
+        }
+
     }
 }

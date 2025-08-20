@@ -1,17 +1,21 @@
 ﻿using Booking_WEB.Data;
+using Booking_WEB.Data.DataAccessors;
 using Booking_WEB.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Booking_WEB.Controllers
 {
-    public class AdministratorController(DataContext dataContext) : Controller
+    public class AdministratorController( 
+        RealtyAccessor realtyAccessor,
+        UserAccessAccessor userAccessAccessor) : Controller
     {
-        private readonly DataContext _dataContext = dataContext;
+        private readonly RealtyAccessor _realtyAccessor = realtyAccessor;
+        private readonly UserAccessAccessor _userAccessAccessor = userAccessAccessor;
 
         public async Task<IActionResult> GetRealtiesTable()
         {
-            var realties = _dataContext.Realties.AsNoTracking().Include(r => r.City).Include(r => r.Country).Include(r => r.RealtyGroup).ToList();
+            var realties = await _realtyAccessor.GetAllAsync(isEditable: false);
             string? tableBodyContent = "";
             foreach(var realty in realties)
             {
@@ -27,7 +31,7 @@ namespace Booking_WEB.Controllers
             //            join user in _dataContext.Users on userAccess.UserId equals user.Id 
             //            join role in _dataContext.UserRoles on userAccess.RoleId equals role.Id 
             //            select userAccess).AsNoTracking();
-            var userAccesses = _dataContext.UserAccesses.AsNoTracking().Include(ua => ua.UserData).Include(ua => ua.UserRole).ToList();
+            var userAccesses = await _userAccessAccessor.GetAllAccesses(isEditable: false);
 
             string? tableBodyContent = "";
             foreach(var userAccess in userAccesses)

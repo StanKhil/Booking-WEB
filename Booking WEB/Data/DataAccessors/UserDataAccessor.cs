@@ -19,6 +19,17 @@ namespace Booking_WEB.Data.DataAccessors
             return user;
         }
 
+        public async Task UpdateAsync(UserData user)
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> ExistsAsync(Guid id)
+        {
+            return await _context.Users.AnyAsync(u => u.Id == id && u.DeletedAt == null);
+        }
+
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();

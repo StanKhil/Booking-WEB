@@ -18,7 +18,6 @@ namespace Booking_WEB.Controllers
     public class AuthController(
         IRandomService randomService,
         IKdfService kdfService,
-        DataContext context,
         ILogger<UserController> logger,
         ITimeService timeService,
         IJwtService jwtService,
@@ -29,7 +28,6 @@ namespace Booking_WEB.Controllers
 
         private readonly IRandomService _randomService = randomService;
         private readonly IKdfService _kdfService = kdfService;
-        private readonly DataContext _context = context;
         private readonly ILogger<UserController> _logger = logger;
         private readonly Regex _passwordRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!?@$&*])[A-Za-z\d@$!%*?&]{12,}$");
         private readonly ITimeService _timeService = timeService;

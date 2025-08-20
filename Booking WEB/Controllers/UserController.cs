@@ -13,27 +13,29 @@ using Booking_WEB.Services.Jwt;
 using System.Security.Claims;
 using Booking_WEB.Data.DataAccessors;
 using System.Text;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Booking_WEB.Controllers
 {
     public class UserController(
-        IRandomService randomService, 
-        IKdfService kdfService, 
-        DataContext context, 
+        IRandomService randomService,
+        IKdfService kdfService,
         ILogger<UserController> logger,
         UserAccessAccessor userAccessAccessor,
         UserDataAccessor userDataAccessor) : Controller
     {
         private readonly IRandomService _randomService = randomService;
         private readonly IKdfService _kdfService = kdfService;
-        private readonly DataContext _context = context;
         private readonly ILogger<UserController> _logger = logger;
         private readonly UserAccessAccessor _userAccessAccessor = userAccessAccessor;
         private readonly UserDataAccessor _userDataAccessor = userDataAccessor;
+        const String authSessionKey = "userAccess";
 
         [HttpPost]
-        public async Task<JsonResult> Create()
+        public async Task<JsonResult> CreateAsync()
         {
+            if (!IsAuthenticated())
+                return Json(new { Status = 401, Error = "Unauthorized" });
             try
             {
                 using var reader = new StreamReader(Request.Body);
@@ -106,8 +108,10 @@ namespace Booking_WEB.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> Update()
+        public async Task<JsonResult> UpdateAsync()
         {
+            if (!IsAuthenticated())
+                return Json(new { Status = 401, Error = "Unauthorized" });
             try
             {
                 using var reader = new StreamReader(Request.Body);
@@ -175,41 +179,36 @@ namespace Booking_WEB.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> Delete()
+        public async Task<JsonResult> DeleteAsync()
         {
+            if (!IsAuthenticated())
+                return Json(new { Status = 401, Error = "Unauthorized" });
             try
             {
                 using var reader = new StreamReader(Request.Body);
                 var body = await reader.ReadToEndAsync();
 
                 var json = JsonDocument.Parse(body);
-                var idProp = json.RootElement.GetProperty("id");
+                var userLogin = json.RootElement.GetProperty("login").GetString()!;
 
-                if (!Guid.TryParse(idProp.ToString(), out var id))
-                {
-                    return Json(new { Status = 400, Error = "Invalid ID" });
-                }
-
-                var user = await _userDataAccessor.GetByIdAsync(id);
-
-                if (user == null)
+                bool loginExists = await _userAccessAccessor.LoginExistsAsync(userLogin);
+                if (!loginExists)
                 {
                     return Json(new { Status = 404, Error = "User not found" });
                 }
 
-                user.FirstName = String.Empty;
-                user.LastName = String.Empty;
-                user.Email = String.Empty;
-                user.BirthDate = null;
-                user.DeletedAt = DateTime.UtcNow;
+                var deleted = await _userAccessAccessor.DeleteUserAsync(userLogin);
 
-                await _userDataAccessor.SaveChangesAsync();
+                if (!deleted)
+                {
+                    return Json(new { Status = 409, Error = "User deletion conflict" });
+                }
 
                 return Json(new
                 {
                     Status = 200,
                     Message = "User deleted",
-                    Data = new { user.Id }
+                    Data = new { Login = userLogin }
                 });
             }
             catch (Exception ex)
@@ -217,6 +216,7 @@ namespace Booking_WEB.Controllers
                 return Json(new { Status = 500, Error = ex.Message });
             }
         }
+
 
         // ============== PROFILE ==============
         public async Task<ViewResult> Profile(String id)
@@ -261,7 +261,7 @@ namespace Booking_WEB.Controllers
         public async Task<JsonResult> EditAsync() // In general ASP-project it is UpdateAsync
         {
             bool isAuthenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
-            if(!isAuthenticated)
+            if (!isAuthenticated)
             {
                 return Json(new
                 {
@@ -272,7 +272,7 @@ namespace Booking_WEB.Controllers
             var userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
             var userAccess = await _userAccessAccessor.GerUserAccessByLoginAsync(userLogin, isEditable: true);
 
-            if(userAccess == null)
+            if (userAccess == null)
             {
                 return Json(new
                 {
@@ -283,7 +283,7 @@ namespace Booking_WEB.Controllers
 
             using StreamReader reader = new(Request.Body, Encoding.UTF8);
             var requestBody = await reader.ReadToEndAsync();
-            if(requestBody == null)
+            if (requestBody == null)
             {
                 return Json(new
                 {
@@ -296,7 +296,7 @@ namespace Booking_WEB.Controllers
             {
                 json = JsonSerializer.Deserialize<JsonElement>(requestBody);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 _logger.LogInformation("JSON decode error {e}", e.Message);
                 return Json(new
@@ -305,7 +305,7 @@ namespace Booking_WEB.Controllers
                     Data = "Body must be a valid JSON string"
                 });
             }
-            if(json.ValueKind != JsonValueKind.Array)
+            if (json.ValueKind != JsonValueKind.Array)
             {
                 return Json(new
                 {
@@ -313,11 +313,11 @@ namespace Booking_WEB.Controllers
                     Data = "Body must be a JSON array"
                 });
             }
-            foreach(var element in json.EnumerateArray())
+            foreach (var element in json.EnumerateArray())
             {
                 string value = element.GetProperty("value").GetString()!;
                 string field = element.GetProperty("field").GetString()!;
-                switch(field)
+                switch (field)
                 {
                     case "FirstName": userAccess.UserData.FirstName = value; break;
                     case "LastName": userAccess.UserData.LastName = value; break;
@@ -330,12 +330,76 @@ namespace Booking_WEB.Controllers
                         });
                 }
             }
-            await _context.SaveChangesAsync();
+
+            await _userAccessAccessor.UpdateUserAsync(userAccess);
             return Json(new
             {
                 Status = 202,
                 Data = "Accepted"
             });
+        }
+
+        [HttpDelete]
+        public async Task<JsonResult> DeleteProfileAsync()
+        {
+            String authControl = HttpContext.Request.Headers["Authentication-Control"].ToString();
+            if (String.IsNullOrEmpty(authControl))
+            {
+                return Json(new
+                {
+                    Status = 400,
+                    Data = "Bad Request: Authentication-Control header is required"
+                });
+            }
+            authControl = Encoding.UTF8.GetString(Base64UrlTextEncoder.Decode(authControl));
+
+            
+            if (!IsAuthenticated())
+            {
+                return Json(new
+                {
+                    Status = 401,
+                    Data = "Unauthorized"
+                });
+            }
+            String userLogin = HttpContext
+                .User
+                .Claims
+                .First(c => c.Type == ClaimTypes.Sid)
+                .Value;
+            if (userLogin != authControl)
+            {
+                return Json(new
+                {
+                    Status = 403,
+                    Data = "Forbidden: You can only delete your own account"
+                });
+            }
+
+            bool isDeleted = await _userAccessAccessor.DeleteUserAsync(authControl);
+            if (isDeleted)
+            {
+                HttpContext.Session.Remove(authSessionKey);
+                Response.Cookies.Delete("AuthToken");
+                return Json(new
+                {
+                    Status = 200,
+                    Data = "User deleted successfully"
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    Status = 409,
+                    Data = "User deletion conflict"
+                });
+            }
+        }
+
+        private bool IsAuthenticated()
+        {
+            return HttpContext.User.Identity?.IsAuthenticated ?? false;
         }
     }
 }

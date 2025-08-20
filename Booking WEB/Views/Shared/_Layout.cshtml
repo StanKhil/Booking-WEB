@@ -36,7 +36,7 @@
                     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light">
                         <div class="container-fluid">
                             <button class="list-property-button">List your property</button>
-                            @if(isAuthenticated)
+                            @if (isAuthenticated && !string.IsNullOrEmpty(fullName))
                             {
                                 <a asp-controller="User" asp-action="Profile" asp-route-id="@userLogin">
                                     <div class="login-icon mx-2">@fullName[0]</div>

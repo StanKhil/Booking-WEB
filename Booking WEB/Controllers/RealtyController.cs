@@ -8,10 +8,9 @@ using System.Text.Json;
 
 namespace Booking_WEB.Controllers
 {
-    public class RealtyController(DataContext context,
+    public class RealtyController(
         RealtyAccessor realtyAccessor) : Controller
     {
-        private readonly DataContext _context = context;
         private readonly RealtyAccessor _realtyAccessor = realtyAccessor;
 
         public IActionResult Index()
