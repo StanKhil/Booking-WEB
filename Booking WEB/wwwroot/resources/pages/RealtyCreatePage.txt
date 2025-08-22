@@ -3,7 +3,7 @@
 <h3>Create Realties</h3>
 <hr>
 
-<form>
+<form id="product-add-form" action="/Home/Realty" method="POST" enctype="multipart/form-data">
 <div class="mb-3">
 	<label for="realty-name" class="form-label">Name</label>
 	<input type="text" name="realty-name" class="form-control @classAddon" id="realty-name" aria-describedby="RealtyName" placeholder="Enter name">
@@ -42,7 +42,7 @@
 
 <div class="mb-3">
 	<label for="realty-group" class="form-label">Group</label>
-	<select class="form-select" aria-label="Group form select">
+	<select class="form-select" aria-label="Group form select" name="realty-group">
 		<option value="Apartments">Apartments</option>
 		<option value="Villas">Villas</option>
 		<option value="Houses">Houses</option>
@@ -52,12 +52,12 @@
 
 <div class="mb-3">
   <label for="realty-main-image" class="form-label">Main image</label>
-  <input type="file" name="realty-main-image" class="form-control" id="realty-main-image" aria-describedby="Main Image">
+  <input type="file" name="realty-img" class="form-control" id="realty-main-image" aria-describedby="Main Image">
 </div>
-
+<button type="sibmit" data-action="create-realty" class="btn btn-success w-100" id="admin-create-realty-button">Create</button>
 </form>
 
-<button data-action="create-realty" class="btn btn-success w-100" id="admin-create-realty-button">Create</button>
+
 <div role="alert" class="alert" style="display: none" id="admin-realty-create-alert"></div>
 
 </div>

@@ -65,5 +65,25 @@ namespace Booking_WEB.Data.DataAccessors
                 .ToListAsync();
         }
 
+        public async Task<Guid> GetCityIdByNameAsync(String cityName)
+        {
+            var city = await _context.Cities.FirstOrDefaultAsync(c => c.Name == cityName) ?? new City { Id = Guid.NewGuid(), Name = cityName };
+            if (!await _context.Cities.AnyAsync(c => c.Id == city.Id)) _context.Cities.Add(city);
+            return city.Id;
+        }
+
+        public async Task<Guid> GetCountryIdByNameAsync(String countryName)
+        {
+            var country = await _context.Countries.FirstOrDefaultAsync(c => c.Name == countryName) ?? new Country { Id = Guid.NewGuid(), Name = countryName };
+            if (!await _context.Countries.AnyAsync(c => c.Id == country.Id)) _context.Countries.Add(country);
+            return country.Id;
+        }
+
+        public async Task<Guid> GetGroupIdByNameAsync(String groupName)
+        {
+            var group = await _context.RealtyGroups.FirstOrDefaultAsync(g => g.Name == groupName) ?? new RealtyGroup { Id = Guid.NewGuid(), Name = groupName };
+            if (!await _context.RealtyGroups.AnyAsync(g => g.Id == group.Id)) _context.RealtyGroups.Add(group);
+            return group.Id;
+        }
     }
 }

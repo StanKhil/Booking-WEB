@@ -166,6 +166,10 @@ document.addEventListener('submit', e => {
 
       
     }
+    if (form.id == "product-add-form") {
+        e.preventDefault();
+        handleAddProduct(form)
+    }    
 });
 
 function openAddCardForm(e)
@@ -371,4 +375,12 @@ function deleteProfileBtnClick() {
             }
         });
     }
+}
+
+function handleAddProduct(form) {
+    console.log("Adding product:", form);
+    fetch('/Realty/Create', {
+        method: "POST",
+        body: new FormData(form)
+    }).then(r => r.json()).then(console.log).catch(console.error);
 }

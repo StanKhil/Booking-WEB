@@ -1,6 +1,7 @@
 ﻿using Booking_WEB.Data;
 using Booking_WEB.Data.DataAccessors;
 using Booking_WEB.Data.Entities;
+using Booking_WEB.Models.Realty;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -19,18 +20,20 @@ namespace Booking_WEB.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> Create()
+        public async Task<JsonResult> Create(CreateRealtyFormModel model)
         {
             try
             {
-                using var reader = new StreamReader(Request.Body);
-                var body = await reader.ReadToEndAsync();
+                String ext = model.Image.FileName[model.Image.FileName.LastIndexOf('.')..];
+                String savedName = Guid.NewGuid() + ext;
+                String path = @"C:\storage\" + savedName;
+                using Stream stream = new StreamWriter(path).BaseStream;
+                var copyTask = model.Image.CopyToAsync(stream);
+                await copyTask;
 
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
-                var model = JsonSerializer.Deserialize<Realty>(body, options);
+                var cityId = await _realtyAccessor.GetCityIdByNameAsync(model.City);
+                var countryId = await _realtyAccessor.GetCountryIdByNameAsync(model.Country);
+                var groupId = await _realtyAccessor.GetGroupIdByNameAsync(model.Group);
 
                 if (model == null)
                 {
@@ -67,11 +70,11 @@ namespace Booking_WEB.Controllers
                     Name = model.Name,
                     Description = model.Description,
                     Slug = model.Slug,
-                    ImageUrl = model.ImageUrl,
+                    ImageUrl = path,
                     Price = model.Price,
-                    CityId = model.CityId,
-                    CountryId = model.CountryId,
-                    GroupId = model.GroupId,
+                    CityId = cityId,
+                    CountryId = countryId,
+                    GroupId = groupId,
                     DeletedAt = null
                 };
 
