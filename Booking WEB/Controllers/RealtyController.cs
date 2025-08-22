@@ -10,8 +10,10 @@ using System.Text.Json;
 namespace Booking_WEB.Controllers
 {
     public class RealtyController(
+        ILogger<RealtyController> logger,
         RealtyAccessor realtyAccessor) : Controller
     {
+        private readonly ILogger<RealtyController> _logger = logger;
         private readonly RealtyAccessor _realtyAccessor = realtyAccessor;
 
         public IActionResult Index()
@@ -94,6 +96,7 @@ namespace Booking_WEB.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Realty/Create: {ex.Message}");
                 return Json(new
                 {
                     Status = 500,

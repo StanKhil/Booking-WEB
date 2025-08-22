@@ -15,6 +15,7 @@
 
         <div  class="col-lg-9">
             <div class="card shadow-sm rounded-3 p-4 p-md-5 mx-auto" style="max-width: 900px;">
+
                 <!-- PERSONAL DETAILS -->
                 <div data-page="personal-details" class="container">
                     <div class="d-flex align-items-start justify-content-between mb-2 mb-md-2">
@@ -177,14 +178,14 @@
                         </form>
 
                         <hr />
-
-                        @foreach(var card in Model.Cards)
+                        <div class="alert alert-danger d-none" role="alert" id="add-card-alert"></div>
+                        @foreach (var card in Model.Cards)
                         {
                             <div class="card">
                                 <div class="card-body">
-                                    <div class="d-flex justify-content-around">
-                                        <i class="bi bi-credit-card-2-front"></i>
-                                        <h5>@card.Number</h5>
+                                    <div class="d-flex justify-content-between align-middle">
+                                        <i class="bi bi-credit-card-2-front h1"></i>
+                                        <h5 class="mt-2">@card.Number</h5>
                                     </div>
                                 </div>
                             </div>
@@ -194,7 +195,7 @@
                     </div>
                    
                 </div>
-
+                
 
             </div>
         </div>

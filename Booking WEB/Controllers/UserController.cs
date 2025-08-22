@@ -248,7 +248,7 @@ namespace Booking_WEB.Controllers
                     {
                         model.IsPersonal = true;
                         model.Birthdate = ua.UserData.BirthDate;
-                        model.Cards = ua.UserData.Cards;
+                        model.Cards = await _userDataAccessor.GetCardsByUserIdAsync(ua.UserId, isEditable: false);
                     }
                     else
                         model.IsPersonal = false;
@@ -399,10 +399,98 @@ namespace Booking_WEB.Controllers
         }
         public async Task<JsonResult> AddCardAsync()
         {
-            return new JsonResult(new
+            bool isAuthenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!isAuthenticated)
             {
-                Status = 418,
-                Data = "I'm a teapot"
+                return Json(new
+                {
+                    Status = 401,
+                    Data = "Unauthorized"
+                });
+            }
+            string? userLogin = HttpContext.User.Claims.First(claim => claim.Type == ClaimTypes.Sid).Value;
+            UserAccess? userAccess = await _userAccessAccessor.GerUserAccessByLoginAsync(userLogin);
+            string? role = userAccess?.RoleId;
+
+            if (role != "Administrator")
+            {
+                return Json(new
+                {
+                    Status = 403,
+                    Data = "Forbidden"
+                });
+            }
+
+            Cards card = new Cards
+            {
+                Id = Guid.NewGuid(),
+                UserId = userAccess!.UserData.Id
+            };
+
+
+            using StreamReader reader = new(Request.Body, Encoding.UTF8);
+            var requestBody = await reader.ReadToEndAsync();
+            if(requestBody == null)
+            {
+                return Json(new
+                {
+                    Status = 400,
+                    Data = "Body must not be empty"
+                });
+            }
+            JsonElement json;
+            try
+            {
+                json = JsonSerializer.Deserialize<JsonElement>(requestBody);
+            }
+            catch (Exception e)
+            {
+                _logger.LogInformation("JSON decode error {e}", e.Message);
+                return Json(new
+                {
+                    Status = 400,
+                    Data = "Body must be a valid JSON string"
+                });
+            }
+            if (json.ValueKind != JsonValueKind.Array)
+            {
+                return Json(new
+                {
+                    Status = 422,
+                    Data = "Body must be a JSON array"
+                });
+            }
+            foreach(var element in json.EnumerateArray())
+            {
+                string value = element.GetProperty("value").GetString()!;
+                string field = element.GetProperty("field").GetString()!;
+                if(string.IsNullOrEmpty(value))
+                {
+                    return Json(new
+                    {
+                        Status = 400,
+                        Data = "Bad request: " + field
+                    });
+                }
+                switch (field)
+                {
+                    case "cardholder-name": card.CardholderName = value; break;
+                    case "card-number": card.Number = value; break;
+                    case "exp-date": card.ExpirationDate = new DateTime(Convert.ToInt32(value.Split('/')[1]), Convert.ToInt32(value.Split('/')[0]), 1); break;
+                    default:
+                        return Json(new
+                        {
+                            Status = 409,
+                            Data = $"Conflict: undefined field '{field}'"
+                        });
+                }
+            }
+            await _userDataAccessor.CreateCardAsync(card);
+            //_logger.LogTrace($"User card: {userAccess.UserData.Cards.First().Number}");
+            return Json(new
+            {
+                Status = 202,
+                Data = "Accepted"
             });
         }
 

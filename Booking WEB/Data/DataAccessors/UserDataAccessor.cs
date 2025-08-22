@@ -41,5 +41,19 @@ namespace Booking_WEB.Data.DataAccessors
                 .Include(u => u.UserAccesses)
                 .FirstOrDefaultAsync(u => u.Id == id && u.DeletedAt == null);
         }
+
+        // При потребности вынеси в другой класс. Только надо будет исправить UserController в самом конце
+        public async Task<Cards> CreateCardAsync(Cards card)
+        {
+            _context.Cards.Add(card);
+            await _context.SaveChangesAsync();
+            return card;
+        }
+        public async Task<List<Cards>> GetCardsByUserIdAsync(Guid id, bool isEditable = false)
+        {
+            IQueryable<Cards> source = _context.Cards.Include(c => c.User);
+            if(!isEditable) source = source.AsNoTracking();
+            return await source.ToListAsync();
+        }
     }
 }

@@ -163,14 +163,57 @@ document.addEventListener('submit', e => {
         // ...
 
 
+        let info = [];
+        info.push({
+            field: cardholderInput.getAttribute('name'),
+            value: cardholderInput.value
+        });
+        info.push({
+            field: numberInput.getAttribute('name'),
+            value: numberInput.value
+        });
+        info.push({
+            field: expDateInput.getAttribute('name'),
+            value: expDateInput.value
+        });
 
-      
+        fetch('/User/AddCard', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(info)
+        }).then(r => r.json()).then(j => {
+            console.log(j);
+            if (j.status == 202)
+            {
+                window.location.reload();
+            }
+            else
+            {
+                const div = document.getElementById('add-card-alert');
+                if (!div) throw "Element 'add-card-alert' was not found";
+                div.classList.remove('d-none');
+                div.innerText = j.data;
+            }
+        });
+
     }
-    if (form.id == "product-add-form") {
+    if (form.id == "product-add-form")
+    {
         e.preventDefault();
         handleAddProduct(form)
     }    
 });
+
+function handleAddProduct(form)
+{
+    console.log("Adding product:", form);
+    fetch('/Realty/Create', {
+        method: "POST",
+        body: new FormData(form)
+    }).then(r => r.json()).then(console.log).catch(console.error);
+}
 
 function openAddCardForm(e)
 {
@@ -188,11 +231,31 @@ function closeAddCardForm(e)
     e.preventDefault();
     const form = document.getElementById('add-card-form');
     if (!form) throw "Element 'add-card-form' was not found";
+
     const field = document.getElementById('add-card-field');
     if (!field) throw "Element 'add-card-field' was not found";
+
+    const alert = document.getElementById('add-card-alert');
+    if (!alert) throw "Element 'add-card-alert' was not found";
+
+    const cardholderInput = form.querySelector('[name="cardholder-name"]');
+    if (!cardholderInput) throw "Element with name 'cardholder-name' was not found";
+
+    const numberInput = form.querySelector('[name="card-number"]');
+    if (!numberInput) throw "Element with name 'card-number' was not found";
+
+    const expDateInput = form.querySelector('[name="exp-date"]');
+    if (!expDateInput) throw "Element with name 'exp-date' was not found";
+
+    cardholderInput.classList.remove('is-invalid');
+    numberInput.classList.remove('is-invalid');
+    expDateInput.classList.remove('is-invalid');
+    
     form.reset();
     form.classList.add('d-none');
     field.classList.remove('d-none');
+    alert.classList.add('d-none');
+    alert.innerText = '';
 }
 
 function navigateProfile(e)
@@ -342,7 +405,7 @@ function editProfileBtnClick()
             {
                 fetch("/User/Edit", {
                     method: 'PATCH',
-                    header: {
+                    headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(changes)
@@ -377,10 +440,3 @@ function deleteProfileBtnClick() {
     }
 }
 
-function handleAddProduct(form) {
-    console.log("Adding product:", form);
-    fetch('/Realty/Create', {
-        method: "POST",
-        body: new FormData(form)
-    }).then(r => r.json()).then(console.log).catch(console.error);
-}

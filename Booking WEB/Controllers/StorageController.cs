@@ -5,10 +5,10 @@ namespace Booking_WEB.Controllers
     public class StorageController : Controller
     {
         [HttpGet]
-        public IActionResult Index(String id)
+        public IActionResult Index(string id)
         {
-            String path = @"C:\storage\" + id;
-            String path2 = @"DimaPath\" + id; //поставь свой путь
+            string path = @"C:\storage\" + id;
+            string path2 = @"D:\C#\ASP\storage\" + id; 
             if (System.IO.File.Exists(path))
             {
                 return File(System.IO.File.ReadAllBytes(path), "image/jpeg");
