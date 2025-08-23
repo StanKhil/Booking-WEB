@@ -17,8 +17,12 @@ namespace Booking_WEB.Middleware.Auth
         {
             string? token = context.Request.Headers.Authorization
                                     .FirstOrDefault(h => h?.StartsWith("Bearer ") ?? false)?
-                                    .Substring("Bearer ".Length)
-                           ?? context.Request.Cookies["AuthToken"];
+                                    .Substring("Bearer ".Length);
+
+            if (string.IsNullOrEmpty(token) && context.Session.Keys.Contains("AuthToken"))
+            {
+                token = context.Session.GetString("AuthToken");
+            }
 
             //logger.LogInformation("JWT token from header/cookie: {token}", token);
 

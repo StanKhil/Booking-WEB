@@ -2,8 +2,10 @@
 using Booking_WEB.Data.DataAccessors;
 using Booking_WEB.Data.Entities;
 using Booking_WEB.Models.Realty;
+using Booking_WEB.Services.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.Json;
 
@@ -11,10 +13,14 @@ namespace Booking_WEB.Controllers
 {
     public class RealtyController(
         ILogger<RealtyController> logger,
-        RealtyAccessor realtyAccessor) : Controller
+        RealtyAccessor realtyAccessor,
+        IStorageService storageService,
+        IOptions<StorageOptions> options) : Controller
     {
         private readonly ILogger<RealtyController> _logger = logger;
         private readonly RealtyAccessor _realtyAccessor = realtyAccessor;
+        private readonly IStorageService _storageService = storageService;
+        IOptions<StorageOptions> _options = options;
 
         public IActionResult Index()
         {
@@ -24,14 +30,11 @@ namespace Booking_WEB.Controllers
         [HttpPost]
         public async Task<JsonResult> Create(CreateRealtyFormModel model)
         {
+            String savedName;
             try
             {
-                String ext = model.Image.FileName[model.Image.FileName.LastIndexOf('.')..];
-                String savedName = Guid.NewGuid() + ext;
-                String path = @"C:\storage\" + savedName;
-                using Stream stream = new StreamWriter(path).BaseStream;
-                var copyTask = model.Image.CopyToAsync(stream);
-                await copyTask;
+                _storageService.TryGetMimeType(model.Image.FileName);
+                savedName = await _storageService.SaveItemAsync(model.Image);
 
                 var cityId = await _realtyAccessor.GetCityIdByNameAsync(model.City);
                 var countryId = await _realtyAccessor.GetCountryIdByNameAsync(model.Country);
@@ -72,7 +75,7 @@ namespace Booking_WEB.Controllers
                     Name = model.Name,
                     Description = model.Description,
                     Slug = model.Slug,
-                    ImageUrl = path,
+                    ImageUrl = Path.Combine(_options.Value.StoragePath!, savedName),
                     Price = model.Price,
                     CityId = cityId,
                     CountryId = countryId,

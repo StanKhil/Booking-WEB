@@ -50,7 +50,7 @@ namespace Booking_WEB.Controllers
 
                 HttpContext.Session.Remove("UserSignupFormModel");
             }
-            return View(model);
+            return View("~/Views/User/SignUp.cshtml", model);
         }
 
         [HttpPost]
@@ -218,12 +218,13 @@ namespace Booking_WEB.Controllers
                 });
             }
 
+
             AccessToken accessToken = new()
             {
                 Jti = Guid.NewGuid().ToString(),
                 Sub = userAccess.Id,
                 Iat = _timeService.Timestamp().ToString(),
-                Exp = (_timeService.Timestamp() + (long)1e1).ToString(),
+                Exp = (_timeService.Timestamp() + 100).ToString(),
                 Iss = nameof(Booking_WEB),
                 Aud = userAccess.RoleId
             };
@@ -245,14 +246,10 @@ namespace Booking_WEB.Controllers
                 userAccess.Login,
             };
             string jwt = _jwtService.EncodeJwt(jwtPayload);
-            Response.Cookies.Append("AuthToken", jwt, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow.AddDays(7)
-            });
+
+            HttpContext.Session.SetString("AuthToken", jwt);
             HttpContext.Session.SetString("userAccess", JsonSerializer.Serialize(userAccess));
+
             return Json(new
             {
                 Status = 200,

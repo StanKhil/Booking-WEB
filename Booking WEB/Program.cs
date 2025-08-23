@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Booking_WEB.Middleware.Auth;
 using Booking_WEB.Services.Jwt;
 using Booking_WEB.Data.DataAccessors;
+using Microsoft.AspNetCore.Identity;
+using Booking_WEB.Services.Storage;
 
 namespace Booking_WEB
 {
@@ -16,6 +18,10 @@ namespace Booking_WEB
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Configuration.AddJsonFile("config.json", optional: false, reloadOnChange: true);
+            builder.Services.Configure<StorageOptions>(
+                builder.Configuration);
+
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddSingleton<IRandomService, DefaultRandomService>();
@@ -23,6 +29,7 @@ namespace Booking_WEB
             builder.Services.AddSingleton<IIdentityService, DefaultIdentityService>();
             builder.Services.AddSingleton<IKdfService, PbKdfService>();
             builder.Services.AddSingleton<IJwtService, JwtService>();
+            builder.Services.AddSingleton<IStorageService, DiskStorageService>();
 
             builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("LocalDB")));
 
@@ -38,6 +45,7 @@ namespace Booking_WEB
                 options.Cookie.HttpOnly = true; 
                 options.Cookie.IsEssential = true;
             });
+
 
             var app = builder.Build();
 

@@ -1,23 +1,25 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Booking_WEB.Services.Storage;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Booking_WEB.Controllers
 {
-    public class StorageController : Controller
+    public class StorageController(IStorageService storageService) : Controller
     {
+        private readonly IStorageService _storageService = storageService;
         [HttpGet]
-        public IActionResult Index(string id)
+        public IActionResult Item(String id)
         {
-            string path = @"C:\storage\" + id;
-            string path2 = @"D:\C#\ASP\storage\" + id; 
-            if (System.IO.File.Exists(path))
+            try
             {
-                return File(System.IO.File.ReadAllBytes(path), "image/jpeg");
+                return File(
+                    _storageService.GetItemBytes(id),
+                    _storageService.TryGetMimeType(id)
+                );
             }
-            if (System.IO.File.Exists(path2))
+            catch
             {
-                return File(System.IO.File.ReadAllBytes(path2), "image/jpeg");
+                return NotFound();
             }
-            return NotFound();
         }
     }
 }
