@@ -2,17 +2,15 @@ using System.Diagnostics;
 using Booking_WEB.Models;
 using Microsoft.AspNetCore.Mvc;
 using Booking_WEB.Models.Realty;
+using System.Security.Claims;
+using Booking_WEB.Data.DataAccessors;
 
 namespace Booking_WEB.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(ILogger<HomeController> logger, BookingItemAccessor bookingItemAccessor) : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
+        private readonly ILogger<HomeController> _logger = logger;
+        private readonly BookingItemAccessor _bookingItemAccessor = bookingItemAccessor;
 
         public IActionResult Index()
         {
@@ -25,6 +23,8 @@ namespace Booking_WEB.Controllers
         }
         public IActionResult BookingsAndTrips()
         {
+            string? login = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Sid)?.Value;
+            if(login != null) ViewData["Bookings"] = _bookingItemAccessor.GetListByUserLoginAsync(login).Result;
             return View();
         }
         public IActionResult Administrator()

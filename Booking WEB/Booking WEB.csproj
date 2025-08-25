@@ -8,6 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\resources\images\BookingsTrips\TripsEmptyScreenCancelled.png" />
+    <Content Remove="wwwroot\resources\images\BookingsTrips\TripsGlobe.png" />
     <Content Remove="wwwroot\resources\images\Countries\Ukraine\chernivtsi.jpg" />
     <Content Remove="wwwroot\resources\images\Countries\Ukraine\dnipro.jpg" />
     <Content Remove="wwwroot\resources\images\Countries\Ukraine\ivanoFr.jpg" />
@@ -30,6 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="wwwroot\resources\images\BookingsTrips\TripsEmptyScreenCancelled.png" />
+    <Resource Include="wwwroot\resources\images\BookingsTrips\TripsGlobe.png" />
     <Resource Include="wwwroot\resources\images\Countries\Ukraine\chernivtsi.jpg" />
     <Resource Include="wwwroot\resources\images\Countries\Ukraine\dnipro.jpg" />
     <Resource Include="wwwroot\resources\images\Countries\Ukraine\ivanoFr.jpg" />

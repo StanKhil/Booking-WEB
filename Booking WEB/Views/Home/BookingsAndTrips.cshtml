@@ -1,5 +1,50 @@
-﻿@{
-    ViewData["Title"] = "Bookings & Trips";
-}
-<h1>@ViewData["Title"]</h1>
+﻿@using System.Security.Claims;
+@using Booking_WEB.Data.Entities;
+
+<div class="container mb-5">
+    @if(!ViewData.ContainsKey("Bookings"))
+    {
+        <div>
+            <h1 class="fs-1 fw-bold mt-5">Bookings & Trips</h1>
+        </div>
+        <div class="d-flex mt-5">
+            <div class="w-25">
+                <picture>
+                    <img class="h-auto w-100" src="~/resources/images/BookingsTrips/TripsGlobe.png" />
+                </picture>
+            </div>
+            <div class="mx-4 d-flex align-items-center">
+                <div class="mb-5">
+                    <div class="mb-3"><span class="fs-4 fw-bold">Where to next?</span><br /></div>
+                    <div><span class="fs-5">You haven’t started any trips yet. Once you make a booking, it'll appear here.</span></div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="container mt-5">
+            @foreach (var booking in (List<BookingItem>)ViewData["Bookings"]!)
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <picture>
+                                    <img class="w-50" src="~/resources/images/BookingsTrips/TripsEmptyScreenCancelled.png" />
+                                </picture>
+                            </div>
+                            <div class="col-6">
+                                <div><span class="fw-bold">@booking.Realty.Name</span></div>
+                                <div><span class="text-secondary">@booking.StartDate.ToString("m") - @booking.EndDate.ToString("m")</span> <span class="text-secondary"> &#x2022; @booking.Realty.Country</span></div>
+                                <div><span class="text-success">Confirmed</span></div>
+                            </div>
+                            <div class="fw-semibold col">@booking.Realty.Price</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
 
