@@ -85,5 +85,51 @@ namespace Booking_WEB.Data.DataAccessors
             if (!await _context.RealtyGroups.AnyAsync(g => g.Id == group.Id)) _context.RealtyGroups.Add(group);
             return group.Id;
         }
+
+        public async Task<List<Realty>> GetRealtiesByFilterAsync(String country, String city, String group, bool isEditable = false)
+        {
+            IQueryable<Realty> query = _context.Realties
+                .Include(r => r.City)
+                .Include(r => r.Country)
+                .Include(r => r.RealtyGroup);
+
+            if (!isEditable)
+                query = query.AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(country))
+            {
+                query = query.Where(r => r.Country.Name == country);
+            }
+
+            if (!string.IsNullOrWhiteSpace(city))
+            {
+                query = query.Where(r => r.City.Name == city);
+            }
+
+            if (!string.IsNullOrWhiteSpace(group))
+            {
+                query = query.Where(r => r.RealtyGroup.Name == group);
+            }
+
+            return await query
+                .Where(r => r.DeletedAt == null)
+                .ToListAsync();
+        }
+
+        public async Task<List<Realty>> GetRealtiesSortedByPrice()
+        {
+            return await _context.Realties
+                .Where(r => r.DeletedAt == null)
+                .OrderBy(r => r.Price)
+                .ToListAsync();
+        }
+
+        public async Task<List<Realty>> GetRealtiesSortedByRating()
+        {
+            return await _context.Realties
+                .Where(r => r.DeletedAt == null)
+                .OrderBy(r => r.Name)
+                .ToListAsync();
+        }
     }
 }

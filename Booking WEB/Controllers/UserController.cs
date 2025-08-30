@@ -7,13 +7,13 @@ using Booking_WEB.Services.Random;
 using Booking_WEB.Services.Kdf;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
-using Booking_WEB.Dto.User;
 using Booking_WEB.Services.Time;
 using Booking_WEB.Services.Jwt;
 using System.Security.Claims;
 using Booking_WEB.Data.DataAccessors;
 using System.Text;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Booking_WEB.Controllers
 {
@@ -46,7 +46,7 @@ namespace Booking_WEB.Controllers
                     PropertyNameCaseInsensitive = true
                 };
 
-                var model = JsonSerializer.Deserialize<UserDto>(body, options);
+                var model = JsonSerializer.Deserialize<UserCreateFormModel>(body, options);
 
                 if (model == null ||
                     string.IsNullOrWhiteSpace(model.FirstName) ||
@@ -69,7 +69,7 @@ namespace Booking_WEB.Controllers
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     Email = model.Email,
-                    BirthDate = model.BirthDate,
+                    BirthDate = model.Birthdate,
                     RegisteredAt = DateTime.UtcNow
                 };
 
@@ -122,14 +122,21 @@ namespace Booking_WEB.Controllers
                     PropertyNameCaseInsensitive = true
                 };
 
-                var model = JsonSerializer.Deserialize<UserUpdateDto>(body, options);
+                var model = JsonSerializer.Deserialize<UserUpdateDeleteModel>(body, options);
 
-                if (model == null || model.Id == Guid.Empty)
+                if (model == null || String.IsNullOrEmpty(model.Login))
                 {
                     return Json(new { Status = 400, Error = "Invalid input" });
                 }
 
-                var user = await _userDataAccessor.GetByIdAsync(model.Id);
+                var userAccess = await _userAccessAccessor.GerUserAccessByLoginAsync(model.Login, isEditable: true);
+
+                if (userAccess == null)
+                {
+                    return Json(new { Status = 404, Error = "User not found" });
+                }
+                var user = userAccess.UserData;
+
                 if (user == null)
                 {
                     return Json(new { Status = 404, Error = "User not found" });
@@ -150,7 +157,7 @@ namespace Booking_WEB.Controllers
                 if (!string.IsNullOrWhiteSpace(model.FirstName)) user.FirstName = model.FirstName;
                 if (!string.IsNullOrWhiteSpace(model.LastName)) user.LastName = model.LastName;
                 if (!string.IsNullOrWhiteSpace(model.Email)) user.Email = model.Email;
-                if (model.BirthDate.HasValue) user.BirthDate = model.BirthDate;
+                if (model.Birthdate.HasValue) user.BirthDate = model.Birthdate;
 
                 if (!string.IsNullOrWhiteSpace(model.Login)) access.Login = model.Login;
                 if (!string.IsNullOrWhiteSpace(model.RoleId)) access.RoleId = model.RoleId;
@@ -497,6 +504,16 @@ namespace Booking_WEB.Controllers
         private bool IsAuthenticated()
         {
             return HttpContext.User.Identity?.IsAuthenticated ?? false;
+        }
+
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            if(!IsAuthenticated())
+            {
+                context.Result = RedirectToAction("Login", "Auth", new { returnUrl = HttpContext.Request.Path.ToString() });
+                return;
+            }
+            base.OnActionExecuting(context);
         }
     }
 }

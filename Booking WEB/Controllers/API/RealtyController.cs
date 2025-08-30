@@ -8,29 +8,29 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.Json;
+using Booking_WEB.Filters;
 
-namespace Booking_WEB.Controllers
+namespace Booking_WEB.Controllers.API
 {
+    [Route("api/realty")]
+    [ApiController]
+    [AuthorizationFilter]
     public class RealtyController(
         ILogger<RealtyController> logger,
         RealtyAccessor realtyAccessor,
         IStorageService storageService,
-        IOptions<StorageOptions> options) : Controller
+        IOptions<StorageOptions> options) : ControllerBase
     {
         private readonly ILogger<RealtyController> _logger = logger;
         private readonly RealtyAccessor _realtyAccessor = realtyAccessor;
         private readonly IStorageService _storageService = storageService;
         IOptions<StorageOptions> _options = options;
 
-        public IActionResult Index()
-        {
-            return View();
-        }
 
         [HttpPost]
-        public async Task<JsonResult> Create(CreateRealtyFormModel model)
+        public async Task<object> Create(CreateRealtyFormModel model)
         {
-            String savedName;
+            string savedName;
             try
             {
                 _storageService.TryGetMimeType(model.Image.FileName);
@@ -42,31 +42,31 @@ namespace Booking_WEB.Controllers
 
                 if (model == null)
                 {
-                    return Json(new
+                    return new
                     {
                         Status = 400,
                         Error = "Invalid JSON"
-                    });
+                    };
                 }
 
                 if (string.IsNullOrWhiteSpace(model.Name) || string.IsNullOrWhiteSpace(model.Slug))
                 {
-                    return Json(new
+                    return new
                     {
                         Status = 400,
                         Error = "Name and Slug are required"
-                    });
+                    };
                 }
 
                 var exists = await _realtyAccessor.SlugExistsAsync(model.Slug);
 
                 if (exists)
                 {
-                    return Json(new
+                    return new
                     {
                         Status = 409,
                         Error = "Slug already exists"
-                    });
+                    };
                 }
 
                 var realty = new Realty
@@ -85,7 +85,7 @@ namespace Booking_WEB.Controllers
 
                 await _realtyAccessor.CreateAsync(realty);
 
-                return Json(new
+                return new
                 {
                     Status = 200,
                     Message = "Realty created",
@@ -95,21 +95,21 @@ namespace Booking_WEB.Controllers
                         realty.Name,
                         realty.Slug
                     }
-                });
+                };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Realty/Create: {ex.Message}");
-                return Json(new
+                return new
                 {
                     Status = 500,
                     Error = ex.Message
-                });
+                };
             }
         }
 
-        [HttpPost]
-        public async Task<JsonResult> Update()
+        [HttpPatch]
+        public async Task<object> Update()
         {
             try
             {
@@ -124,29 +124,29 @@ namespace Booking_WEB.Controllers
 
                 if (model == null || model.Id == Guid.Empty)
                 {
-                    return Json(new { Status = 400, Error = "Invalid input" });
+                    return new { Status = 400, Error = "Invalid input" };
                 }
 
                 var realty = await _realtyAccessor.GetByIdAsync(model.Id, true);
 
                 if (realty == null)
                 {
-                    return Json(new { Status = 404, Error = "Realty not found" });
+                    return (new { Status = 404, Error = "Realty not found" });
                 }
 
                 var slugExists = await _realtyAccessor.SlugExistsAsync(model.Slug!, model.Id);
 
                 if (slugExists)
                 {
-                    return Json(new { Status = 409, Error = "Slug already exists" });
+                    return (new { Status = 409, Error = "Slug already exists" });
                 }
 
-                if(!String.IsNullOrEmpty(model.Name)) realty.Name = model.Name;
-                if (!String.IsNullOrEmpty(model.Description)) realty.Description = model.Description;
-                if (!String.IsNullOrEmpty(model.Slug)) realty.Slug = model.Slug;
-                if (!String.IsNullOrEmpty(model.ImageUrl)) realty.ImageUrl = model.ImageUrl;
+                if (!string.IsNullOrEmpty(model.Name)) realty.Name = model.Name;
+                if (!string.IsNullOrEmpty(model.Description)) realty.Description = model.Description;
+                if (!string.IsNullOrEmpty(model.Slug)) realty.Slug = model.Slug;
+                if (!string.IsNullOrEmpty(model.ImageUrl)) realty.ImageUrl = model.ImageUrl;
 
-                if(model.Price > 0) realty.Price = model.Price;
+                if (model.Price > 0) realty.Price = model.Price;
 
                 realty.CityId = model.CityId;
                 realty.CountryId = model.CountryId;
@@ -154,7 +154,7 @@ namespace Booking_WEB.Controllers
 
                 await _realtyAccessor.UpdateAsync(realty);
 
-                return Json(new
+                return (new
                 {
                     Status = 200,
                     Message = "Realty updated",
@@ -163,12 +163,12 @@ namespace Booking_WEB.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { Status = 500, Error = ex.Message });
+                return (new { Status = 500, Error = ex.Message });
             }
         }
 
-        [HttpPost]
-        public async Task<JsonResult> Delete()
+        [HttpDelete]
+        public async Task<object> Delete()
         {
             try
             {
@@ -179,19 +179,19 @@ namespace Booking_WEB.Controllers
                 var idProp = json.RootElement.GetProperty("id");
                 if (!Guid.TryParse(idProp.ToString(), out var id))
                 {
-                    return Json(new { Status = 400, Error = "Invalid ID" });
+                    return (new { Status = 400, Error = "Invalid ID" });
                 }
 
                 var realty = await _realtyAccessor.GetByIdAsync(id, true);
 
                 if (realty == null)
                 {
-                    return Json(new { Status = 404, Error = "Realty not found" });
+                    return (new { Status = 404, Error = "Realty not found" });
                 }
 
                 await _realtyAccessor.SoftDeleteAsync(realty);
 
-                return Json(new
+                return (new
                 {
                     Status = 200,
                     Message = "Realty deleted",
@@ -200,7 +200,104 @@ namespace Booking_WEB.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { Status = 500, Error = ex.Message });
+                return (new { Status = 500, Error = ex.Message });
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<object> GetById(Guid id)
+        {
+            try
+            {
+                var realty = await _realtyAccessor.GetByIdAsync(id);
+                if (realty == null)
+                {
+                    return new { Status = 404, Error = "Realty not found" };
+                }
+                return new
+                {
+                    Status = 200,
+                    Data = realty
+                };
+            }
+            catch (Exception ex)
+            {
+                return new { Status = 500, Error = ex.Message };
+            }
+        }
+
+        [HttpGet("all")]
+        public async Task<object> GetAll()
+        {
+            try
+            {
+                var realties = await _realtyAccessor.GetAllAsync();
+                return new
+                {
+                    Status = 200,
+                    Data = realties
+                };
+            }
+            catch (Exception ex)
+            {
+                return new { Status = 500, Error = ex.Message };
+            }
+        }
+
+        [HttpGet("filter")]
+        public async Task<object> GetByFilter([FromQuery] string? country, [FromQuery] string? city, [FromQuery] string? group)
+        {
+            try
+            {
+                var realties = await _realtyAccessor.GetRealtiesByFilterAsync(country, city, group);
+                return new
+                {
+                    Status = 200,
+                    Data = realties
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Realty/GetByFilter: {ex.Message}");
+                return new { Status = 500, Error = ex.Message };
+            }
+        }
+
+        [HttpGet("sort/price")]
+        public async Task<object> GetSortedByPrice()
+        {
+            try
+            {
+                var realties = await _realtyAccessor.GetRealtiesSortedByPrice();
+                return new
+                {
+                    Status = 200,
+                    Data = realties
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Realty/GetSortedByPrice: {ex.Message}");
+                return new { Status = 500, Error = ex.Message };
+            }
+        }
+
+        [HttpGet("sort/rating")]
+        public async Task<object> GetSortedByRating()
+        {
+            try
+            {
+                var realties = await _realtyAccessor.GetRealtiesSortedByRating();
+                return new
+                {
+                    Status = 200,
+                    Data = realties
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Realty/GetSortedByRating: {ex.Message}");
+                return new { Status = 500, Error = ex.Message };
             }
         }
 

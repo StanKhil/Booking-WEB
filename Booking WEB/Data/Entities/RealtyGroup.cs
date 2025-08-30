@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Booking_WEB.Data.Entities
@@ -18,6 +19,7 @@ namespace Booking_WEB.Data.Entities
 
 
         public RealtyGroup? ParentGroup { get; set; }
+        [JsonIgnore]
         public List<Realty> Realties { get; set; } = [];
         public List<ItemImage> Images { get; set; } = [];
     }

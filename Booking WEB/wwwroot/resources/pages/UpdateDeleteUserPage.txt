@@ -39,7 +39,7 @@
 
 <div class="mb-3">
 	<label for="user-birthdate" class="form-label">New date of birth</label>
-	<input type="date" name="birthdate"  class="form-control @classAddon" id="user-birthdate" aria-describedby="Birthdate" placeholder="New birthdate">
+	<input type="date" name="user-birthdate"  class="form-control @classAddon" id="user-birthdate" aria-describedby="Birthdate" placeholder="New birthdate">
 	<div class="invalid-feedback">@errorMessage</div>
 </div>
 
