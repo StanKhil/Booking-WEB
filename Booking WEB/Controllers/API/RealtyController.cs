@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.Json;
 using Booking_WEB.Filters;
+using Booking_WEB.Models.Rest;
 
 namespace Booking_WEB.Controllers.API
 {
@@ -28,46 +29,37 @@ namespace Booking_WEB.Controllers.API
 
 
         [HttpPost]
-        public async Task<object> Create(CreateRealtyFormModel model)
+        public async Task<ActionResult<RestResponse>> Create([FromForm] CreateRealtyFormModel model)
         {
-            string savedName;
             try
             {
+                if (model == null || string.IsNullOrWhiteSpace(model.Name) || string.IsNullOrWhiteSpace(model.Slug))
+                {
+                    return BadRequest(new RestResponse
+                    {
+                        Status = RestStatus.RestStatus400,
+                        Meta = BuildMeta("Create"),
+                        Data = null
+                    });
+                }
+
+                var exists = await _realtyAccessor.SlugExistsAsync(model.Slug);
+                if (exists)
+                {
+                    return Conflict(new RestResponse
+                    {
+                        Status = new RestStatus { Code = 409, IsOk = false, Phrase = "Slug already exists" },
+                        Meta = BuildMeta("Create"),
+                        Data = null
+                    });
+                }
+
                 _storageService.TryGetMimeType(model.Image.FileName);
-                savedName = await _storageService.SaveItemAsync(model.Image);
+                var savedName = await _storageService.SaveItemAsync(model.Image);
 
                 var cityId = await _realtyAccessor.GetCityIdByNameAsync(model.City);
                 var countryId = await _realtyAccessor.GetCountryIdByNameAsync(model.Country);
                 var groupId = await _realtyAccessor.GetGroupIdByNameAsync(model.Group);
-
-                if (model == null)
-                {
-                    return new
-                    {
-                        Status = 400,
-                        Error = "Invalid JSON"
-                    };
-                }
-
-                if (string.IsNullOrWhiteSpace(model.Name) || string.IsNullOrWhiteSpace(model.Slug))
-                {
-                    return new
-                    {
-                        Status = 400,
-                        Error = "Name and Slug are required"
-                    };
-                }
-
-                var exists = await _realtyAccessor.SlugExistsAsync(model.Slug);
-
-                if (exists)
-                {
-                    return new
-                    {
-                        Status = 409,
-                        Error = "Slug already exists"
-                    };
-                }
 
                 var realty = new Realty
                 {
@@ -85,67 +77,67 @@ namespace Booking_WEB.Controllers.API
 
                 await _realtyAccessor.CreateAsync(realty);
 
-                return new
+                return CreatedAtAction(nameof(GetById), new { id = realty.Id }, new RestResponse
                 {
-                    Status = 200,
-                    Message = "Realty created",
-                    Data = new
-                    {
-                        realty.Id,
-                        realty.Name,
-                        realty.Slug
-                    }
-                };
+                    Status = RestStatus.RestStatus201,
+                    Meta = BuildMeta("Create"),
+                    Data = new { realty.Id, realty.Name, realty.Slug }
+                });
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Realty/Create: {ex.Message}");
-                return new
+                return StatusCode(500, new RestResponse
                 {
-                    Status = 500,
-                    Error = ex.Message
-                };
+                    Status = RestStatus.RestStatus500,
+                    Meta = BuildMeta("Create"),
+                    Data = ex.Message
+                });
             }
         }
 
+
         [HttpPatch]
-        public async Task<object> Update()
+        public async Task<ActionResult<RestResponse>> Update([FromBody] Realty model)
         {
             try
             {
-                using var reader = new StreamReader(Request.Body);
-                var body = await reader.ReadToEndAsync();
-
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
-                var model = JsonSerializer.Deserialize<Realty>(body, options);
-
                 if (model == null || model.Id == Guid.Empty)
                 {
-                    return new { Status = 400, Error = "Invalid input" };
+                    return BadRequest(new RestResponse
+                    {
+                        Status = RestStatus.RestStatus400,
+                        Meta = BuildMeta("Update"),
+                        Data = "Invalid input"
+                    });
                 }
 
                 var realty = await _realtyAccessor.GetByIdAsync(model.Id, true);
-
                 if (realty == null)
                 {
-                    return (new { Status = 404, Error = "Realty not found" });
+                    return NotFound(new RestResponse
+                    {
+                        Status = new RestStatus { Code = 404, IsOk = false, Phrase = "Realty not found" },
+                        Meta = BuildMeta("Update"),
+                        Data = null
+                    });
                 }
 
                 var slugExists = await _realtyAccessor.SlugExistsAsync(model.Slug!, model.Id);
-
                 if (slugExists)
                 {
-                    return (new { Status = 409, Error = "Slug already exists" });
+                    return Conflict(new RestResponse
+                    {
+                        Status = new RestStatus { Code = 409, IsOk = false, Phrase = "Slug already exists" },
+                        Meta = BuildMeta("Update"),
+                        Data = null
+                    });
                 }
 
                 if (!string.IsNullOrEmpty(model.Name)) realty.Name = model.Name;
                 if (!string.IsNullOrEmpty(model.Description)) realty.Description = model.Description;
                 if (!string.IsNullOrEmpty(model.Slug)) realty.Slug = model.Slug;
                 if (!string.IsNullOrEmpty(model.ImageUrl)) realty.ImageUrl = model.ImageUrl;
-
                 if (model.Price > 0) realty.Price = model.Price;
 
                 realty.CityId = model.CityId;
@@ -154,152 +146,202 @@ namespace Booking_WEB.Controllers.API
 
                 await _realtyAccessor.UpdateAsync(realty);
 
-                return (new
+                return Ok(new RestResponse
                 {
-                    Status = 200,
-                    Message = "Realty updated",
+                    Status = new RestStatus { Code = 200, IsOk = true, Phrase = "Updated" },
+                    Meta = BuildMeta("Update"),
                     Data = new { realty.Id }
                 });
             }
             catch (Exception ex)
             {
-                return (new { Status = 500, Error = ex.Message });
+                return StatusCode(500, new RestResponse
+                {
+                    Status = RestStatus.RestStatus500,
+                    Meta = BuildMeta("Update"),
+                    Data = ex.Message
+                });
             }
         }
 
-        [HttpDelete]
-        public async Task<object> Delete()
+
+        [HttpDelete("{id:guid}")]
+        public async Task<ActionResult<RestResponse>> Delete(Guid id)
         {
             try
             {
-                using var reader = new StreamReader(Request.Body);
-                var body = await reader.ReadToEndAsync();
-
-                var json = JsonDocument.Parse(body);
-                var idProp = json.RootElement.GetProperty("id");
-                if (!Guid.TryParse(idProp.ToString(), out var id))
-                {
-                    return (new { Status = 400, Error = "Invalid ID" });
-                }
-
                 var realty = await _realtyAccessor.GetByIdAsync(id, true);
-
                 if (realty == null)
                 {
-                    return (new { Status = 404, Error = "Realty not found" });
+                    return NotFound(new RestResponse
+                    {
+                        Status = new RestStatus { Code = 404, IsOk = false, Phrase = "Realty not found" },
+                        Meta = BuildMeta("Delete"),
+                        Data = null
+                    });
                 }
 
                 await _realtyAccessor.SoftDeleteAsync(realty);
 
-                return (new
+                return Ok(new RestResponse
                 {
-                    Status = 200,
-                    Message = "Realty deleted",
+                    Status = new RestStatus { Code = 200, IsOk = true, Phrase = "Deleted" },
+                    Meta = BuildMeta("Delete"),
                     Data = new { realty.Id }
                 });
             }
             catch (Exception ex)
             {
-                return (new { Status = 500, Error = ex.Message });
+                return StatusCode(500, new RestResponse
+                {
+                    Status = RestStatus.RestStatus500,
+                    Meta = BuildMeta("Delete"),
+                    Data = ex.Message
+                });
             }
         }
 
-        [HttpGet("{id}")]
-        public async Task<object> GetById(Guid id)
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<RestResponse>> GetById(Guid id)
         {
             try
             {
                 var realty = await _realtyAccessor.GetByIdAsync(id);
                 if (realty == null)
                 {
-                    return new { Status = 404, Error = "Realty not found" };
+                    return NotFound(new RestResponse
+                    {
+                        Status = new RestStatus { Code = 404, IsOk = false, Phrase = "Realty not found" },
+                        Meta = BuildMeta("GetById"),
+                        Data = null
+                    });
                 }
-                return new
+
+                return Ok(new RestResponse
                 {
-                    Status = 200,
+                    Status = new RestStatus { Code = 200, IsOk = true, Phrase = "OK" },
+                    Meta = BuildMeta("GetById"),
                     Data = realty
-                };
+                });
             }
             catch (Exception ex)
             {
-                return new { Status = 500, Error = ex.Message };
+                return StatusCode(500, new RestResponse
+                {
+                    Status = RestStatus.RestStatus500,
+                    Meta = BuildMeta("GetById"),
+                    Data = ex.Message
+                });
             }
         }
 
         [HttpGet("all")]
-        public async Task<object> GetAll()
+        public async Task<ActionResult<RestResponse>> GetAll()
         {
             try
             {
                 var realties = await _realtyAccessor.GetAllAsync();
-                return new
+                return Ok(new RestResponse
                 {
-                    Status = 200,
+                    Status = new RestStatus { Code = 200, IsOk = true, Phrase = "OK" },
+                    Meta = BuildMeta("GetAll"),
                     Data = realties
-                };
+                });
             }
             catch (Exception ex)
             {
-                return new { Status = 500, Error = ex.Message };
+                return StatusCode(500, new RestResponse
+                {
+                    Status = RestStatus.RestStatus500,
+                    Meta = BuildMeta("GetAll"),
+                    Data = ex.Message
+                });
             }
         }
 
         [HttpGet("filter")]
-        public async Task<object> GetByFilter([FromQuery] string? country, [FromQuery] string? city, [FromQuery] string? group)
+        public async Task<ActionResult<RestResponse>> GetByFilter([FromQuery] string? country, [FromQuery] string? city, [FromQuery] string? group)
         {
             try
             {
                 var realties = await _realtyAccessor.GetRealtiesByFilterAsync(country, city, group);
-                return new
+                return Ok(new RestResponse
                 {
-                    Status = 200,
+                    Status = new RestStatus { Code = 200, IsOk = true, Phrase = "OK" },
+                    Meta = BuildMeta("GetByFilter"),
                     Data = realties
-                };
+                });
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Realty/GetByFilter: {ex.Message}");
-                return new { Status = 500, Error = ex.Message };
+                return StatusCode(500, new RestResponse
+                {
+                    Status = RestStatus.RestStatus500,
+                    Meta = BuildMeta("GetByFilter"),
+                    Data = ex.Message
+                });
             }
         }
 
+
         [HttpGet("sort/price")]
-        public async Task<object> GetSortedByPrice()
+        public async Task<ActionResult<RestResponse>> GetSortedByPrice()
         {
             try
             {
                 var realties = await _realtyAccessor.GetRealtiesSortedByPrice();
-                return new
+                return Ok(new RestResponse
                 {
-                    Status = 200,
+                    Status = new RestStatus { Code = 200, IsOk = true, Phrase = "OK" },
+                    Meta = BuildMeta("GetSortedByPrice"),
                     Data = realties
-                };
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Realty/GetSortedByPrice: {ex.Message}");
-                return new { Status = 500, Error = ex.Message };
+                return StatusCode(500, new RestResponse
+                {
+                    Status = RestStatus.RestStatus500,
+                    Meta = BuildMeta("GetSortedByPrice"),
+                    Data = ex.Message
+                });
             }
         }
 
         [HttpGet("sort/rating")]
-        public async Task<object> GetSortedByRating()
+        public async Task<ActionResult<RestResponse>> GetSortedByRating()
         {
             try
             {
                 var realties = await _realtyAccessor.GetRealtiesSortedByRating();
-                return new
+                return Ok(new RestResponse
                 {
-                    Status = 200,
+                    Status = new RestStatus { Code = 200, IsOk = true, Phrase = "OK" },
+                    Meta = BuildMeta("GetSortedByRating"),
                     Data = realties
-                };
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Realty/GetSortedByRating: {ex.Message}");
-                return new { Status = 500, Error = ex.Message };
+                return StatusCode(500, new RestResponse
+                {
+                    Status = RestStatus.RestStatus500,
+                    Meta = BuildMeta("GetSortedByRating"),
+                    Data = ex.Message
+                });
             }
         }
 
+        private RestMeta BuildMeta(string resourceName)
+        {
+            return new RestMeta
+            {
+                ResourceName = resourceName,
+                ResourceUrl = HttpContext.Request.Path,
+                DataType = "application/json",
+                Method = HttpContext.Request.Method
+            };
+        }
     }
 }
