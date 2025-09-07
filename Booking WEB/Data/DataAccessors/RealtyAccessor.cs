@@ -18,13 +18,15 @@ namespace Booking_WEB.Data.DataAccessors
                 .AnyAsync(r => r.Slug == slug && r.DeletedAt == null && (!excludeId.HasValue || r.Id != excludeId.Value));
         }
 
-        public async Task<Realty?> GetByIdAsync(Guid id, bool isEditable = false)
+        public async Task<Realty?> GetRealtyBySlugAsync(string slug, bool isEditable = false)
         {
             var query = _context.Realties.AsQueryable();
             if (!isEditable)
                 query = query.AsNoTracking();
 
-            return await query.FirstOrDefaultAsync(r => r.Id == id && r.DeletedAt == null);
+            return await query.Include(r => r.Images).Include(r => r.Feedbacks)
+                .Include(r => r.City).Include(r => r.Country)
+                .FirstOrDefaultAsync(r => (r.Slug == slug || r.Id.ToString() == slug) && r.DeletedAt == null);
         }
 
         public async Task CreateAsync(Realty realty)

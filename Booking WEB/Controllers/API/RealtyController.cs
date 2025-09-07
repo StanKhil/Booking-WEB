@@ -112,7 +112,7 @@ namespace Booking_WEB.Controllers.API
                     });
                 }
 
-                var realty = await _realtyAccessor.GetByIdAsync(model.Id, true);
+                var realty = await _realtyAccessor.GetRealtyBySlugAsync(model.Id.ToString(), true);
                 if (realty == null)
                 {
                     return NotFound(new RestResponse
@@ -170,7 +170,7 @@ namespace Booking_WEB.Controllers.API
         {
             try
             {
-                var realty = await _realtyAccessor.GetByIdAsync(id, true);
+                var realty = await _realtyAccessor.GetRealtyBySlugAsync(id.ToString(), true);
                 if (realty == null)
                 {
                     return NotFound(new RestResponse
@@ -206,7 +206,7 @@ namespace Booking_WEB.Controllers.API
         {
             try
             {
-                var realty = await _realtyAccessor.GetByIdAsync(id);
+                var realty = await _realtyAccessor.GetRealtyBySlugAsync(id.ToString());
                 if (realty == null)
                 {
                     return NotFound(new RestResponse

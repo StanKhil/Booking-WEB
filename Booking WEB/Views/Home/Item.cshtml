@@ -1,6 +1,194 @@
 ﻿@model Booking_WEB.Models.Realty.RealtyModel;
-@{
-    ViewData["Title"] = "Item";
-}
-<h1>@ViewData["Title"]</h1>
 
+<div class="container mt-2">
+    <div class="container main-content">
+        <div class="d-flex justify-content-between align-items-start mb-4 property-header">
+            <div>
+                <h1>@Model.Name</h1>
+                <p>
+                    <i class="fas fa-map-marker-alt text-primary"></i>
+                    @Model.City.Name @Model.Country.Name
+                </p>
+            </div>
+            <div class="d-flex align-items-center header-buttons">
+                <button class="btn btn-outline-primary me-2"><i class="far fa-heart"></i></button>
+                <button class="btn btn-primary">Reserve</button>
+            </div>
+        </div>
+        <!-- TO DO: Fix storage problem-->
+        <div class="row mb-5">
+            <div class="col-lg-8">
+                <img src="https://placehold.co/800x400/0071c2/ffffff?text=Main+Property+Image" class="gallery-main-image mb-2" alt="Main property image">
+                <div class="gallery-grid">
+                    <img src="https://placehold.co/400x300/e0e0e0/333333?text=Room+Image+1" alt="Room image 1">
+                    <img src="https://placehold.co/400x300/e0e0e0/333333?text=Room+Image+2" alt="Room image 2">
+                    <img src="https://placehold.co/400x300/e0e0e0/333333?text=Room+Image+3" alt="Room image 3">
+                    <img src="https://placehold.co/400x300/e0e0e0/333333?text=Room+Image+4" alt="Room image 4">
+                    <img src="https://placehold.co/400x300/e0e0e0/333333?text=Room+Image+5" alt="Room image 5">
+                    <img src="https://placehold.co/400x300/e0e0e0/333333?text=Room+Image+6" alt="Room image 6">
+                </div>
+            </div>
+            <div class="col-lg-4 d-none d-lg-block">
+                <div class="card p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="card-title mb-0">Superb</h5>
+                        <div class="rating-box">@Model.AccRates?.AvgRate</div> <!-- TODO: AccRates access -->
+                    </div>
+                    <p class="text-muted">@(Model.Feedbacks.Count()) reviews</p>
+                    <div class="mb-3">
+                        @if(Model.Feedbacks.Count() != 0)
+                        {
+                            <h6 class="card-subtitle mb-2 text-muted">Guests who stayed here said</h6>
+                            <p>@Model.Feedbacks.MaxBy(f => f.Rate)?.Text</p>
+                            <a href="#" class="text-primary">Read more</a>
+                        }
+                        else
+                        {
+                            <h6 class="card-subtitle mb-2 text-muted">None stayed here</h6>
+                        }
+                    </div>
+                    <hr>
+                    <div class="text-center">
+                        <button class="btn btn-primary w-100">Reserve</button>
+                        <button class="btn btn-outline-primary w-100 mt-2"><i class="far fa-heart"></i> Save the property</button>
+                    </div>
+                </div>
+                <div class="card p-3">
+                    <h5 class="card-title">Property highlights</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-map-marker-alt text-primary"></i> Situated in @(Model.City.Name)</li>
+                        <li><i class="fas fa-wifi text-primary"></i> Free WiFi</li>
+                        <li><i class="fas fa-car text-primary"></i> Private parking</li>
+                        <li><i class="fas fa-utensils text-primary"></i> Breakfast included</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-4 mb-5">
+            <h3 class="mb-4">About this property</h3>
+            <p>
+                @Model.Description
+            </p>
+        </div>
+
+        <div class="card p-4 mb-5">
+            <div class="room-list">
+                <div class="room-card mb-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h5>Deluxe Apartment</h5>
+                            <small>Bedroom: 1 large double bed</small>
+                            <br>
+                            <small>Living room: 1 sofa bed</small>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-user-friends"></i><i class="fas fa-user-friends"></i><i class="fas fa-user-friends"></i><i class="fas fa-user-friends"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <button class="btn btn-primary">Show prices</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="room-card mb-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h5>Superior Apartment</h5>
+                            <small>Bedroom: 1 large double bed</small>
+                            <br>
+                            <small>Living room: 1 sofa bed</small>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-user-friends"></i><i class="fas fa-user-friends"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <button class="btn btn-primary">Show prices</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-end mt-4">
+                <button class="btn btn-outline-primary">See availability</button>
+            </div>
+        </div>
+
+        <div class="mb-5">
+            <h3 class="mb-4">Guests who stayed here loved</h3>
+            <div class="row">
+                @if (Model.Feedbacks.Count != 0)
+                {
+                    foreach (var feedback in Model.Feedbacks)
+                    {
+                        <div class="col-md-4 mb-3">
+                            <div class="card p-3">
+                                <div class="d-flex align-items-center mb-3">
+                                    <img src="https://placehold.co/50x50/e0e0e0/333333" class="rounded-circle me-3">
+                                    <div>
+                                        <h5 class="mb-0">@feedback.UserAccess.UserData.FirstName @feedback.UserAccess.UserData.LastName</h5>
+                                    </div>
+                                </div>
+                                <p>"@feedback.Text"</p>
+                                <a href="#" class="text-primary">Read more</a>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="card p-4 mb-5">
+                        <h4><i class="bi bi-search"></i> It looks deserted here...</h4>
+                    </div>
+                }
+            </div>
+        </div>
+
+
+        <div class="card p-4 mb-5 house-rules">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>House rules</h3>
+                <button class="btn btn-outline-primary">See availability</button>
+            </div>
+
+            <div class="rule-item">
+                <div class="icon"><i class="far fa-clock"></i></div>
+                <div class="rule-text">
+                    <h5>Check-in</h5>
+                    <p>From 14:00</p>
+                    <p class="text-muted">Guests are required to show a photo identification and credit card upon check-in. You'll need to let the property know in advance what time you'll arrive.</p>
+                </div>
+            </div>
+
+            <div class="rule-item">
+                <div class="icon"><i class="far fa-clock"></i></div>
+                <div class="rule-text">
+                    <h5>Check-out</h5>
+                    <p>Until 12:00</p>
+                </div>
+            </div>
+
+            <div class="rule-item">
+                <div class="icon"><i class="fas fa-credit-card"></i></div>
+                <div class="rule-text">
+                    <h5>Cancellation/ prepayment</h5>
+                    <p class="text-muted">Cancellation and prepayment policies vary according to accommodation type. Please <a href="#">enter the dates of your stay</a> and check the conditions of your required option.</p>
+                </div>
+            </div>
+
+            <div class="rule-item">
+                <div class="icon"><i class="fas fa-child"></i></div>
+                <div class="rule-text">
+                    <h5>Children and beds</h5>
+                    <p>Child policies</p>
+                    <p class="text-muted">Children of any age are welcome.</p>
+                    <p class="text-muted">Children 5 years and above will be charged as adults at this property.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

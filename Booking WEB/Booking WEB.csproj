@@ -16,6 +16,10 @@
     <Content Remove="wwwroot\resources\images\Countries\Ukraine\kharkiv.jpg" />
     <Content Remove="wwwroot\resources\images\Countries\Ukraine\poltava.jpg" />
     <Content Remove="wwwroot\resources\images\Countries\Ukraine\sumy.jpg" />
+    <Content Remove="wwwroot\resources\images\RealtyTypes\apartments.jpeg" />
+    <Content Remove="wwwroot\resources\images\RealtyTypes\holidayHomes.jpeg" />
+    <Content Remove="wwwroot\resources\images\RealtyTypes\hotels.jpeg" />
+    <Content Remove="wwwroot\resources\images\RealtyTypes\villas.jpeg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,6 +44,10 @@
     <Resource Include="wwwroot\resources\images\Countries\Ukraine\kharkiv.jpg" />
     <Resource Include="wwwroot\resources\images\Countries\Ukraine\poltava.jpg" />
     <Resource Include="wwwroot\resources\images\Countries\Ukraine\sumy.jpg" />
+    <Resource Include="wwwroot\resources\images\RealtyTypes\apartments.jpeg" />
+    <Resource Include="wwwroot\resources\images\RealtyTypes\holidayHomes.jpeg" />
+    <Resource Include="wwwroot\resources\images\RealtyTypes\hotels.jpeg" />
+    <Resource Include="wwwroot\resources\images\RealtyTypes\villas.jpeg" />
     <Resource Include="wwwroot\resources\images\text.svg" />
     <Resource Include="wwwroot\resources\pages\UpdateDeleteUserPage.txt" />
   </ItemGroup>

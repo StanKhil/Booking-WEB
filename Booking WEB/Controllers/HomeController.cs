@@ -4,13 +4,15 @@ using Microsoft.AspNetCore.Mvc;
 using Booking_WEB.Models.Realty;
 using System.Security.Claims;
 using Booking_WEB.Data.DataAccessors;
+using Booking_WEB.Data.Entities;
 
 namespace Booking_WEB.Controllers
 {
-    public class HomeController(ILogger<HomeController> logger, BookingItemAccessor bookingItemAccessor) : Controller
+    public class HomeController(ILogger<HomeController> logger, BookingItemAccessor bookingItemAccessor, RealtyAccessor realtyAccessor) : Controller
     {
         private readonly ILogger<HomeController> _logger = logger;
         private readonly BookingItemAccessor _bookingItemAccessor = bookingItemAccessor;
+        private readonly RealtyAccessor _realtyAccessor = realtyAccessor;
 
         public IActionResult Index()
         {
@@ -23,17 +25,36 @@ namespace Booking_WEB.Controllers
         }
         public IActionResult BookingsAndTrips()
         {
+            BookingsAndTripsModel model = new();
             string? login = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Sid)?.Value;
-            if(login != null) ViewData["Bookings"] = _bookingItemAccessor.GetListByUserLoginAsync(login).Result;
-            return View();
+            if (login != null)
+            {
+                model.BookingItems = _bookingItemAccessor.GetBookingItemsByUserLoginAsync(login).Result;
+            }
+            return View(model);
         }
         public IActionResult Administrator()
         {
             return View();
         }
-        public IActionResult Item()
+        public async Task<IActionResult> ItemAsync([FromRoute]string id)
         {
-            RealtyModel model = new(); // TO DO: fill in the data
+            Realty? realty = await _realtyAccessor.GetRealtyBySlugAsync(id);
+            RealtyModel? model = null;
+            if (realty != null)
+            {
+                model = new();
+                model.Name = realty.Name;
+                model.Feedbacks = realty.Feedbacks;
+                model.Price = realty.Price;
+                model.Description = realty.Description;
+                model.ImageUrl = realty.ImageUrl;
+                model.City = realty.City;
+                model.Country = realty.Country;
+                model.Feedbacks = realty.Feedbacks;
+                model.Images = realty.Images;
+                model.AccRates = realty.AccRates;
+            }
             return View(model);
         }
 

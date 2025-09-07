@@ -55,7 +55,7 @@ namespace Booking_WEB.Controllers.API
                     });
                 }
 
-                var realty = await _realtyAccessor.GetByIdAsync(model.RealtyId, true);
+                var realty = await _realtyAccessor.GetRealtyBySlugAsync(model.RealtyId.ToString(), true);
                 if (realty == null)
                 {
                     return NotFound(new RestResponse

@@ -1,8 +1,9 @@
-﻿@using System.Security.Claims;
+﻿@model Booking_WEB.Models.Realty.BookingsAndTripsModel
+@using System.Security.Claims;
 @using Booking_WEB.Data.Entities;
 
 <div class="container mb-5">
-    @if(!ViewData.ContainsKey("Bookings"))
+    @if(Model.BookingItems.Count() == 0)
     {
         <div>
             <h1 class="fs-1 fw-bold mt-5">Bookings & Trips</h1>
@@ -24,25 +25,11 @@
     else
     {
         <div class="container mt-5">
-            @foreach (var booking in (List<BookingItem>)ViewData["Bookings"]!)
+            @foreach (var bookingItem in Model.BookingItems)
             {
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <picture>
-                                    <img class="w-50" src="~/resources/images/BookingsTrips/TripsEmptyScreenCancelled.png" />
-                                </picture>
-                            </div>
-                            <div class="col-6">
-                                <div><span class="fw-bold">@booking.Realty.Name</span></div>
-                                <div><span class="text-secondary">@booking.StartDate.ToString("m") - @booking.EndDate.ToString("m")</span> <span class="text-secondary"> &#x2022; @booking.Realty.Country</span></div>
-                                <div><span class="text-success">Confirmed</span></div>
-                            </div>
-                            <div class="fw-semibold col">@booking.Realty.Price</div>
-                        </div>
-                    </div>
-                </div>
+                <a asp-action="Item" asp-route-id="@(bookingItem.Realty.Slug ?? bookingItem.Realty.Id.ToString())" class="nav-link">
+                    @Html.DisplayFor(m => bookingItem, "BookingItem")
+                </a>
             }
         </div>
     }

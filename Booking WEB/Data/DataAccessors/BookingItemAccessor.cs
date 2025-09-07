@@ -18,7 +18,7 @@ namespace Booking_WEB.Data.DataAccessors
                 query = query.AsNoTracking();
             return await query.FirstOrDefaultAsync(bi => bi.Id == id && bi.DeletedAt == null);
         }
-        public async Task<List<BookingItem>> GetListByUserLoginAsync(string userLogin)
+        public async Task<List<BookingItem>> GetBookingItemsByUserLoginAsync(string userLogin)
         {
             return await _context.BookingItems.AsNoTracking().Include(bi => bi.Realty).Include(bi => bi.UserAccess).Where(bi => bi.UserAccess.Login == userLogin).ToListAsync();
         }
