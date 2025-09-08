@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Booking_WEB.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250706084412_Init")]
-    partial class Init
+    [Migration("20250908174510_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,6 +51,36 @@ namespace Booking_WEB.Migrations
                     b.ToTable("AccRates");
                 });
 
+            modelBuilder.Entity("Booking_WEB.Data.Entities.AccessToken", b =>
+                {
+                    b.Property<string>("Jti")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Aud")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Exp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Iat")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Iss")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nbf")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("Sub")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Jti");
+
+                    b.HasIndex("Sub");
+
+                    b.ToTable("AccessTokens");
+                });
+
             modelBuilder.Entity("Booking_WEB.Data.Entities.BookingItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -84,10 +114,40 @@ namespace Booking_WEB.Migrations
                     b.ToTable("BookingItems");
                 });
 
+            modelBuilder.Entity("Booking_WEB.Data.Entities.Cards", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CardholderName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Cards");
+                });
+
             modelBuilder.Entity("Booking_WEB.Data.Entities.City", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CountryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
@@ -96,18 +156,40 @@ namespace Booking_WEB.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CountryId");
+
                     b.ToTable("Cities");
 
                     b.HasData(
                         new
                         {
                             Id = new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"),
+                            CountryId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Name = "Lviv"
                         },
                         new
                         {
                             Id = new Guid("0d156354-89f1-4d58-a735-876b7add59d2"),
+                            CountryId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Name = "Krakow"
+                        },
+                        new
+                        {
+                            Id = new Guid("59b082e4-19ab-4d7f-a061-4fbc08c59778"),
+                            CountryId = new Guid("d72ad227-ad60-4f30-897f-8a7aaa46e049"),
+                            Name = "Kyiv"
+                        },
+                        new
+                        {
+                            Id = new Guid("c5efcfde-ee1f-4521-bb8f-f4cdb97c1578"),
+                            CountryId = new Guid("d72ad227-ad60-4f30-897f-8a7aaa46e049"),
+                            Name = "Odesa"
+                        },
+                        new
+                        {
+                            Id = new Guid("afd0db5d-9207-42fb-9629-26f5d74ef0b0"),
+                            CountryId = new Guid("d72ad227-ad60-4f30-897f-8a7aaa46e049"),
+                            Name = "Lviv"
                         });
                 });
 
@@ -135,6 +217,11 @@ namespace Booking_WEB.Migrations
                         {
                             Id = new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"),
                             Name = "Poland"
+                        },
+                        new
+                        {
+                            Id = new Guid("d72ad227-ad60-4f30-897f-8a7aaa46e049"),
+                            Name = "Ukraine"
                         });
                 });
 
@@ -200,9 +287,6 @@ namespace Booking_WEB.Migrations
                     b.Property<Guid>("CityId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CountryId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
@@ -211,9 +295,6 @@ namespace Booking_WEB.Migrations
 
                     b.Property<Guid>("GroupId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -229,8 +310,6 @@ namespace Booking_WEB.Migrations
 
                     b.HasIndex("CityId");
 
-                    b.HasIndex("CountryId");
-
                     b.HasIndex("GroupId");
 
                     b.HasIndex("Slug")
@@ -243,11 +322,9 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"),
-                            CityId = new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"),
-                            CountryId = new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"),
+                            CityId = new Guid("59b082e4-19ab-4d7f-a061-4fbc08c59778"),
                             Description = "Готель \"Сонячний\" - це ідеальне місце для відпочинку на природі.",
                             GroupId = new Guid("f1ea6b3f-0021-417b-95c8-f6cd333d7207"),
-                            ImageUrl = "hotel_sunny.jpg",
                             Name = "Готель \"Сонячний\"",
                             Price = 150.00m,
                             Slug = "hotel-sunny"
@@ -255,11 +332,9 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"),
-                            CityId = new Guid("0d156354-89f1-4d58-a735-876b7add59d2"),
-                            CountryId = new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"),
+                            CityId = new Guid("59b082e4-19ab-4d7f-a061-4fbc08c59778"),
                             Description = "Готель \"Зоряний\" - це ідеальне місце для відпочинку на природі.",
                             GroupId = new Guid("f1ea6b3f-0021-417b-95c8-f6cd333d7207"),
-                            ImageUrl = "hotel_star.jpg",
                             Name = "Готель \"Зоряний\"",
                             Price = 200.00m,
                             Slug = "hotel-star"
@@ -267,11 +342,9 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"),
-                            CityId = new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"),
-                            CountryId = new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"),
+                            CityId = new Guid("afd0db5d-9207-42fb-9629-26f5d74ef0b0"),
                             Description = "Готель \"Лісовий\" - це ідеальне місце для відпочинку на природі.",
                             GroupId = new Guid("f1ea6b3f-0021-417b-95c8-f6cd333d7207"),
-                            ImageUrl = "hotel_forest.jpg",
                             Name = "Готель \"Лісовий\"",
                             Price = 250.00m,
                             Slug = "hotel-forest"
@@ -279,11 +352,9 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("0d156354-89f1-4d58-a735-876b7add59d2"),
-                            CityId = new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"),
-                            CountryId = new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"),
+                            CityId = new Guid("afd0db5d-9207-42fb-9629-26f5d74ef0b0"),
                             Description = "Квартира \"Центральна\" - це ідеальне місце для відпочинку в місті.",
                             GroupId = new Guid("8806ca58-8daa-4576-92ba-797de42ffaa7"),
-                            ImageUrl = "apartment_central.jpg",
                             Name = "Квартира \"Центральна\"",
                             Price = 100.00m,
                             Slug = "apartment-central"
@@ -291,11 +362,9 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("a3c55a79-05ea-4053-ad3c-7301f3b7a7e2"),
-                            CityId = new Guid("0d156354-89f1-4d58-a735-876b7add59d2"),
-                            CountryId = new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"),
+                            CityId = new Guid("c5efcfde-ee1f-4521-bb8f-f4cdb97c1578"),
                             Description = "Квартира \"Люкс\" - це ідеальне місце для відпочинку, якщо ви не хочете виходити з дому.",
                             GroupId = new Guid("8806ca58-8daa-4576-92ba-797de42ffaa7"),
-                            ImageUrl = "apartment_luxury.jpg",
                             Name = "Квартира \"Люкс\"",
                             Price = 150.00m,
                             Slug = "apartment-luxury"
@@ -303,11 +372,9 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("eadb0b3b-523e-478b-88ee-b6cf57cbc05d"),
-                            CityId = new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"),
-                            CountryId = new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"),
+                            CityId = new Guid("c5efcfde-ee1f-4521-bb8f-f4cdb97c1578"),
                             Description = "Будинок \"Садиба\" - це ідеальне місце для відпочинку з друзями.",
                             GroupId = new Guid("97191468-a02f-4a78-927b-9ea660e9ea36"),
-                            ImageUrl = "house_mansion.jpg",
                             Name = "Будинок \"Садиба\"",
                             Price = 300.00m,
                             Slug = "house-mansion"
@@ -315,11 +382,9 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("a0f7b463-6eef-4a70-8444-789bbea23369"),
-                            CityId = new Guid("0d156354-89f1-4d58-a735-876b7add59d2"),
-                            CountryId = new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"),
+                            CityId = new Guid("c5efcfde-ee1f-4521-bb8f-f4cdb97c1578"),
                             Description = "Будинок \"Лісовий\" - це ідеальне місце для відпочинку на природі.",
                             GroupId = new Guid("97191468-a02f-4a78-927b-9ea660e9ea36"),
-                            ImageUrl = "house_forest.jpg",
                             Name = "Будинок \"Лісовий\"",
                             Price = 350.00m,
                             Slug = "house-forest"
@@ -327,11 +392,9 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"),
-                            CityId = new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"),
-                            CountryId = new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"),
+                            CityId = new Guid("c5efcfde-ee1f-4521-bb8f-f4cdb97c1578"),
                             Description = "Будинок \"Гірський\" - це ідеальне місце для відпочинку в горах.",
                             GroupId = new Guid("97191468-a02f-4a78-927b-9ea660e9ea36"),
-                            ImageUrl = "house_mountain.jpg",
                             Name = "Будинок \"Гірський\"",
                             Price = 400.00m,
                             Slug = "house-mountain"
@@ -339,11 +402,9 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("37dcc68e-b7e7-4b55-b04e-147c1a4126b7"),
-                            CityId = new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"),
-                            CountryId = new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"),
+                            CityId = new Guid("c5efcfde-ee1f-4521-bb8f-f4cdb97c1578"),
                             Description = "Вілла \"Сонячна\" - це ідеальне місце для відпочинку на морі.",
                             GroupId = new Guid("6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"),
-                            ImageUrl = "villa_sunny.jpg",
                             Name = "Вілла \"Сонячна\"",
                             Price = 500.00m,
                             Slug = "villa-sunny"
@@ -351,11 +412,9 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("d5e36e96-0314-4b7e-9cbf-d0fae477ae36"),
-                            CityId = new Guid("0d156354-89f1-4d58-a735-876b7add59d2"),
-                            CountryId = new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"),
+                            CityId = new Guid("c5efcfde-ee1f-4521-bb8f-f4cdb97c1578"),
                             Description = "Вілла \"Лісова\" - це ідеальне місце для відпочинку на природі.",
                             GroupId = new Guid("6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"),
-                            ImageUrl = "villa_forest.jpg",
                             Name = "Вілла \"Лісова\"",
                             Price = 600.00m,
                             Slug = "villa-forest"
@@ -569,7 +628,11 @@ namespace Booking_WEB.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -586,7 +649,8 @@ namespace Booking_WEB.Migrations
                             Id = new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"),
                             BirthDate = new DateTime(1998, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "jakiv@ukr.net",
-                            Name = "Палійчук Яків",
+                            FirstName = "Палійчук",
+                            LastName = "Яків",
                             RegisteredAt = new DateTime(2025, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -594,7 +658,8 @@ namespace Booking_WEB.Migrations
                             Id = new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"),
                             BirthDate = new DateTime(1999, 5, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "storozh@ukr.net",
-                            Name = "Сторож Чеслава",
+                            FirstName = "Сторож",
+                            LastName = "Чеслава",
                             RegisteredAt = new DateTime(2025, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -602,7 +667,8 @@ namespace Booking_WEB.Migrations
                             Id = new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"),
                             BirthDate = new DateTime(1989, 7, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "dnistr@ukr.net",
-                            Name = "Дністрянський Збоїслав",
+                            FirstName = "Дністрянський",
+                            LastName = "Збоїслав",
                             RegisteredAt = new DateTime(2024, 8, 5, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -610,7 +676,8 @@ namespace Booking_WEB.Migrations
                             Id = new Guid("0d156354-89f1-4d58-a735-876b7add59d2"),
                             BirthDate = new DateTime(2005, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "dina@ukr.net",
-                            Name = "Гординська Діна",
+                            FirstName = "Гординська",
+                            LastName = "Діна",
                             RegisteredAt = new DateTime(2024, 12, 20, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -618,7 +685,8 @@ namespace Booking_WEB.Migrations
                             Id = new Guid("a3c55a79-05ea-4053-ad3c-7301f3b7a7e2"),
                             BirthDate = new DateTime(2005, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "romashko@ukr.net",
-                            Name = "Ромашко Жадан",
+                            FirstName = "Ромашко",
+                            LastName = "Жадан",
                             RegisteredAt = new DateTime(2024, 12, 20, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -626,7 +694,8 @@ namespace Booking_WEB.Migrations
                             Id = new Guid("eadb0b3b-523e-478b-88ee-b6cf57cbc05d"),
                             BirthDate = new DateTime(2001, 12, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "erstenuk@ukr.net",
-                            Name = "Ерстенюк Вікторія",
+                            FirstName = "Ерстенюк",
+                            LastName = "Вікторія",
                             RegisteredAt = new DateTime(2025, 1, 21, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -634,7 +703,8 @@ namespace Booking_WEB.Migrations
                             Id = new Guid("a0f7b463-6eef-4a70-8444-789bbea23369"),
                             BirthDate = new DateTime(1999, 10, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "bondarko@ukr.net",
-                            Name = "Бондарко Юрій",
+                            FirstName = "Бондарко",
+                            LastName = "Юрій",
                             RegisteredAt = new DateTime(2025, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
@@ -672,7 +742,7 @@ namespace Booking_WEB.Migrations
                             CanDelete = false,
                             CanRead = false,
                             CanUpdate = false,
-                            Description = "Самостійно зареєстрований користувач"
+                            Description = "Self-registered user"
                         },
                         new
                         {
@@ -681,7 +751,7 @@ namespace Booking_WEB.Migrations
                             CanDelete = false,
                             CanRead = true,
                             CanUpdate = false,
-                            Description = "Співробітник компанії"
+                            Description = "Company's employee"
                         },
                         new
                         {
@@ -690,7 +760,7 @@ namespace Booking_WEB.Migrations
                             CanDelete = true,
                             CanRead = true,
                             CanUpdate = true,
-                            Description = "Редактор контенту"
+                            Description = "Content editor"
                         },
                         new
                         {
@@ -699,7 +769,7 @@ namespace Booking_WEB.Migrations
                             CanDelete = true,
                             CanRead = true,
                             CanUpdate = true,
-                            Description = "Системний адміністратор"
+                            Description = "System administrator"
                         });
                 });
 
@@ -712,6 +782,15 @@ namespace Booking_WEB.Migrations
                         .IsRequired();
 
                     b.Navigation("Realty");
+                });
+
+            modelBuilder.Entity("Booking_WEB.Data.Entities.AccessToken", b =>
+                {
+                    b.HasOne("Booking_WEB.Data.Entities.UserAccess", "UserAccess")
+                        .WithMany()
+                        .HasForeignKey("Sub");
+
+                    b.Navigation("UserAccess");
                 });
 
             modelBuilder.Entity("Booking_WEB.Data.Entities.BookingItem", b =>
@@ -731,6 +810,28 @@ namespace Booking_WEB.Migrations
                     b.Navigation("Realty");
 
                     b.Navigation("UserAccess");
+                });
+
+            modelBuilder.Entity("Booking_WEB.Data.Entities.Cards", b =>
+                {
+                    b.HasOne("Booking_WEB.Data.Entities.UserData", "User")
+                        .WithMany("Cards")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Booking_WEB.Data.Entities.City", b =>
+                {
+                    b.HasOne("Booking_WEB.Data.Entities.Country", "Country")
+                        .WithMany("Cities")
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Country");
                 });
 
             modelBuilder.Entity("Booking_WEB.Data.Entities.Feedback", b =>
@@ -775,12 +876,6 @@ namespace Booking_WEB.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Booking_WEB.Data.Entities.Country", "Country")
-                        .WithMany("Realties")
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Booking_WEB.Data.Entities.RealtyGroup", "RealtyGroup")
                         .WithMany("Realties")
                         .HasForeignKey("GroupId")
@@ -788,8 +883,6 @@ namespace Booking_WEB.Migrations
                         .IsRequired();
 
                     b.Navigation("City");
-
-                    b.Navigation("Country");
 
                     b.Navigation("RealtyGroup");
                 });
@@ -829,7 +922,7 @@ namespace Booking_WEB.Migrations
 
             modelBuilder.Entity("Booking_WEB.Data.Entities.Country", b =>
                 {
-                    b.Navigation("Realties");
+                    b.Navigation("Cities");
                 });
 
             modelBuilder.Entity("Booking_WEB.Data.Entities.Realty", b =>
@@ -859,6 +952,8 @@ namespace Booking_WEB.Migrations
 
             modelBuilder.Entity("Booking_WEB.Data.Entities.UserData", b =>
                 {
+                    b.Navigation("Cards");
+
                     b.Navigation("UserAccesses");
                 });
 

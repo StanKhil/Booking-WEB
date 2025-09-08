@@ -65,9 +65,10 @@ namespace Booking_WEB.Data.DataAccessors
                 .ToListAsync();
         }
 
-        public async Task<Guid> GetCityIdByNameAsync(String cityName)
+        public async Task<Guid> GetCityIdByNameAsync(String cityName, Guid countryId)
         {
             var city = await _context.Cities.FirstOrDefaultAsync(c => c.Name == cityName) ?? new City { Id = Guid.NewGuid(), Name = cityName };
+            city.CountryId = countryId;
             if (!await _context.Cities.AnyAsync(c => c.Id == city.Id)) _context.Cities.Add(city);
             return city.Id;
         }

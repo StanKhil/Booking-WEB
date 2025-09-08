@@ -54,7 +54,7 @@
   <label for="realty-main-image" class="form-label">Main image</label>
   <input type="file" name="realty-img" class="form-control" id="realty-main-image" aria-describedby="Main Image">
 </div>
-<button type="sibmit" data-action="create-realty" class="btn btn-success w-100" id="admin-create-realty-button">Create</button>
+<button type="submit" data-action="create-realty" class="btn btn-success w-100" id="admin-create-realty-button">Create</button>
 </form>
 
 

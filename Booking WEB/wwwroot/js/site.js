@@ -209,7 +209,7 @@ document.addEventListener('submit', e => {
         e.preventDefault();
         adminUpdateRealty(form)
     }
-    if (form.id == "user-delete-form")
+    if (form.id == "realty-delete-form")
     {
         e.preventDefault();
         adminDeleteRealty(form)
@@ -315,28 +315,29 @@ function showPage(page)
         // ========== PROFILE ==========
         default: spaContainer.innerHTML = `<div class="alert alert-danger" role="alert">Something went wrong!</div>`;
     }
-    setupActions();
+    //setupActions();
 }
-function setupActions()
-{
-    for (let button of document.querySelectorAll('[data-action]'))
-    {
-        switch (button.dataset.action)
-        {
-            case "create-user": button.onclick = adminCreateUser; break;
-            case "update-user": button.onclick = adminUpdateUser; break;
-            case "delete-user": button.onclick = adminDeleteUser; break;
-            case "create-realty": button.onclick = adminCreateRealty; break;
-            case "update-realty": button.onclick = adminUpdateRealty; break;
-            case "delete-realty": button.onclick = adminDeleteRealty; break;
-        }
-    }
-}
+//function setupActions()
+//{
+//    for (let button of document.querySelectorAll('[data-action]'))
+//    {
+//        switch (button.dataset.action)
+//        {
+//            case "create-user": button.onclick = adminCreateUser; break;
+//            case "update-user": button.onclick = adminUpdateUser; break;
+//            case "delete-user": button.onclick = adminDeleteUser; break;
+//            case "create-realty": button.onclick = adminCreateRealty; break;
+//            case "update-realty": button.onclick = adminUpdateRealty; break;
+//            case "delete-realty": button.onclick = adminDeleteRealty; break;
+//        }
+//    }
+//}
 
 // ----------------TO REMOVE LATER--------------------
 
 export function adminCreateUser(form)
 {
+    console.log(form);
     fetch("/User/Create", {
         method: "POST",
         body: new FormData(form)
@@ -368,7 +369,8 @@ export function adminFillInUserTable() {
 
 export function adminCreateRealty(form)
 {
-    fetch("/Realty/Create", {
+    console.log(form);  
+    fetch("/api/realty", {
         method: "POST",
         body: new FormData(form)
     }).then(r => r.json()).then(console.log);

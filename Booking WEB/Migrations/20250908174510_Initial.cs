@@ -8,34 +8,22 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Booking_WEB.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Cities",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Cities", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Countries",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Countries", x => x.Id);
-                });
+    name: "Countries",
+    columns: table => new
+    {
+        Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+        Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+    },
+    constraints: table =>
+    {
+        table.PrimaryKey("PK_Countries", x => x.Id);
+    });
 
             migrationBuilder.CreateTable(
                 name: "RealtyGroups",
@@ -81,7 +69,8 @@ namespace Booking_WEB.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BirthDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     RegisteredAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -93,39 +82,41 @@ namespace Booking_WEB.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Realties",
+                name: "Cities",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Slug = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Price = table.Column<decimal>(type: "decimal(12,2)", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CountryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    CountryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Realties", x => x.Id);
+                    table.PrimaryKey("PK_Cities", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Realties_Cities_CityId",
-                        column: x => x.CityId,
-                        principalTable: "Cities",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Realties_Countries_CountryId",
+                        name: "FK_Cities_Countries_CountryId",
                         column: x => x.CountryId,
                         principalTable: "Countries",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Cards",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Number = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CardholderName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cards", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Realties_RealtyGroups_GroupId",
-                        column: x => x.GroupId,
-                        principalTable: "RealtyGroups",
+                        name: "FK_Cards_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -159,6 +150,58 @@ namespace Booking_WEB.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Realties",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Slug = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Price = table.Column<decimal>(type: "decimal(12,2)", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Realties", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Realties_Cities_CityId",
+                        column: x => x.CityId,
+                        principalTable: "Cities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Realties_RealtyGroups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "RealtyGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AccessTokens",
+                columns: table => new
+                {
+                    Jti = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Sub = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Iat = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Exp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Nbf = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Aud = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Iss = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AccessTokens", x => x.Jti);
+                    table.ForeignKey(
+                        name: "FK_AccessTokens_UserAccesses_Sub",
+                        column: x => x.Sub,
+                        principalTable: "UserAccesses",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AccRates",
                 columns: table => new
                 {
@@ -177,19 +220,6 @@ namespace Booking_WEB.Migrations
                         principalTable: "Realties",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ItemImages",
-                columns: table => new
-                {
-                    ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ImageUrl = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Order = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemImages", x => new { x.ItemId, x.ImageUrl });
                 });
 
             migrationBuilder.CreateTable(
@@ -251,23 +281,39 @@ namespace Booking_WEB.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Cities",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
+            migrationBuilder.CreateTable(
+                name: "ItemImages",
+                columns: table => new
                 {
-                    { new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), "Lviv" },
-                    { new Guid("0d156354-89f1-4d58-a735-876b7add59d2"), "Krakow" }
+                    ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Order = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemImages", x => new { x.ItemId, x.ImageUrl });
                 });
+
 
             migrationBuilder.InsertData(
                 table: "Countries",
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), "Ukraine" },
-                    { new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"), "Poland" }
+        { new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), "Ukraine" },
+        { new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"), "Poland" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "Cities",
+                columns: new[] { "Id", "CountryId", "Name" },
+                values: new object[,]
+                {
+        { new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), "Lviv" },
+        { new Guid("0d156354-89f1-4d58-a735-876b7add59d2"), new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"), "Krakow" }
+                });
+
+
 
             migrationBuilder.InsertData(
                 table: "RealtyGroups",
@@ -285,41 +331,24 @@ namespace Booking_WEB.Migrations
                 columns: new[] { "Id", "CanCreate", "CanDelete", "CanRead", "CanUpdate", "Description" },
                 values: new object[,]
                 {
-                    { "Administrator", true, true, true, true, "Системний адміністратор" },
-                    { "Employee", true, false, true, false, "Співробітник компанії" },
-                    { "Moderator", false, true, true, true, "Редактор контенту" },
-                    { "SelfRegistered", false, false, false, false, "Самостійно зареєстрований користувач" }
+                    { "Administrator", true, true, true, true, "System administrator" },
+                    { "Employee", true, false, true, false, "Company's employee" },
+                    { "Moderator", false, true, true, true, "Content editor" },
+                    { "SelfRegistered", false, false, false, false, "Self-registered user" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "BirthDate", "DeletedAt", "Email", "Name", "RegisteredAt" },
+                columns: new[] { "Id", "BirthDate", "DeletedAt", "Email", "FirstName", "LastName", "RegisteredAt" },
                 values: new object[,]
                 {
-                    { new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), new DateTime(1989, 7, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "dnistr@ukr.net", "Дністрянський Збоїслав", new DateTime(2024, 8, 5, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { new Guid("0d156354-89f1-4d58-a735-876b7add59d2"), new DateTime(2005, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "dina@ukr.net", "Гординська Діна", new DateTime(2024, 12, 20, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), new DateTime(1998, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "jakiv@ukr.net", "Палійчук Яків", new DateTime(2025, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { new Guid("a0f7b463-6eef-4a70-8444-789bbea23369"), new DateTime(1999, 10, 21, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "bondarko@ukr.net", "Бондарко Юрій", new DateTime(2025, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { new Guid("a3c55a79-05ea-4053-ad3c-7301f3b7a7e2"), new DateTime(2005, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "romashko@ukr.net", "Ромашко Жадан", new DateTime(2024, 12, 20, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"), new DateTime(1999, 5, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "storozh@ukr.net", "Сторож Чеслава", new DateTime(2025, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { new Guid("eadb0b3b-523e-478b-88ee-b6cf57cbc05d"), new DateTime(2001, 12, 21, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "erstenuk@ukr.net", "Ерстенюк Вікторія", new DateTime(2025, 1, 21, 0, 0, 0, 0, DateTimeKind.Unspecified) }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Realties",
-                columns: new[] { "Id", "CityId", "CountryId", "DeletedAt", "Description", "GroupId", "ImageUrl", "Name", "Price", "Slug" },
-                values: new object[,]
-                {
-                    { new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), null, "Готель \"Лісовий\" - це ідеальне місце для відпочинку на природі.", new Guid("f1ea6b3f-0021-417b-95c8-f6cd333d7207"), "hotel_forest.jpg", "Готель \"Лісовий\"", 250.00m, "hotel-forest" },
-                    { new Guid("0d156354-89f1-4d58-a735-876b7add59d2"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), null, "Квартира \"Центральна\" - це ідеальне місце для відпочинку в місті.", new Guid("8806ca58-8daa-4576-92ba-797de42ffaa7"), "apartment_central.jpg", "Квартира \"Центральна\"", 100.00m, "apartment-central" },
-                    { new Guid("37dcc68e-b7e7-4b55-b04e-147c1a4126b7"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), null, "Вілла \"Сонячна\" - це ідеальне місце для відпочинку на морі.", new Guid("6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"), "villa_sunny.jpg", "Вілла \"Сонячна\"", 500.00m, "villa-sunny" },
-                    { new Guid("6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), null, "Будинок \"Гірський\" - це ідеальне місце для відпочинку в горах.", new Guid("97191468-a02f-4a78-927b-9ea660e9ea36"), "house_mountain.jpg", "Будинок \"Гірський\"", 400.00m, "house-mountain" },
-                    { new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), null, "Готель \"Сонячний\" - це ідеальне місце для відпочинку на природі.", new Guid("f1ea6b3f-0021-417b-95c8-f6cd333d7207"), "hotel_sunny.jpg", "Готель \"Сонячний\"", 150.00m, "hotel-sunny" },
-                    { new Guid("a0f7b463-6eef-4a70-8444-789bbea23369"), new Guid("0d156354-89f1-4d58-a735-876b7add59d2"), new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"), null, "Будинок \"Лісовий\" - це ідеальне місце для відпочинку на природі.", new Guid("97191468-a02f-4a78-927b-9ea660e9ea36"), "house_forest.jpg", "Будинок \"Лісовий\"", 350.00m, "house-forest" },
-                    { new Guid("a3c55a79-05ea-4053-ad3c-7301f3b7a7e2"), new Guid("0d156354-89f1-4d58-a735-876b7add59d2"), new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"), null, "Квартира \"Люкс\" - це ідеальне місце для відпочинку, якщо ви не хочете виходити з дому.", new Guid("8806ca58-8daa-4576-92ba-797de42ffaa7"), "apartment_luxury.jpg", "Квартира \"Люкс\"", 150.00m, "apartment-luxury" },
-                    { new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"), new Guid("0d156354-89f1-4d58-a735-876b7add59d2"), new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"), null, "Готель \"Зоряний\" - це ідеальне місце для відпочинку на природі.", new Guid("f1ea6b3f-0021-417b-95c8-f6cd333d7207"), "hotel_star.jpg", "Готель \"Зоряний\"", 200.00m, "hotel-star" },
-                    { new Guid("d5e36e96-0314-4b7e-9cbf-d0fae477ae36"), new Guid("0d156354-89f1-4d58-a735-876b7add59d2"), new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"), null, "Вілла \"Лісова\" - це ідеальне місце для відпочинку на природі.", new Guid("6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"), "villa_forest.jpg", "Вілла \"Лісова\"", 600.00m, "villa-forest" },
-                    { new Guid("eadb0b3b-523e-478b-88ee-b6cf57cbc05d"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), null, "Будинок \"Садиба\" - це ідеальне місце для відпочинку з друзями.", new Guid("97191468-a02f-4a78-927b-9ea660e9ea36"), "house_mansion.jpg", "Будинок \"Садиба\"", 300.00m, "house-mansion" }
+                    { new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), new DateTime(1989, 7, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "dnistr@ukr.net", "Дністрянський", "Збоїслав", new DateTime(2024, 8, 5, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { new Guid("0d156354-89f1-4d58-a735-876b7add59d2"), new DateTime(2005, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "dina@ukr.net", "Гординська", "Діна", new DateTime(2024, 12, 20, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), new DateTime(1998, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "jakiv@ukr.net", "Палійчук", "Яків", new DateTime(2025, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { new Guid("a0f7b463-6eef-4a70-8444-789bbea23369"), new DateTime(1999, 10, 21, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "bondarko@ukr.net", "Бондарко", "Юрій", new DateTime(2025, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { new Guid("a3c55a79-05ea-4053-ad3c-7301f3b7a7e2"), new DateTime(2005, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "romashko@ukr.net", "Ромашко", "Жадан", new DateTime(2024, 12, 20, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"), new DateTime(1999, 5, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "storozh@ukr.net", "Сторож", "Чеслава", new DateTime(2025, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { new Guid("eadb0b3b-523e-478b-88ee-b6cf57cbc05d"), new DateTime(2001, 12, 21, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "erstenuk@ukr.net", "Ерстенюк", "Вікторія", new DateTime(2025, 1, 21, 0, 0, 0, 0, DateTimeKind.Unspecified) }
                 });
 
             migrationBuilder.InsertData(
@@ -338,6 +367,28 @@ namespace Booking_WEB.Migrations
                     { new Guid("fb4ad18c-d916-4708-be71-a9bbcf1eb806"), "Salt2123", "storozh", "Employee", "Salt2", new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415") }
                 });
 
+            migrationBuilder.InsertData(
+                table: "Realties",
+                columns: new[] { "Id", "CityId", "DeletedAt", "Description", "GroupId", "Name", "Price", "Slug" },
+                values: new object[,]
+                {
+                    { new Guid("bbcad513-0a88-4368-8fbe-5ad874e2c5a2"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Готель \"Лісовий\" - це ідеальне місце для відпочинку на природі.", new Guid("f1ea6b3f-0021-417b-95c8-f6cd333d7207"), "Готель \"Лісовий\"", 250.00m, "hotel-forest" },
+                    { new Guid("0d156354-89f1-4d58-a735-876b7add59d2"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Квартира \"Центральна\" - це ідеальне місце для відпочинку в місті.", new Guid("8806ca58-8daa-4576-92ba-797de42ffaa7"), "Квартира \"Центральна\"", 100.00m, "apartment-central" },
+                    { new Guid("37dcc68e-b7e7-4b55-b04e-147c1a4126b7"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Вілла \"Сонячна\" - це ідеальне місце для відпочинку на морі.", new Guid("6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"), "Вілла \"Сонячна\"", 500.00m, "villa-sunny" },
+                    { new Guid("6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Будинок \"Гірський\" - це ідеальне місце для відпочинку в горах.", new Guid("97191468-a02f-4a78-927b-9ea660e9ea36"), "Будинок \"Гірський\"", 400.00m, "house-mountain" },
+                    { new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Готель \"Сонячний\" - це ідеальне місце для відпочинку на природі.", new Guid("f1ea6b3f-0021-417b-95c8-f6cd333d7207"), "Готель \"Сонячний\"", 150.00m, "hotel-sunny" },
+                    { new Guid("a0f7b463-6eef-4a70-8444-789bbea23369"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Будинок \"Лісовий\" - це ідеальне місце для відпочинку на природі.", new Guid("97191468-a02f-4a78-927b-9ea660e9ea36"), "Будинок \"Лісовий\"", 350.00m, "house-forest" },
+                    { new Guid("a3c55a79-05ea-4053-ad3c-7301f3b7a7e2"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Квартира \"Люкс\" - це ідеальне місце для відпочинку, якщо ви не хочете виходити з дому.", new Guid("8806ca58-8daa-4576-92ba-797de42ffaa7"), "Квартира \"Люкс\"", 150.00m, "apartment-luxury" },
+                    { new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Готель \"Зоряний\" - це ідеальне місце для відпочинку на природі.", new Guid("f1ea6b3f-0021-417b-95c8-f6cd333d7207"), "Готель \"Зоряний\"", 200.00m, "hotel-star" },
+                    { new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Вілла \"Лісова\" - це ідеальне місце для відпочинку на природі.", new Guid("6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"), "Вілла \"Лісова\"", 600.00m, "villa-forest" },
+                    { new Guid("eadb0b3b-523e-478b-88ee-b6cf57cbc05d"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Будинок \"Садиба\" - це ідеальне місце для відпочинку з друзями.", new Guid("97191468-a02f-4a78-927b-9ea660e9ea36"), "Будинок \"Садиба\"", 300.00m, "house-mansion" }
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AccessTokens_Sub",
+                table: "AccessTokens",
+                column: "Sub");
+
             migrationBuilder.CreateIndex(
                 name: "IX_AccRates_RealtyId",
                 table: "AccRates",
@@ -355,6 +406,16 @@ namespace Booking_WEB.Migrations
                 column: "UserAccessId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Cards_UserId",
+                table: "Cards",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cities_CountryId",
+                table: "Cities",
+                column: "CountryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Feedbacks_RealtyId",
                 table: "Feedbacks",
                 column: "RealtyId");
@@ -368,11 +429,6 @@ namespace Booking_WEB.Migrations
                 name: "IX_Realties_CityId",
                 table: "Realties",
                 column: "CityId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Realties_CountryId",
-                table: "Realties",
-                column: "CountryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Realties_GroupId",
@@ -412,10 +468,16 @@ namespace Booking_WEB.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AccessTokens");
+
+            migrationBuilder.DropTable(
                 name: "AccRates");
 
             migrationBuilder.DropTable(
                 name: "BookingItems");
+
+            migrationBuilder.DropTable(
+                name: "Cards");
 
             migrationBuilder.DropTable(
                 name: "Feedbacks");
@@ -439,10 +501,10 @@ namespace Booking_WEB.Migrations
                 name: "Cities");
 
             migrationBuilder.DropTable(
-                name: "Countries");
+                name: "RealtyGroups");
 
             migrationBuilder.DropTable(
-                name: "RealtyGroups");
+                name: "Countries");
         }
     }
 }

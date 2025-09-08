@@ -284,9 +284,6 @@ namespace Booking_WEB.Migrations
                     b.Property<Guid>("CityId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("CountryId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
@@ -309,8 +306,6 @@ namespace Booking_WEB.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CityId");
-
-                    b.HasIndex("CountryId");
 
                     b.HasIndex("GroupId");
 
@@ -878,10 +873,6 @@ namespace Booking_WEB.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Booking_WEB.Data.Entities.Country", null)
-                        .WithMany("Realties")
-                        .HasForeignKey("CountryId");
-
                     b.HasOne("Booking_WEB.Data.Entities.RealtyGroup", "RealtyGroup")
                         .WithMany("Realties")
                         .HasForeignKey("GroupId")
@@ -929,8 +920,6 @@ namespace Booking_WEB.Migrations
             modelBuilder.Entity("Booking_WEB.Data.Entities.Country", b =>
                 {
                     b.Navigation("Cities");
-
-                    b.Navigation("Realties");
                 });
 
             modelBuilder.Entity("Booking_WEB.Data.Entities.Realty", b =>

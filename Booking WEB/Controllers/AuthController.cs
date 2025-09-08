@@ -241,7 +241,7 @@ namespace Booking_WEB.Controllers
                 userAccess.UserData.FirstName,
                 userAccess.UserData.LastName,
                 userAccess.UserData.Email,
-                userAccess.UserRole.Id,
+                RoleId = userAccess.UserRole.Id,
                 userAccess.Login,
             };
             string jwt = _jwtService.EncodeJwt(jwtPayload);

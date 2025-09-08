@@ -13,9 +13,6 @@ namespace Booking_WEB.Data.Entities
         public String Name { get; set; } = null!;
 
         [JsonIgnore]
-        public List<Realty> Realties { get; set; } = new List<Realty>();
-
-        [JsonIgnore]
         public List<City> Cities { get; set; } = [];
     }
 }

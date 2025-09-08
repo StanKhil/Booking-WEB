@@ -57,8 +57,8 @@ namespace Booking_WEB.Controllers.API
                 _storageService.TryGetMimeType(model.Image.FileName);
                 var savedName = await _storageService.SaveItemAsync(model.Image);
 
-                var cityId = await _realtyAccessor.GetCityIdByNameAsync(model.City);
                 var countryId = await _realtyAccessor.GetCountryIdByNameAsync(model.Country);
+                var cityId = await _realtyAccessor.GetCityIdByNameAsync(model.City, countryId);
                 var groupId = await _realtyAccessor.GetGroupIdByNameAsync(model.Group);
 
                 var realty = new Realty
