@@ -67,10 +67,8 @@ namespace Booking_WEB.Controllers.API
                     Name = model.Name,
                     Description = model.Description,
                     Slug = model.Slug,
-                    ImageUrl = Path.Combine(_options.Value.StoragePath!, savedName),
                     Price = model.Price,
                     CityId = cityId,
-                    CountryId = countryId,
                     GroupId = groupId,
                     DeletedAt = null
                 };
@@ -137,11 +135,9 @@ namespace Booking_WEB.Controllers.API
                 if (!string.IsNullOrEmpty(model.Name)) realty.Name = model.Name;
                 if (!string.IsNullOrEmpty(model.Description)) realty.Description = model.Description;
                 if (!string.IsNullOrEmpty(model.Slug)) realty.Slug = model.Slug;
-                if (!string.IsNullOrEmpty(model.ImageUrl)) realty.ImageUrl = model.ImageUrl;
                 if (model.Price > 0) realty.Price = model.Price;
 
                 realty.CityId = model.CityId;
-                realty.CountryId = model.CountryId;
                 realty.GroupId = model.GroupId;
 
                 await _realtyAccessor.UpdateAsync(realty);

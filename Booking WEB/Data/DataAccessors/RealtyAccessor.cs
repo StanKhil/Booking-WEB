@@ -25,8 +25,7 @@ namespace Booking_WEB.Data.DataAccessors
                 query = query.AsNoTracking();
 
             return await query.Include(r => r.Images).Include(r => r.Feedbacks)
-                .Include(r => r.City).Include(r => r.Country)
-                .FirstOrDefaultAsync(r => (r.Slug == slug || r.Id.ToString() == slug) && r.DeletedAt == null);
+                .Include(r => r.City).FirstOrDefaultAsync(r => (r.Slug == slug || r.Id.ToString() == slug) && r.DeletedAt == null);
         }
 
         public async Task CreateAsync(Realty realty)
@@ -56,7 +55,6 @@ namespace Booking_WEB.Data.DataAccessors
         {
             IQueryable<Realty> query = _context.Realties
                 .Include(r => r.City)
-                .Include(r => r.Country)
                 .Include(r => r.RealtyGroup);
 
             if (!isEditable)
@@ -92,16 +90,10 @@ namespace Booking_WEB.Data.DataAccessors
         {
             IQueryable<Realty> query = _context.Realties
                 .Include(r => r.City)
-                .Include(r => r.Country)
                 .Include(r => r.RealtyGroup);
 
             if (!isEditable)
                 query = query.AsNoTracking();
-
-            if (!string.IsNullOrWhiteSpace(country))
-            {
-                query = query.Where(r => r.Country.Name == country);
-            }
 
             if (!string.IsNullOrWhiteSpace(city))
             {

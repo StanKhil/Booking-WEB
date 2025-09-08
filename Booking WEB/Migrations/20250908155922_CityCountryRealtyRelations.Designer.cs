@@ -4,6 +4,7 @@ using Booking_WEB.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Booking_WEB.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250908155922_CityCountryRealtyRelations")]
+    partial class CityCountryRealtyRelations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -169,24 +172,6 @@ namespace Booking_WEB.Migrations
                             Id = new Guid("0d156354-89f1-4d58-a735-876b7add59d2"),
                             CountryId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Name = "Krakow"
-                        },
-                        new
-                        {
-                            Id = new Guid("59b082e4-19ab-4d7f-a061-4fbc08c59778"),
-                            CountryId = new Guid("d72ad227-ad60-4f30-897f-8a7aaa46e049"),
-                            Name = "Kyiv"
-                        },
-                        new
-                        {
-                            Id = new Guid("c5efcfde-ee1f-4521-bb8f-f4cdb97c1578"),
-                            CountryId = new Guid("d72ad227-ad60-4f30-897f-8a7aaa46e049"),
-                            Name = "Odesa"
-                        },
-                        new
-                        {
-                            Id = new Guid("afd0db5d-9207-42fb-9629-26f5d74ef0b0"),
-                            CountryId = new Guid("d72ad227-ad60-4f30-897f-8a7aaa46e049"),
-                            Name = "Lviv"
                         });
                 });
 
@@ -214,11 +199,6 @@ namespace Booking_WEB.Migrations
                         {
                             Id = new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"),
                             Name = "Poland"
-                        },
-                        new
-                        {
-                            Id = new Guid("d72ad227-ad60-4f30-897f-8a7aaa46e049"),
-                            Name = "Ukraine"
                         });
                 });
 
@@ -324,7 +304,7 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"),
-                            CityId = new Guid("59b082e4-19ab-4d7f-a061-4fbc08c59778"),
+                            CityId = new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"),
                             Description = "Готель \"Сонячний\" - це ідеальне місце для відпочинку на природі.",
                             GroupId = new Guid("f1ea6b3f-0021-417b-95c8-f6cd333d7207"),
                             Name = "Готель \"Сонячний\"",
@@ -334,7 +314,7 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"),
-                            CityId = new Guid("59b082e4-19ab-4d7f-a061-4fbc08c59778"),
+                            CityId = new Guid("0d156354-89f1-4d58-a735-876b7add59d2"),
                             Description = "Готель \"Зоряний\" - це ідеальне місце для відпочинку на природі.",
                             GroupId = new Guid("f1ea6b3f-0021-417b-95c8-f6cd333d7207"),
                             Name = "Готель \"Зоряний\"",
@@ -344,7 +324,7 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"),
-                            CityId = new Guid("afd0db5d-9207-42fb-9629-26f5d74ef0b0"),
+                            CityId = new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"),
                             Description = "Готель \"Лісовий\" - це ідеальне місце для відпочинку на природі.",
                             GroupId = new Guid("f1ea6b3f-0021-417b-95c8-f6cd333d7207"),
                             Name = "Готель \"Лісовий\"",
@@ -354,7 +334,7 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("0d156354-89f1-4d58-a735-876b7add59d2"),
-                            CityId = new Guid("afd0db5d-9207-42fb-9629-26f5d74ef0b0"),
+                            CityId = new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"),
                             Description = "Квартира \"Центральна\" - це ідеальне місце для відпочинку в місті.",
                             GroupId = new Guid("8806ca58-8daa-4576-92ba-797de42ffaa7"),
                             Name = "Квартира \"Центральна\"",
@@ -364,7 +344,7 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("a3c55a79-05ea-4053-ad3c-7301f3b7a7e2"),
-                            CityId = new Guid("c5efcfde-ee1f-4521-bb8f-f4cdb97c1578"),
+                            CityId = new Guid("0d156354-89f1-4d58-a735-876b7add59d2"),
                             Description = "Квартира \"Люкс\" - це ідеальне місце для відпочинку, якщо ви не хочете виходити з дому.",
                             GroupId = new Guid("8806ca58-8daa-4576-92ba-797de42ffaa7"),
                             Name = "Квартира \"Люкс\"",
@@ -374,7 +354,7 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("eadb0b3b-523e-478b-88ee-b6cf57cbc05d"),
-                            CityId = new Guid("c5efcfde-ee1f-4521-bb8f-f4cdb97c1578"),
+                            CityId = new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"),
                             Description = "Будинок \"Садиба\" - це ідеальне місце для відпочинку з друзями.",
                             GroupId = new Guid("97191468-a02f-4a78-927b-9ea660e9ea36"),
                             Name = "Будинок \"Садиба\"",
@@ -384,7 +364,7 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("a0f7b463-6eef-4a70-8444-789bbea23369"),
-                            CityId = new Guid("c5efcfde-ee1f-4521-bb8f-f4cdb97c1578"),
+                            CityId = new Guid("0d156354-89f1-4d58-a735-876b7add59d2"),
                             Description = "Будинок \"Лісовий\" - це ідеальне місце для відпочинку на природі.",
                             GroupId = new Guid("97191468-a02f-4a78-927b-9ea660e9ea36"),
                             Name = "Будинок \"Лісовий\"",
@@ -394,7 +374,7 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"),
-                            CityId = new Guid("c5efcfde-ee1f-4521-bb8f-f4cdb97c1578"),
+                            CityId = new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"),
                             Description = "Будинок \"Гірський\" - це ідеальне місце для відпочинку в горах.",
                             GroupId = new Guid("97191468-a02f-4a78-927b-9ea660e9ea36"),
                             Name = "Будинок \"Гірський\"",
@@ -404,7 +384,7 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("37dcc68e-b7e7-4b55-b04e-147c1a4126b7"),
-                            CityId = new Guid("c5efcfde-ee1f-4521-bb8f-f4cdb97c1578"),
+                            CityId = new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"),
                             Description = "Вілла \"Сонячна\" - це ідеальне місце для відпочинку на морі.",
                             GroupId = new Guid("6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"),
                             Name = "Вілла \"Сонячна\"",
@@ -414,7 +394,7 @@ namespace Booking_WEB.Migrations
                         new
                         {
                             Id = new Guid("d5e36e96-0314-4b7e-9cbf-d0fae477ae36"),
-                            CityId = new Guid("c5efcfde-ee1f-4521-bb8f-f4cdb97c1578"),
+                            CityId = new Guid("0d156354-89f1-4d58-a735-876b7add59d2"),
                             Description = "Вілла \"Лісова\" - це ідеальне місце для відпочинку на природі.",
                             GroupId = new Guid("6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"),
                             Name = "Вілла \"Лісова\"",

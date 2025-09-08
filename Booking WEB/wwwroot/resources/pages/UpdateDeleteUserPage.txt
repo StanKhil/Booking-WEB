@@ -3,7 +3,7 @@
 <h3>Update Users</h3>
 <hr>
 
-<form>
+<form id="user-update-form">
 
 <div class="mb-3">
 	<label for="user-former-login" class="form-label">Login</label>
@@ -68,13 +68,16 @@
 <h3 class="mt-5">Delete Users</h3>
 <hr>
 
-<div class="mb-3">
-	<label for="user-delete-login" class="form-label">Login</label>
-	<input type="text" name="user-delete-login"  class="form-control @classAddon" id="user-delete-login" aria-describedby="Delete login" placeholder="Enter user's current login">
-	<div class="invalid-feedback">@errorMessage</div>
-</div>
+<form id="user-delete-form">
+	<div class="mb-3">
+		<label for="user-delete-login" class="form-label">Login</label>
+		<input type="text" name="user-delete-login"  class="form-control @classAddon" id="user-delete-login" aria-describedby="Delete login" placeholder="Enter user's current login">
+		<div class="invalid-feedback">@errorMessage</div>
+	</div>
 
-<button data-action="delete-user" class="btn btn-danger w-100" id="admin-user-delete-button">Delete</button>
-<div role="alert" class="alert mb-3" style="display:none" id="admin-user-delete-alert"></div>
+	<button data-action="delete-user" class="btn btn-danger w-100" id="admin-user-delete-button">Delete</button>
+	<div role="alert" class="alert mb-3" style="display:none" id="admin-user-delete-alert"></div>
+</form>
+
 
 </div>

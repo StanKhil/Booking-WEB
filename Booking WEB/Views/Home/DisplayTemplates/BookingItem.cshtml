@@ -5,12 +5,12 @@
         <div class="row">
             <div class="col">
                 <picture>
-                    <img class="w-50" src="/Storage/Item/@(Model.Realty.ImageUrl)" />
+                    <img class="w-50" alt="Image" />
                 </picture>
             </div>
             <div class="col-6">
                 <div><span class="fw-bold">@Model.Realty.Name</span></div>
-                <div><span class="text-secondary">@Model.StartDate.ToString("m") - @Model.EndDate.ToString("m")</span> <span class="text-secondary"> &#x2022; @Model.Realty.Country</span></div>
+                <div><span class="text-secondary">@Model.StartDate.ToString("m") - @Model.EndDate.ToString("m")</span> <span class="text-secondary"> &#x2022; @Model.Realty.City.Country</span></div>
                 <div><span class="text-success">Confirmed</span></div>
             </div>
             <div class="fw-semibold col">@Model.Realty.Price</div>

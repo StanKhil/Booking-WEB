@@ -3,7 +3,7 @@
 <h3>Update Users</h3>
 <hr>
 
-<form>
+<form id="realty-update-form">
 
 <div class="mb-3">
 	<label for="realty-former-slug" class="form-label">Slug</label>
@@ -78,13 +78,15 @@
 <h3 class="mt-5">Delete Users</h3>
 <hr>
 
-<div class="mb-3">
-	<label for="realty-delete-slug" class="form-label">Login</label>
-	<input type="text" name="realty-delete-slug"  class="form-control @classAddon" id="realty-delete-slug" aria-describedby="Delete slug" placeholder="Enter realty's current slug">
-	<div class="invalid-feedback">@errorMessage</div>
-</div>
+<form id="realty-delete-form">
+	<div class="mb-3">
+		<label for="realty-delete-slug" class="form-label">Login</label>
+		<input type="text" name="realty-delete-slug"  class="form-control @classAddon" id="realty-delete-slug" aria-describedby="Delete slug" placeholder="Enter realty's current slug">
+		<div class="invalid-feedback">@errorMessage</div>
+	</div>
 
-<button data-action="delete-realty" class="btn btn-danger w-100" id="admin-realty-delete-button">Delete</button>
-<div role="alert" class="alert mb-3" style="display:none" id="admin-realty-delete-alert"></div>
+	<button data-action="delete-realty" class="btn btn-danger w-100" id="admin-realty-delete-button">Delete</button>
+	<div role="alert" class="alert mb-3" style="display:none" id="admin-realty-delete-alert"></div>
+</form>
 
 </div>

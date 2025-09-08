@@ -20,7 +20,8 @@ namespace Booking_WEB.Data.DataAccessors
         }
         public async Task<List<BookingItem>> GetBookingItemsByUserLoginAsync(string userLogin)
         {
-            return await _context.BookingItems.AsNoTracking().Include(bi => bi.Realty).Include(bi => bi.UserAccess).Where(bi => bi.UserAccess.Login == userLogin).ToListAsync();
+            return await _context.BookingItems.AsNoTracking().Include(bi => bi.Realty)
+                .Include(bi => bi.UserAccess).Where(bi => bi.UserAccess.Login == userLogin).ToListAsync();
         }
         
         public async Task CreateAsync(BookingItem bookingItem)

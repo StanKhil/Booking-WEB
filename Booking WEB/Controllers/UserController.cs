@@ -226,7 +226,7 @@ namespace Booking_WEB.Controllers
 
 
         // ============== PROFILE ==============
-        public async Task<ViewResult> Profile(String id)
+        public async Task<ViewResult> Profile([FromRoute]String id)
         {
             UserProfilePageModel model = new();
 

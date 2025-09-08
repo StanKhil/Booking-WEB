@@ -199,21 +199,40 @@ document.addEventListener('submit', e => {
         });
 
     }
-    if (form.id == "product-add-form")
+    if (form.id == "realty-add-form")
     {
         e.preventDefault();
-        handleAddProduct(form)
-    }    
+        adminCreateRealty(form)
+    }
+    if (form.id == "realty-update-form")
+    {
+        e.preventDefault();
+        adminUpdateRealty(form)
+    }
+    if (form.id == "user-delete-form")
+    {
+        e.preventDefault();
+        adminDeleteRealty(form)
+    }
+
+    if (form.id == "user-add-form")
+    {
+        e.preventDefault();
+        adminCreateUser(form)
+    }
+    if (form.id == "user-update-form")
+    {
+        e.preventDefault();
+        adminUpdateUser(form)
+    }
+    if (form.id == "user-delete-form")
+    {
+        e.preventDefault();
+        adminDeleteUser(form)
+    }
 });
 
-function handleAddProduct(form)
-{
-    console.log("Adding product:", form);
-    fetch('/Realty/Create', {
-        method: "POST",
-        body: new FormData(form)
-    }).then(r => r.json()).then(console.log).catch(console.error);
-}
+
 
 function openAddCardForm(e)
 {
@@ -257,7 +276,6 @@ function closeAddCardForm(e)
     alert.classList.add('d-none');
     alert.innerText = '';
 }
-
 function navigateProfile(e)
 {
     const targetButton = e.target.closest('[data-profile]');
@@ -273,7 +291,6 @@ function navigateProfile(e)
         }
     }
 }
-
 function navigate(e)
 {
     const targetButton = e.target.closest('[data-nav]');
@@ -318,14 +335,26 @@ function setupActions()
 
 // ----------------TO REMOVE LATER--------------------
 
-export function adminCreateUser() {
-    console.log("USER CREATE");
+export function adminCreateUser(form)
+{
+    fetch("/User/Create", {
+        method: "POST",
+        body: new FormData(form)
+    }).then(r => r.json()).then(console.log);
 }
-export function adminUpdateUser() {
-    console.log("USER UPDATE");
+export function adminUpdateUser(form)
+{
+    fetch("/User/Update", {
+        method: "POST",
+        body: new FormData(form)
+    }).then(r => r.json()).then(console.log);
 }
-export function adminDeleteUser() {
-    console.log("USER DELETE");
+export function adminDeleteUser(form)
+{
+    fetch("/User/Delete", {
+        method: "POST",
+        body: new FormData(form)
+    }).then(r => r.json()).then(console.log);
 }
 export function adminFillInUserTable() {
     const table = document.getElementById('admin-user-table');
@@ -337,14 +366,26 @@ export function adminFillInUserTable() {
 }
 
 
-export function adminCreateRealty() {
-    console.log("REALTY CREATE");
+export function adminCreateRealty(form)
+{
+    fetch("/Realty/Create", {
+        method: "POST",
+        body: new FormData(form)
+    }).then(r => r.json()).then(console.log);
 }
-export function adminUpdateRealty() {
-    console.log("REALTY UPDATE");
+export function adminUpdateRealty(form)
+{
+    fetch("/Realty/Update", {
+        method: "POST",
+        body: new FormData(form)
+    }).then(r => r.json()).then(console.log);
 }
-export function adminDeleteRealty() {
-    console.log("REALTY DELETE");
+export function adminDeleteRealty(form)
+{
+    fetch("/Realty/Delete", {
+        method: "POST",
+        body: new FormData(form)
+    }).then(r => r.json()).then(console.log);
 }
 export function adminFillInRealtyTable() {
     const table = document.getElementById('admin-realty-table');

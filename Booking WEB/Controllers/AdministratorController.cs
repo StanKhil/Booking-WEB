@@ -20,7 +20,7 @@ namespace Booking_WEB.Controllers
             foreach(var realty in realties)
             {
                 tableBodyContent += $"<tr><td>{realty.Name}</td> <td>{realty.Description}</td> " +
-                    $"<td>{realty.Slug}</td> <td>{realty.Price}</td> <td>{realty.Country.Name}</td> <td>{realty.City.Name}</td> <td>{realty.RealtyGroup.Name}</td> </tr>";
+                    $"<td>{realty.Slug}</td> <td>{realty.Price}</td> <td>{realty.City.Country.Name}</td> <td>{realty.City.Name}</td> <td>{realty.RealtyGroup.Name}</td> </tr>";
             }
             return Content(tableBodyContent, "text/html");
         }

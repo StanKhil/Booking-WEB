@@ -67,7 +67,7 @@
                             <li class="nav-item mx-2">
                                 <a class="nav-link" name="header-nav-button" asp-area="" asp-controller="Home" asp-action="BookingsAndTrips"><i class="bi bi-journal-bookmark"></i> Bookings & Trips</a>
                             </li>
-                            @if (true || Context.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Role)?.Value == "Administrator")
+                            @if (Context.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Role)?.Value == "Administrator")
                             {
                                 <li class="nav-item">
                                     <a class="nav-link" name="header-nav-button" asp-area="" asp-controller="Home" asp-action="Administrator"><i class="bi bi-feather"></i> Administrator</a>

@@ -14,7 +14,6 @@ namespace Booking_WEB.Models.Realty
         public decimal Price { get; set; }
         public AccRates? AccRates { get; set; }
         public City City { get; set; } = null!;
-        public Country Country { get; set; } = null!;
         public List<ItemImage> Images { get; set; } = [];
         public List<Feedback> Feedbacks { get; set; } = [];
     }

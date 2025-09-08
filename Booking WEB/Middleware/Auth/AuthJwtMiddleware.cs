@@ -33,24 +33,26 @@ namespace Booking_WEB.Middleware.Auth
                     var (header, payload) = jwtService.DecodeJwt(token);
                     var payloadElement = (JsonElement)payload;
 
+                    logger.LogTrace(payloadElement.ToString());
+
                     //logger.LogInformation("JWT payload: {payload}", payloadElement.ToString());
 
                     var claims = new List<Claim>();
-
+                    
                     if (payloadElement.TryGetProperty("FirstName", out var firstName))
-                        claims.Add(new Claim(ClaimTypes.Name, firstName.GetString() ?? ""));
-
+                        claims.Add(new Claim(ClaimTypes.Name, firstName.GetString()!));
+                    
                     if (payloadElement.TryGetProperty("LastName", out var lastName))
-                        claims.Add(new Claim(ClaimTypes.Surname, lastName.GetString() ?? ""));
-
+                        claims.Add(new Claim(ClaimTypes.Surname, lastName.GetString()!));
+                    
                     if (payloadElement.TryGetProperty("Email", out var email))
-                        claims.Add(new Claim(ClaimTypes.Email, email.GetString() ?? ""));
-
-                    if (payloadElement.TryGetProperty("Role", out var role))
-                        claims.Add(new Claim(ClaimTypes.Role, role.GetString() ?? ""));
-
+                        claims.Add(new Claim(ClaimTypes.Email, email.GetString()!));
+                    
+                    if (payloadElement.TryGetProperty("RoleId", out var role))
+                        claims.Add(new Claim(ClaimTypes.Role, role.GetString()!));
+                    
                     if (payloadElement.TryGetProperty("Login", out var login))
-                        claims.Add(new Claim(ClaimTypes.Sid, login.GetString() ?? ""));
+                        claims.Add(new Claim(ClaimTypes.Sid, login.GetString()!));
 
                     context.User = new ClaimsPrincipal(
                         new ClaimsIdentity(claims, nameof(AuthJwtMiddleware))

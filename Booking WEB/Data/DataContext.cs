@@ -83,11 +83,6 @@ namespace Booking_WEB.Data
                 .WithMany(c => c.Realties)
                 .HasForeignKey(r => r.CityId);
 
-            modelBuilder.Entity<Entities.Realty>()
-                .HasOne(r => r.Country)
-                .WithMany(c => c.Realties)
-                .HasForeignKey(r => r.CountryId);
-
             modelBuilder.Entity<Entities.BookingItem>()
                 .HasOne(b => b.Realty)
                 .WithMany(r => r.BookingItems)
@@ -112,6 +107,10 @@ namespace Booking_WEB.Data
                 .HasOne(ar => ar.Realty)
                 .WithOne(r => r.AccRates);
             SeedData(modelBuilder);
+
+            modelBuilder.Entity<Entities.City>()
+                .HasOne(city => city.Country)
+                .WithMany(country => country.Cities);
         }
 
         private void SeedData(ModelBuilder modelBuilder)
@@ -331,14 +330,44 @@ namespace Booking_WEB.Data
                 }
             );
 
-
-
             SeedHotels(modelBuilder);
             SeedApartments(modelBuilder);
             SeedHouses(modelBuilder);
             SeedVillas(modelBuilder);
+            SeedCountries(modelBuilder);
+            SeedCities(modelBuilder);
         }
-
+        private void SeedCountries(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Country>().HasData(
+                new Country
+                {
+                    Id = Guid.Parse("D72AD227-AD60-4F30-897F-8A7AAA46E049"),
+                    Name = "Ukraine"
+                });
+        }
+        private void SeedCities(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<City>().HasData(
+                new City
+                {
+                    Id = Guid.Parse("59B082E4-19AB-4D7F-A061-4FBC08C59778"),
+                    Name = "Kyiv",
+                    CountryId = Guid.Parse("D72AD227-AD60-4F30-897F-8A7AAA46E049")
+                },
+                new City
+                {
+                    Id = Guid.Parse("C5EFCFDE-EE1F-4521-BB8F-F4CDB97C1578"),
+                    Name = "Odesa",
+                    CountryId = Guid.Parse("D72AD227-AD60-4F30-897F-8A7AAA46E049")
+                },
+                new City
+                {
+                    Id = Guid.Parse("AFD0DB5D-9207-42FB-9629-26F5D74EF0B0"),
+                    Name = "Lviv",
+                    CountryId = Guid.Parse("D72AD227-AD60-4F30-897F-8A7AAA46E049")
+                });
+        }
         private void SeedHotels(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Realty>().HasData(
@@ -349,10 +378,8 @@ namespace Booking_WEB.Data
                     Name = "Готель \"Сонячний\"",
                     Description = "Готель \"Сонячний\" - це ідеальне місце для відпочинку на природі.",
                     Slug = "hotel-sunny",
-                    ImageUrl = "hotel_sunny.jpg",
                     Price = 150.00m,
-                    CityId = Guid.Parse("03767d46-aab3-4cc4-989c-a696a7fdd434"),
-                    CountryId = Guid.Parse("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d")
+                    CityId = Guid.Parse("59B082E4-19AB-4D7F-A061-4FBC08C59778")
                 },
                 new Realty
                 {
@@ -361,10 +388,8 @@ namespace Booking_WEB.Data
                     Name = "Готель \"Зоряний\"",
                     Description = "Готель \"Зоряний\" - це ідеальне місце для відпочинку на природі.",
                     Slug = "hotel-star",
-                    ImageUrl = "hotel_star.jpg",
                     Price = 200.00m,
-                    CityId = Guid.Parse("0d156354-89f1-4d58-a735-876b7add59d2"),
-                    CountryId = Guid.Parse("bdf41cd9-c0f1-4349-8a44-4e67755d0415")
+                    CityId = Guid.Parse("59B082E4-19AB-4D7F-A061-4FBC08C59778")
                 },
                 new Realty
                 {
@@ -373,10 +398,8 @@ namespace Booking_WEB.Data
                     Name = "Готель \"Лісовий\"",
                     Description = "Готель \"Лісовий\" - це ідеальне місце для відпочинку на природі.",
                     Slug = "hotel-forest",
-                    ImageUrl = "hotel_forest.jpg",
                     Price = 250.00m,
-                    CityId = Guid.Parse("03767d46-aab3-4cc4-989c-a696a7fdd434"),
-                    CountryId = Guid.Parse("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d")
+                    CityId = Guid.Parse("AFD0DB5D-9207-42FB-9629-26F5D74EF0B0")
                 }
             );
         }
@@ -391,10 +414,8 @@ namespace Booking_WEB.Data
                     Name = "Квартира \"Центральна\"",
                     Description = "Квартира \"Центральна\" - це ідеальне місце для відпочинку в місті.",
                     Slug = "apartment-central",
-                    ImageUrl = "apartment_central.jpg",
                     Price = 100.00m,
-                    CityId = Guid.Parse("03767d46-aab3-4cc4-989c-a696a7fdd434"),
-                    CountryId = Guid.Parse("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d")
+                    CityId = Guid.Parse("AFD0DB5D-9207-42FB-9629-26F5D74EF0B0")
                 },
                 new Realty
                 {
@@ -403,10 +424,8 @@ namespace Booking_WEB.Data
                     Name = "Квартира \"Люкс\"",
                     Description = "Квартира \"Люкс\" - це ідеальне місце для відпочинку, якщо ви не хочете виходити з дому.",
                     Slug = "apartment-luxury",
-                    ImageUrl = "apartment_luxury.jpg",
                     Price = 150.00m,
-                    CityId = Guid.Parse("0d156354-89f1-4d58-a735-876b7add59d2"),
-                    CountryId = Guid.Parse("bdf41cd9-c0f1-4349-8a44-4e67755d0415")
+                    CityId = Guid.Parse("C5EFCFDE-EE1F-4521-BB8F-F4CDB97C1578"),
                 }
             );
         }
@@ -421,10 +440,8 @@ namespace Booking_WEB.Data
                     Name = "Будинок \"Садиба\"",
                     Description = "Будинок \"Садиба\" - це ідеальне місце для відпочинку з друзями.",
                     Slug = "house-mansion",
-                    ImageUrl = "house_mansion.jpg",
                     Price = 300.00m,
-                    CityId = Guid.Parse("03767d46-aab3-4cc4-989c-a696a7fdd434"),
-                    CountryId = Guid.Parse("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d")
+                    CityId = Guid.Parse("C5EFCFDE-EE1F-4521-BB8F-F4CDB97C1578"),
                 },
                 new Realty
                 {
@@ -433,10 +450,8 @@ namespace Booking_WEB.Data
                     Name = "Будинок \"Лісовий\"",
                     Description = "Будинок \"Лісовий\" - це ідеальне місце для відпочинку на природі.",
                     Slug = "house-forest",
-                    ImageUrl = "house_forest.jpg",
                     Price = 350.00m,
-                    CityId = Guid.Parse("0d156354-89f1-4d58-a735-876b7add59d2"),
-                    CountryId = Guid.Parse("bdf41cd9-c0f1-4349-8a44-4e67755d0415")
+                    CityId = Guid.Parse("C5EFCFDE-EE1F-4521-BB8F-F4CDB97C1578"),
                 },
                 new Realty
                 {
@@ -445,10 +460,8 @@ namespace Booking_WEB.Data
                     Name = "Будинок \"Гірський\"",
                     Description = "Будинок \"Гірський\" - це ідеальне місце для відпочинку в горах.",
                     Slug = "house-mountain",
-                    ImageUrl = "house_mountain.jpg",
                     Price = 400.00m,
-                    CityId = Guid.Parse("03767d46-aab3-4cc4-989c-a696a7fdd434"),
-                    CountryId = Guid.Parse("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d")
+                    CityId = Guid.Parse("C5EFCFDE-EE1F-4521-BB8F-F4CDB97C1578"),
                 }
             );
         }
@@ -463,10 +476,8 @@ namespace Booking_WEB.Data
                     Name = "Вілла \"Сонячна\"",
                     Description = "Вілла \"Сонячна\" - це ідеальне місце для відпочинку на морі.",
                     Slug = "villa-sunny",
-                    ImageUrl = "villa_sunny.jpg",
                     Price = 500.00m,
-                    CityId = Guid.Parse("03767d46-aab3-4cc4-989c-a696a7fdd434"),
-                    CountryId = Guid.Parse("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d")
+                    CityId = Guid.Parse("C5EFCFDE-EE1F-4521-BB8F-F4CDB97C1578"),
                 },
                 new Realty
                 {
@@ -475,10 +486,8 @@ namespace Booking_WEB.Data
                     Name = "Вілла \"Лісова\"",
                     Description = "Вілла \"Лісова\" - це ідеальне місце для відпочинку на природі.",
                     Slug = "villa-forest",
-                    ImageUrl = "villa_forest.jpg",
                     Price = 600.00m,
-                    CityId = Guid.Parse("0d156354-89f1-4d58-a735-876b7add59d2"),
-                    CountryId = Guid.Parse("bdf41cd9-c0f1-4349-8a44-4e67755d0415")
+                    CityId = Guid.Parse("C5EFCFDE-EE1F-4521-BB8F-F4CDB97C1578")
                 }
             );
         }

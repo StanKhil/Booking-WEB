@@ -10,8 +10,13 @@ namespace Booking_WEB.Data.Entities
     public class City
     {
         public Guid Id { get; set; }
+        public Guid CountryId { get; set; }
         public String Name { get; set; } = null!;
+
         [JsonIgnore]
         public List<Realty> Realties { get; set; } = new List<Realty>();
+
+        [JsonIgnore]
+        public Country Country { get; set; } = null!;
     }
 }

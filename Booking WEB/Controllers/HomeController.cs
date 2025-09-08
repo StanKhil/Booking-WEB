@@ -39,18 +39,23 @@ namespace Booking_WEB.Controllers
         }
         public async Task<IActionResult> ItemAsync([FromRoute]string id)
         {
-            Realty? realty = await _realtyAccessor.GetRealtyBySlugAsync(id);
+            Realty? realty = null;
+            try
+            {
+                realty = await _realtyAccessor.GetRealtyBySlugAsync(id);
+            }
+            catch(Exception e)
+            {
+                _logger.LogError("Exception: " + e.Message);
+            }
             RealtyModel? model = null;
             if (realty != null)
             {
                 model = new();
                 model.Name = realty.Name;
-                model.Feedbacks = realty.Feedbacks;
                 model.Price = realty.Price;
                 model.Description = realty.Description;
-                model.ImageUrl = realty.ImageUrl;
                 model.City = realty.City;
-                model.Country = realty.Country;
                 model.Feedbacks = realty.Feedbacks;
                 model.Images = realty.Images;
                 model.AccRates = realty.AccRates;

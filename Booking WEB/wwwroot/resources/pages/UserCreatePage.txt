@@ -3,7 +3,7 @@
 <h3>Create Users</h3>
 <hr>
 
-<form>
+<form id="user-add-form">
 <div class="mb-3">
 	<label for="user-first-name" class="form-label">First Name</label>
 	<input type="text" name="user-first-name" class="form-control @classAddon" id="user-first-name" aria-describedby="FirstName" placeholder="Enter first name">
