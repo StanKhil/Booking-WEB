@@ -1,11 +1,40 @@
-﻿export function adminCreateUser() {
-    console.log("USER CREATE");
+﻿
+export function adminCreateUser(form) {
+    console.log(form);
+    fetch("/api/user", {
+        method: "POST",
+        body: new FormData(form)
+    }).then(r => r.json()).then(console.log);
 }
-export function adminUpdateUser() {
-    console.log("USER UPDATE");
+export function adminUpdateUser(form) {
+    const login = form.querySelector("input[name='user-former-login']").value;
+
+    const data = {
+        FormerLogin: form.querySelector("input[name='user-former-login']").value,
+        FirstName: form.querySelector("input[name='user-first-name']").value,
+        LastName: form.querySelector("input[name='user-last-name']").value,
+        Email: form.querySelector("input[name='user-email']").value,
+        Birthdate: form.querySelector("input[name='user-birthdate']").value || null,
+        Login: form.querySelector("input[name='user-login']").value,
+        Password: form.querySelector("input[name='user-password']").value,
+        RoleId: form.querySelector("select[name='user-role']").value
+    };
+
+    fetch(`/api/user/${login}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data) 
+    })
+        .then(r => r.json())
+        .then(console.log)
+        .catch(console.error);
 }
-export function adminDeleteUser() {
-    console.log("USER DELETE");
+
+export function adminDeleteUser(form) {
+    fetch("/api/user", {
+        method: "DELETE",
+        body: new FormData(form)
+    }).then(r => r.json()).then(console.log);
 }
 export function adminFillInUserTable() {
     const table = document.getElementById('admin-user-table');
@@ -17,14 +46,23 @@ export function adminFillInUserTable() {
 }
 
 
-export function adminCreateRealty() {
-    console.log("REALTY CREATE");
+export function adminCreateRealty(form) {
+    console.log(form);
+    fetch("/api/realty", {
+        method: "POST",
+        body: new FormData(form)
+    }).then(r => r.json()).then(console.log);
 }
-export function adminUpdateRealty() {
-    console.log("REALTY UPDATE");
+export function adminUpdateRealty(form) {
+    fetch("/api/realty", {
+        method: "PATCH",
+        body: new FormData(form)
+    }).then(r => r.json()).then(console.log);
 }
-export function adminDeleteRealty() {
-    console.log("REALTY DELETE");
+export function adminDeleteRealty(slug) {
+    fetch(`/api/realty/${slug}`, {
+        method: "DELETE",
+    }).then(r => r.json()).then(console.log);
 }
 export function adminFillInRealtyTable() {
     const table = document.getElementById('admin-realty-table');
@@ -34,9 +72,6 @@ export function adminFillInRealtyTable() {
         table.querySelector('tbody').innerHTML = userData;
     });
 }
-
-
-
 const getUserTableData = async (actionName) => {
     const response = await fetch(`/Administrator/${actionName}`, { method: "GET" });
     return await response.text();

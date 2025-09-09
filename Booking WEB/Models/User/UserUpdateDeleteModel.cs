@@ -8,9 +8,6 @@ namespace Booking_WEB.Models.User
         [FromForm(Name = "user-former-login")]
         public String FormerLogin { get; set; } = null!;
 
-        [FromForm(Name = "user-delete-login")]
-        public String DeleteLogin { get; set; } = null!;
-
         [FromForm(Name = "user-first-name")]
         public String FirstName { get; set; } = null!;
 

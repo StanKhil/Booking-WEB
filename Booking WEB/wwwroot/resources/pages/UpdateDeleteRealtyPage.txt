@@ -1,9 +1,9 @@
 ﻿<div class="container">
 
-<h3>Update Users</h3>
+<h3>Update Realties</h3>
 <hr>
 
-<form id="realty-update-form">
+<form id="realty-update-form" enctype="multipart/form-data">
 
 <div class="mb-3">
 	<label for="realty-former-slug" class="form-label">Slug</label>
@@ -45,13 +45,13 @@
 
 <div class="mb-3">
 	<label for="realty-city" class="form-label">New city</label>
-	<input type="tex" name="realty-city" class="form-control @classAddon" id="realty-city" aria-describedby="City" placeholder="New city">
+	<input type="text" name="realty-city" class="form-control @classAddon" id="realty-city" aria-describedby="City" placeholder="New city">
 	<div class="invalid-feedback">@errorMessage</div>
 </div>
 
 <div class="mb-3">
 	<label for="realty-group" class="form-label">Group</label>
-	<select class="form-select" aria-label="Group form select">
+	<select name="realty-group" class="form-select" aria-label="Group form select">
 		<option value="Apartments">Apartments</option>
 		<option value="Villas">Villas</option>
 		<option value="Houses">Houses</option>
@@ -68,10 +68,9 @@
   <label for="realty-secondary-images" class="form-label">Secondary images</label>
   <input type="file" name="realty-secondary-images" class="form-control" id="realty-secondary-images" aria-describedby="Secondary images" data-show-upload="false" data-show-caption="true" multiple>
 </div>
-
+<button type="submit" data-action="update-user" class="btn btn-info w-100" id="admin-realty-update-button">Update</button>
 </form>
 
-<button data-action="update-user" class="btn btn-info w-100" id="admin-realty-update-button">Update</button>
 <div role="alert" class="alert" style="display: none" id="admin-realty-update-alert"></div>
 
 <hr>

@@ -30,7 +30,7 @@
 
 <div class="mb-3">
 	<label for="user-birthdate" class="form-label">Date of birth</label>
-	<input type="date" name="birthdate"  class="form-control @classAddon" id="user-birthdate" aria-describedby="Birthdate" placeholder="Enter birthdate">
+	<input type="date" name="user-birthdate"  class="form-control @classAddon" id="user-birthdate" aria-describedby="Birthdate" placeholder="Enter birthdate">
 	<div class="invalid-feedback">@errorMessage</div>
 </div>
 
@@ -42,17 +42,17 @@
 
 <div class="mb-3">
 	<label for="user-role" class="form-label">Role</label>
-	<select class="form-select" aria-label="Role form select">
+	<select name="user-role" class="form-select" aria-label="Role form select">
 		<option value="SelfRegistered">Self-Registered</option>
 		<option value="Employee">Employee</option>
 		<option value="Moderator">Moderator</option>
 		<option value="Administrator">Administrator</option>
 	</select>
 </div>
-
+<button type="submit" data-action="create-user" class="btn btn-success w-100" id="admin-create-user-button">Create</button>
 </form>
 
-<button data-action="create-user" class="btn btn-success w-100" id="admin-create-user-button">Create</button>
+
 <div role="alert" class="alert" style="display: none" id="admin-user-create-alert"></div>
 
 </div>

@@ -1,7 +1,7 @@
 ﻿import Base64 from "./Base64.js";
 //import { userCreate, userUpdateDelete, userDatabase, realtyCreate, realtyUpdateDelete, realtyDatabase } from "./resources.js";
-//import { adminFillInUserTable, adminCreateUser, adminUpdateUser, adminDeleteUser } from "./admin.js";
-//import { adminFillInRealtyTable, adminCreateRealty, adminUpdateRealty, adminDeleteRealty } from "./admin.js";
+import { adminFillInUserTable, adminCreateUser, adminUpdateUser, adminDeleteUser } from "./admin.js";
+import { adminFillInRealtyTable, adminCreateRealty, adminUpdateRealty, adminDeleteRealty } from "./admin.js";
 
 document.addEventListener('DOMContentLoaded', function ()
 {
@@ -211,8 +211,14 @@ document.addEventListener('submit', e => {
     }
     if (form.id == "realty-delete-form")
     {
+        const slug = document.getElementById("realty-delete-slug").value.trim();
+        if (!slug) {
+            alert("Please enter a slug to delete");
+            return;
+        }
+
         e.preventDefault();
-        adminDeleteRealty(form)
+        adminDeleteRealty(slug);
     }
 
     if (form.id == "user-add-form")
@@ -312,97 +318,9 @@ function showPage(page)
         case 'realty-update-delete': spaContainer.innerHTML = realtyUpdateDelete; break;
         case 'view-realty-database': spaContainer.innerHTML = realtyDatabase; adminFillInRealtyTable(); break;
 
-        // ========== PROFILE ==========
         default: spaContainer.innerHTML = `<div class="alert alert-danger" role="alert">Something went wrong!</div>`;
     }
-    //setupActions();
 }
-//function setupActions()
-//{
-//    for (let button of document.querySelectorAll('[data-action]'))
-//    {
-//        switch (button.dataset.action)
-//        {
-//            case "create-user": button.onclick = adminCreateUser; break;
-//            case "update-user": button.onclick = adminUpdateUser; break;
-//            case "delete-user": button.onclick = adminDeleteUser; break;
-//            case "create-realty": button.onclick = adminCreateRealty; break;
-//            case "update-realty": button.onclick = adminUpdateRealty; break;
-//            case "delete-realty": button.onclick = adminDeleteRealty; break;
-//        }
-//    }
-//}
-
-// ----------------TO REMOVE LATER--------------------
-
-export function adminCreateUser(form)
-{
-    console.log(form);
-    fetch("/User/Create", {
-        method: "POST",
-        body: new FormData(form)
-    }).then(r => r.json()).then(console.log);
-}
-export function adminUpdateUser(form)
-{
-    fetch("/User/Update", {
-        method: "POST",
-        body: new FormData(form)
-    }).then(r => r.json()).then(console.log);
-}
-export function adminDeleteUser(form)
-{
-    fetch("/User/Delete", {
-        method: "POST",
-        body: new FormData(form)
-    }).then(r => r.json()).then(console.log);
-}
-export function adminFillInUserTable() {
-    const table = document.getElementById('admin-user-table');
-    if (!table) throw "Element 'admin-user-table' was not found";
-    getUserTableData("GetUsersTable").then(s => {
-        const userData = s;
-        table.querySelector('tbody').innerHTML = userData;
-    });
-}
-
-
-export function adminCreateRealty(form)
-{
-    console.log(form);  
-    fetch("/api/realty", {
-        method: "POST",
-        body: new FormData(form)
-    }).then(r => r.json()).then(console.log);
-}
-export function adminUpdateRealty(form)
-{
-    fetch("/Realty/Update", {
-        method: "POST",
-        body: new FormData(form)
-    }).then(r => r.json()).then(console.log);
-}
-export function adminDeleteRealty(form)
-{
-    fetch("/Realty/Delete", {
-        method: "POST",
-        body: new FormData(form)
-    }).then(r => r.json()).then(console.log);
-}
-export function adminFillInRealtyTable() {
-    const table = document.getElementById('admin-realty-table');
-    if (!table) throw "Element 'admin-realty-table' was not found";
-    getUserTableData("GetRealtiesTable").then(s => {
-        const userData = s;
-        table.querySelector('tbody').innerHTML = userData;
-    });
-}
-const getUserTableData = async (actionName) => {
-    const response = await fetch(`/Administrator/${actionName}`, { method: "GET" });
-    return await response.text();
-}
-
-
 
 const getHtml = async (fileName, path) => {
     const response = await fetch(`/Resources/GetHtmlPage?fileName=${fileName}`);

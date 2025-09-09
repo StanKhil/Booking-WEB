@@ -51,17 +51,16 @@
 
 <div class="mb-3">
 	<label for="user-role" class="form-label">New role</label>
-	<select class="form-select" aria-label="Role form select">
+	<select name="user-role" class="form-select" aria-label="Role form select">
 		<option value="SelfRegistered">Self-Registered</option>
 		<option value="Employee">Employee</option>
 		<option value="Moderator">Moderator</option>
 		<option value="Administrator">Administrator</option>
 	</select>
 </div>
-
+<button type="submit" data-action="update-user" class="btn btn-info w-100" id="admin-user-update-button">Update</button>
 </form>
 
-<button data-action="update-user" class="btn btn-info w-100" id="admin-user-update-button">Update</button>
 <div role="alert" class="alert" style="display: none" id="admin-user-update-alert"></div>
 
 <hr>

@@ -55,6 +55,7 @@ namespace Booking_WEB.Data.DataAccessors
         {
             IQueryable<Realty> query = _context.Realties
                 .Include(r => r.City)
+                .ThenInclude(c => c.Country)
                 .Include(r => r.RealtyGroup);
 
             if (!isEditable)

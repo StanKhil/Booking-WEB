@@ -38,6 +38,7 @@ namespace Booking_WEB
             builder.Services.AddScoped<RealtyAccessor>();
             builder.Services.AddScoped<UserDataAccessor>();
             builder.Services.AddScoped<BookingItemAccessor>();
+            builder.Services.AddScoped<ItemImageAccessor>();
 
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options => 

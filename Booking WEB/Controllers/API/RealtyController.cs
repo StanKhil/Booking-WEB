@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text.Json;
 using Booking_WEB.Filters;
 using Booking_WEB.Models.Rest;
+using Azure;
 
 namespace Booking_WEB.Controllers.API
 {
@@ -20,11 +21,13 @@ namespace Booking_WEB.Controllers.API
         ILogger<RealtyController> logger,
         RealtyAccessor realtyAccessor,
         IStorageService storageService,
-        IOptions<StorageOptions> options) : ControllerBase
+        IOptions<StorageOptions> options,
+        ItemImageAccessor itemImageAccessor) : ControllerBase
     {
         private readonly ILogger<RealtyController> _logger = logger;
         private readonly RealtyAccessor _realtyAccessor = realtyAccessor;
         private readonly IStorageService _storageService = storageService;
+        private readonly ItemImageAccessor _itemImageAccessor = itemImageAccessor;
         IOptions<StorageOptions> _options = options;
 
 
@@ -96,11 +99,11 @@ namespace Booking_WEB.Controllers.API
 
 
         [HttpPatch]
-        public async Task<ActionResult<RestResponse>> Update([FromBody] Realty model)
+        public async Task<ActionResult<RestResponse>> Update([FromForm] UpdateRealtyFormModel model)
         {
             try
             {
-                if (model == null || model.Id == Guid.Empty)
+                if (model == null)
                 {
                     return BadRequest(new RestResponse
                     {
@@ -110,7 +113,8 @@ namespace Booking_WEB.Controllers.API
                     });
                 }
 
-                var realty = await _realtyAccessor.GetRealtyBySlugAsync(model.Id.ToString(), true);
+                var realty = await _realtyAccessor.GetRealtyBySlugAsync(model.FormerSlug, true);
+
                 if (realty == null)
                 {
                     return NotFound(new RestResponse
@@ -121,7 +125,7 @@ namespace Booking_WEB.Controllers.API
                     });
                 }
 
-                var slugExists = await _realtyAccessor.SlugExistsAsync(model.Slug!, model.Id);
+                var slugExists = await _realtyAccessor.SlugExistsAsync(model.Slug!, realty.Id);
                 if (slugExists)
                 {
                     return Conflict(new RestResponse
@@ -137,8 +141,42 @@ namespace Booking_WEB.Controllers.API
                 if (!string.IsNullOrEmpty(model.Slug)) realty.Slug = model.Slug;
                 if (model.Price > 0) realty.Price = model.Price;
 
-                realty.CityId = model.CityId;
-                realty.GroupId = model.GroupId;
+                var countryId = await _realtyAccessor.GetCountryIdByNameAsync(model.Country!);
+                var cityId = await _realtyAccessor.GetCityIdByNameAsync(model.City!, countryId);
+                var groupId = await _realtyAccessor.GetGroupIdByNameAsync(model.Group!);
+
+                realty.CityId = cityId;
+                realty.GroupId = groupId;
+
+                string? savedName = null;
+                
+                try
+                {
+                    List<String> urls = new();
+
+                    _storageService.TryGetMimeType(model.Image!.FileName);
+                    savedName = await _storageService.SaveItemAsync(model.Image);
+                    urls.Add(savedName);
+
+                    foreach (var img in model.SecondaryImages!)
+                    {
+                        _storageService.TryGetMimeType(img.FileName);
+                        savedName = await _storageService.SaveItemAsync(img);
+                        urls.Add(savedName);
+                    }
+
+                    await _itemImageAccessor.AddRangeAsync(realty.Id, urls);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(new RestResponse
+                    {
+                        Status = RestStatus.RestStatus400,
+                        Meta = BuildMeta("Update"),
+                        Data = $"Image upload failed: {ex.Message}"
+                    });
+                }
+                
 
                 await _realtyAccessor.UpdateAsync(realty);
 
@@ -161,12 +199,12 @@ namespace Booking_WEB.Controllers.API
         }
 
 
-        [HttpDelete("{id:guid}")]
-        public async Task<ActionResult<RestResponse>> Delete(Guid id)
+        [HttpDelete("{slug}")]
+        public async Task<ActionResult<RestResponse>> DeleteBySlug(string slug)
         {
             try
             {
-                var realty = await _realtyAccessor.GetRealtyBySlugAsync(id.ToString(), true);
+                var realty = await _realtyAccessor.GetRealtyBySlugAsync(slug, true);
                 if (realty == null)
                 {
                     return NotFound(new RestResponse
@@ -196,6 +234,7 @@ namespace Booking_WEB.Controllers.API
                 });
             }
         }
+
 
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<RestResponse>> GetById(Guid id)
