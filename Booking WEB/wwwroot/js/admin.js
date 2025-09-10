@@ -31,11 +31,23 @@ export function adminUpdateUser(form) {
 }
 
 export function adminDeleteUser(form) {
-    fetch("/api/user", {
-        method: "DELETE",
-        body: new FormData(form)
-    }).then(r => r.json()).then(console.log);
+    const login = form.querySelector("input[name='user-delete-login']").value;
+    fetch(`/api/user/${login}`, {
+        method: "DELETE"
+    })
+        .then(r => {
+            if (r.status === 204) {
+                console.log("User deleted");
+                return;
+            }
+            return r.json();
+        })
+        .then(data => {
+            if (data) console.log(data);
+        })
+        .catch(console.error);
 }
+
 export function adminFillInUserTable() {
     const table = document.getElementById('admin-user-table');
     if (!table) throw "Element 'admin-user-table' was not found";

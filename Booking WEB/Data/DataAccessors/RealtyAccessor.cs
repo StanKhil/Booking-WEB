@@ -28,6 +28,14 @@ namespace Booking_WEB.Data.DataAccessors
                 .Include(r => r.City).FirstOrDefaultAsync(r => (r.Slug == slug || r.Id.ToString() == slug) && r.DeletedAt == null);
         }
 
+        public async Task<Realty?> GetRealtyByIdAsync(Guid id, bool isEditable = false)
+        {
+            var query = _context.Realties.AsQueryable();
+            if (!isEditable)
+                query = query.AsNoTracking();
+            return await query.Include(r => r.Images).Include(r => r.Feedbacks)
+                .Include(r => r.City).FirstOrDefaultAsync(r => r.Id == id && r.DeletedAt == null);
+        }
         public async Task CreateAsync(Realty realty)
         {
             _context.Realties.Add(realty);
@@ -38,6 +46,18 @@ namespace Booking_WEB.Data.DataAccessors
         {
             _context.Realties.Update(realty);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteImagesByRealtySlug(string slug)
+        {
+            var realty = await _context.Realties
+                .Include(r => r.Images)
+                .FirstOrDefaultAsync(r => r.Slug == slug && r.DeletedAt == null);
+            if (realty != null)
+            {
+                _context.ItemImages.RemoveRange(realty.Images);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task SoftDeleteAsync(Realty realty)
@@ -125,6 +145,20 @@ namespace Booking_WEB.Data.DataAccessors
             return await _context.Realties
                 .Where(r => r.DeletedAt == null)
                 .OrderBy(r => r.Name)
+                .ToListAsync();
+        }
+
+        public async Task<List<Realty>> GetRealtiesByLowerRate(int rate)
+        {
+            return await _context.Realties
+                .Where(r => r.DeletedAt == null && r.AccRates != null && r.AccRates.AvgRate >= rate)
+                .ToListAsync();
+        }
+
+        public async Task<List<Realty>> GetRealtiesByPriceRange(decimal minPrice = 0, decimal maxPrice = 10000)
+        {
+            return await _context.Realties
+                .Where(r => r.DeletedAt == null && r.Price >= minPrice && r.Price <= maxPrice)
                 .ToListAsync();
         }
     }

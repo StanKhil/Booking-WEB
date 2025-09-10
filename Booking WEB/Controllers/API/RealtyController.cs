@@ -152,6 +152,7 @@ namespace Booking_WEB.Controllers.API
                 
                 try
                 {
+                    await _realtyAccessor.DeleteImagesByRealtySlug(model.FormerSlug);
                     List<String> urls = new();
 
                     _storageService.TryGetMimeType(model.Image!.FileName);
@@ -363,6 +364,54 @@ namespace Booking_WEB.Controllers.API
                 {
                     Status = RestStatus.RestStatus500,
                     Meta = BuildMeta("GetSortedByRating"),
+                    Data = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("filter/rate/{rate:int}")]
+        public async Task<ActionResult<RestResponse>> GetByLowerRate(int rate)
+        {
+            try
+            {
+                var realties = await _realtyAccessor.GetRealtiesByLowerRate(rate);
+                return Ok(new RestResponse
+                {
+                    Status = new RestStatus { Code = 200, IsOk = true, Phrase = "OK" },
+                    Meta = BuildMeta("GetByLowerRate"),
+                    Data = realties
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new RestResponse
+                {
+                    Status = RestStatus.RestStatus500,
+                    Meta = BuildMeta("GetByLowerRate"),
+                    Data = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("filter/price")]
+        public async Task<ActionResult<RestResponse>> GetByPriceRange([FromQuery] decimal minPrice = 0, [FromQuery] decimal maxPrice = 10000)
+        {
+            try
+            {
+                var realties = await _realtyAccessor.GetRealtiesByPriceRange(minPrice, maxPrice);
+                return Ok(new RestResponse
+                {
+                    Status = new RestStatus { Code = 200, IsOk = true, Phrase = "OK" },
+                    Meta = BuildMeta("GetByPriceRange"),
+                    Data = realties
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new RestResponse
+                {
+                    Status = RestStatus.RestStatus500,
+                    Meta = BuildMeta("GetByPriceRange"),
                     Data = ex.Message
                 });
             }
