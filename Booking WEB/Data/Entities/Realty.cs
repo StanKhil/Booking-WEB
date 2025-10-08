@@ -12,7 +12,7 @@ using System.Text.Json.Serialization;
 
 namespace Booking_WEB.Data.Entities
 {
-    public class Realty
+    public record Realty
     {
         public Guid Id { get; set; }
         public Guid GroupId { get; set; }

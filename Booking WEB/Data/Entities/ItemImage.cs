@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Booking_WEB.Data.Entities
 {
-    public class ItemImage
+    public record ItemImage
     {
         public Guid ItemId { get; set; }
         public String ImageUrl { get; set; } = null!;

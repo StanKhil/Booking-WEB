@@ -29,6 +29,8 @@ namespace Booking_WEB.Controllers.API
         private readonly IStorageService _storageService = storageService;
         private readonly ItemImageAccessor _itemImageAccessor = itemImageAccessor;
         IOptions<StorageOptions> _options = options;
+        String imgPath => HttpContext.Request.Scheme + "://" +
+               HttpContext.Request.Host + "/Storage/Item/";
 
 
         [HttpPost]
@@ -253,6 +255,27 @@ namespace Booking_WEB.Controllers.API
                     });
                 }
 
+                realty = realty with
+                {
+                    Images = realty.Images?.Select(i => i with
+                    {
+                        ImageUrl = string.IsNullOrEmpty(i.ImageUrl) ? null : imgPath + i.ImageUrl
+                    }).ToList() ?? [],
+
+                    RealtyGroup = realty.RealtyGroup is null
+                ? null!
+                : realty.RealtyGroup with
+                {
+                    ImageUrl = string.IsNullOrEmpty(realty.RealtyGroup.ImageUrl)
+                        ? null
+                        : imgPath + realty.RealtyGroup.ImageUrl,
+
+                    Images = realty.RealtyGroup.Images?.Select(gimg => gimg with
+                    {
+                        ImageUrl = string.IsNullOrEmpty(gimg.ImageUrl) ? null : imgPath + gimg.ImageUrl
+                    }).ToList() ?? []
+                }
+                };
                 return Ok(new RestResponse
                 {
                     Status = new RestStatus { Code = 200, IsOk = true, Phrase = "OK" },
@@ -277,11 +300,12 @@ namespace Booking_WEB.Controllers.API
             try
             {
                 var realties = await _realtyAccessor.GetAllAsync();
+                var result = AttachImagePaths(realties);
                 return Ok(new RestResponse
                 {
                     Status = new RestStatus { Code = 200, IsOk = true, Phrase = "OK" },
                     Meta = BuildMeta("GetAll"),
-                    Data = realties
+                    Data = result
                 });
             }
             catch (Exception ex)
@@ -300,12 +324,13 @@ namespace Booking_WEB.Controllers.API
         {
             try
             {
-                var realties = await _realtyAccessor.GetRealtiesByFilterAsync(country, city, group);
+                var realties = await _realtyAccessor.GetRealtiesByFilterAsync(country!, city!, group!);
+                var result = AttachImagePaths(realties);
                 return Ok(new RestResponse
                 {
                     Status = new RestStatus { Code = 200, IsOk = true, Phrase = "OK" },
                     Meta = BuildMeta("GetByFilter"),
-                    Data = realties
+                    Data = result
                 });
             }
             catch (Exception ex)
@@ -327,11 +352,12 @@ namespace Booking_WEB.Controllers.API
             try
             {
                 var realties = await _realtyAccessor.GetRealtiesSortedByPrice();
+                var result = AttachImagePaths(realties);
                 return Ok(new RestResponse
                 {
                     Status = new RestStatus { Code = 200, IsOk = true, Phrase = "OK" },
                     Meta = BuildMeta("GetSortedByPrice"),
-                    Data = realties
+                    Data = result
                 });
             }
             catch (Exception ex)
@@ -351,11 +377,12 @@ namespace Booking_WEB.Controllers.API
             try
             {
                 var realties = await _realtyAccessor.GetRealtiesSortedByRating();
+                var result = AttachImagePaths(realties);
                 return Ok(new RestResponse
                 {
                     Status = new RestStatus { Code = 200, IsOk = true, Phrase = "OK" },
                     Meta = BuildMeta("GetSortedByRating"),
-                    Data = realties
+                    Data = result
                 });
             }
             catch (Exception ex)
@@ -375,11 +402,12 @@ namespace Booking_WEB.Controllers.API
             try
             {
                 var realties = await _realtyAccessor.GetRealtiesByLowerRate(rate);
+                var result = AttachImagePaths(realties);
                 return Ok(new RestResponse
                 {
                     Status = new RestStatus { Code = 200, IsOk = true, Phrase = "OK" },
                     Meta = BuildMeta("GetByLowerRate"),
-                    Data = realties
+                    Data = result
                 });
             }
             catch (Exception ex)
@@ -399,11 +427,12 @@ namespace Booking_WEB.Controllers.API
             try
             {
                 var realties = await _realtyAccessor.GetRealtiesByPriceRange(minPrice, maxPrice);
+                var result = AttachImagePaths(realties);
                 return Ok(new RestResponse
                 {
                     Status = new RestStatus { Code = 200, IsOk = true, Phrase = "OK" },
                     Meta = BuildMeta("GetByPriceRange"),
-                    Data = realties
+                    Data = result
                 });
             }
             catch (Exception ex)
@@ -427,5 +456,31 @@ namespace Booking_WEB.Controllers.API
                 Method = HttpContext.Request.Method
             };
         }
+
+        private IEnumerable<Realty> AttachImagePaths(IEnumerable<Realty> realties)
+        {
+            return realties.Select(r => r with
+            {
+                Images = r.Images?.Select(img => img with
+                {
+                    ImageUrl = string.IsNullOrEmpty(img.ImageUrl) ? null : imgPath + img.ImageUrl
+                }).ToList() ?? [],
+
+                RealtyGroup = r.RealtyGroup is null
+                    ? null!
+                    : r.RealtyGroup with
+                    {
+                        ImageUrl = string.IsNullOrEmpty(r.RealtyGroup.ImageUrl)
+                            ? null
+                            : imgPath + r.RealtyGroup.ImageUrl,
+
+                        Images = r.RealtyGroup.Images?.Select(gimg => gimg with
+                        {
+                            ImageUrl = string.IsNullOrEmpty(gimg.ImageUrl) ? null : imgPath + gimg.ImageUrl
+                        }).ToList() ?? []
+                    }
+            });
+        }
+
     }
 }

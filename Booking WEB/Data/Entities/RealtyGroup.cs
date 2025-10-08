@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Booking_WEB.Data.Entities
 {
-    public class RealtyGroup
+    public record RealtyGroup
     {
         public Guid Id { get; set; }
         public Guid? ParentId { get; set; }
