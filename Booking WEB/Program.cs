@@ -48,6 +48,14 @@ namespace Booking_WEB
                 options.Cookie.IsEssential = true;
             });
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    policy =>
+                    {
+                        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                    });
+            });
 
             var app = builder.Build();
 
@@ -60,6 +68,8 @@ namespace Booking_WEB
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+
+            app.UseCors();
 
             app.MapStaticAssets();
 

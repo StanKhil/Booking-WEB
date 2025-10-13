@@ -1,19 +1,21 @@
-﻿using Booking_WEB.Data.Entities;
+﻿using Booking_WEB.Data.DataAccessors;
+using Booking_WEB.Data.Entities;
+using Booking_WEB.Models.Rest;
 using Booking_WEB.Models.User;
+using Booking_WEB.Services.Jwt;
+using Booking_WEB.Services.Kdf;
 using Booking_WEB.Services.Random;
 using Booking_WEB.Services.Time;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
-using Booking_WEB.Services.Jwt;
-using Booking_WEB.Data;
-using Booking_WEB.Services.Kdf;
 using System.Text.RegularExpressions;
-using System.IdentityModel.Tokens.Jwt;
-using Booking_WEB.Data.DataAccessors;
 
-namespace Booking_WEB.Controllers
+
+
+namespace Booking_WEB.Controllers.API
 {
+    [Route("api/auth")]
+    [ApiController]
     public class AuthController(
         IRandomService randomService,
         IKdfService kdfService,
@@ -34,123 +36,103 @@ namespace Booking_WEB.Controllers
         private readonly UserAccessAccessor _userAccessAccessor = userAccessAccessor;
         private readonly UserDataAccessor _userDataAccessor = userDataAccessor;
         private readonly AccessTokenAccessor _accessTokenAccessor = accessTokenAccessor;
+        const String authSessionKey = "userAccess";
 
         // ============= REGISTRATION ============= //
-        public async Task<ViewResult> SignUp()
-        {
-            UserSignupPageModel model = new();
-            if (HttpContext.Session.Keys.Contains("UserSignupFormModel"))
-            {
-                model.FormModel = JsonSerializer.
-                    Deserialize<UserSignupFormModel>(
-                        HttpContext.Session.
-                        GetString("UserSignupFormModel")!);
-                model.FormErrors = await ProcessSignupData(model.FormModel!);
-
-                HttpContext.Session.Remove("UserSignupFormModel");
-            }
-            return View("~/Views/User/SignUp.cshtml", model);
-        }
-
-        [HttpPost]
-        public async Task<RedirectToActionResult> Register(UserSignupFormModel model)
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] UserSignupFormModel model)
         {
             var errors = await ProcessSignupData(model);
+
             if (errors.Count > 0)
             {
-                HttpContext.Session.SetString(
-                    "UserSignupFormModel", JsonSerializer.Serialize(model)
-                );
-                return RedirectToAction(nameof(SignUp));
+                return BadRequest(new
+                {
+                    status = 400,
+                    errors
+                });
             }
-            else
+
+            return Ok(new
             {
-                return RedirectToAction("Index", "Home");
-            }
+                status = 200,
+                message = "Registration successful"
+            });
         }
 
-        private async Task<Dictionary<String, String>> ProcessSignupData(UserSignupFormModel model)
+        private async Task<Dictionary<string, string>> ProcessSignupData(UserSignupFormModel model)
         {
-            Dictionary<String, String> errors = [];
-            #region Validation
+            Dictionary<string, string> errors = new();
 
-            if (String.IsNullOrEmpty(model.UserFirstName)) errors[nameof(model.UserFirstName)] = "First Name must not be empty!";
-            if (String.IsNullOrEmpty(model.UserLastName)) errors[nameof(model.UserLastName)] = "Last Name must not be empty!";
-            if (String.IsNullOrEmpty(model.UserEmail)) errors[nameof(model.UserEmail)] = "Email must not be empty!";
-            if (String.IsNullOrEmpty(model.UserLogin)) errors[nameof(model.UserLogin)] = "Login must not be empty!";
-            else
-            {
-                if (model.UserLogin.Contains(":")) errors[nameof(model.UserLogin)] = "Login must not contain ':'!";
-            }
+            // === Validation ===
+            if (string.IsNullOrEmpty(model.UserFirstName))
+                errors[nameof(model.UserFirstName)] = "First Name must not be empty!";
+            if (string.IsNullOrEmpty(model.UserLastName))
+                errors[nameof(model.UserLastName)] = "Last Name must not be empty!";
+            if (string.IsNullOrEmpty(model.UserEmail))
+                errors[nameof(model.UserEmail)] = "Email must not be empty!";
+            if (string.IsNullOrEmpty(model.UserLogin))
+                errors[nameof(model.UserLogin)] = "Login must not be empty!";
+            else if (model.UserLogin.Contains(":"))
+                errors[nameof(model.UserLogin)] = "Login must not contain ':'!";
+
             if (string.IsNullOrEmpty(model.UserPassword))
             {
                 errors[nameof(model.UserPassword)] = "Password cannot be empty";
                 errors[nameof(model.UserRepeat)] = "Invalid original password";
             }
-            else
+            else if (!_passwordRegex.IsMatch(model.UserPassword))
             {
-                if (!_passwordRegex.IsMatch(model.UserPassword))
-                {
-                    errors[nameof(model.UserPassword)] = "Password must be at least 12 characters long and contain lower, upper case letters, at least one number and at least one special character";
-                    errors[nameof(model.UserRepeat)] = "Invalid original password";
-                }
-                else
-                {
-                    if (model.UserRepeat != model.UserPassword) errors[nameof(model.UserRepeat)] = "Passwords must match";
-                }
+                errors[nameof(model.UserPassword)] =
+                    "Password must be at least 12 characters long and contain lower, upper case letters, at least one number and at least one special character";
+                errors[nameof(model.UserRepeat)] = "Invalid original password";
             }
-            //if (String.IsNullOrEmpty(model.UserPassword)) errors[nameof(model.UserPassword)] = "Password must not be empty!";
-            //else if (model.UserPassword.Length < 6) errors[nameof(model.UserPassword)] = "Password must be over 6 characters!";
-            //else if (!model.UserPassword.Any(char.IsUpper))
-            //    errors[nameof(model.UserPassword)] = "Password must contain at least one uppercase letter!";
-            //
-            //if (String.IsNullOrEmpty(model.UserRepeat))
-            //    errors[nameof(model.UserRepeat)] = "Repeat password must not be empty!";
-            //else if (model.UserRepeat != model.UserPassword)
-            //    errors[nameof(model.UserRepeat)] = "Repeat password does not match!";
-
-            if (!model.Agree) errors[nameof(model.Agree)] = "You must agree with policies!";
-
-            #endregion
-            if (errors.Count == 0)
+            else if (model.UserRepeat != model.UserPassword)
             {
-                Guid userId = Guid.NewGuid();
-
-                UserData user = new()
-                {
-                    Id = userId,
-                    FirstName = model.UserFirstName,
-                    LastName = model.UserLastName,
-                    Email = model.UserEmail,
-                    BirthDate = model.Birthdate,
-                    RegisteredAt = DateTime.Now,
-
-                };
-
-                String salt = _randomService.Otp(12);
-                UserAccess userAccess = new()
-
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = userId,
-                    Login = model.UserLogin,
-                    Salt = salt,
-                    Dk = _kdfService.Dk(model.UserPassword, salt),
-                    RoleId = "SelfRegistered"
-                };
-
-                try
-                {
-                    await _userDataAccessor.CreateAsync(user);
-                    await _userAccessAccessor.CreateAsync(userAccess);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError("SignUp: {e}", e.Message);
-                    errors[nameof(model.UserLogin)] = "Login already exists";
-                    return errors;
-                }
+                errors[nameof(model.UserRepeat)] = "Passwords must match";
             }
+
+            if (!model.Agree)
+                errors[nameof(model.Agree)] = "You must agree with policies!";
+
+            if (errors.Count > 0)
+                return errors;
+
+            // === Registration ===
+            Guid userId = Guid.NewGuid();
+
+            UserData user = new()
+            {
+                Id = userId,
+                FirstName = model.UserFirstName,
+                LastName = model.UserLastName,
+                Email = model.UserEmail,
+                BirthDate = model.Birthdate,
+                RegisteredAt = DateTime.Now
+            };
+
+            string salt = _randomService.Otp(12);
+            UserAccess userAccess = new()
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Login = model.UserLogin,
+                Salt = salt,
+                Dk = _kdfService.Dk(model.UserPassword, salt),
+                RoleId = "SelfRegistered"
+            };
+
+            try
+            {
+                await _userDataAccessor.CreateAsync(user);
+                await _userAccessAccessor.CreateAsync(userAccess);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("SignUp: {e}", e.Message);
+                errors[nameof(model.UserLogin)] = "Login already exists";
+            }
+
             return errors;
         }
 
@@ -249,20 +231,11 @@ namespace Booking_WEB.Controllers
             HttpContext.Session.SetString("AuthToken", jwt);
             HttpContext.Session.SetString("userAccess", JsonSerializer.Serialize(userAccess));
 
-            return Json(new
+            return Json(new RestResponse
             {
-                Status = 200,
+                Status = RestStatus.RestStatus200,
                 Data = _jwtService.EncodeJwt(jwt)
             });
-        }
-
-        public IActionResult LoginView()
-        {
-            if (HttpContext.Session.Keys.Contains("userAccess"))
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            return View("~/Views/User/LoginView.cshtml");
         }
     }
 }

@@ -27,6 +27,8 @@ namespace Booking_WEB.Services.Storage
                 ".jpg" => "image/jpeg",
                 ".png" => "image/png",
                 ".bmp" => "image/bmp",
+                ".jpeg" => "image/jpeg",
+                ".svg" => "image/svg",
                 _ => throw new ArgumentException($"Unsupported exception '{ext}'")
             };
         }
