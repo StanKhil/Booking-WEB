@@ -234,7 +234,7 @@ namespace Booking_WEB.Controllers.API
             return Json(new RestResponse
             {
                 Status = RestStatus.RestStatus200,
-                Data = _jwtService.EncodeJwt(jwt)
+                Data = jwt
             });
         }
     }
