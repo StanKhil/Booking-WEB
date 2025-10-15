@@ -49,14 +49,14 @@ namespace Booking_WEB.Controllers.API
                 return BadRequest(new
                 {
                     status = 400,
-                    errors
+                    message = errors
                 });
             }
 
             return Ok(new
             {
-                status = 200,
-                message = "Registration successful"
+                Status = RestStatus.RestStatus200,
+                Data = "Registration successful"
             });
         }
 
