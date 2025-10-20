@@ -1,5 +1,6 @@
 ﻿using Booking_WEB.Data.DataAccessors;
 using Booking_WEB.Data.Entities;
+using Booking_WEB.Models.Rest;
 using Booking_WEB.Models.User;
 using Booking_WEB.Services.Kdf;
 using Booking_WEB.Services.Random;
@@ -15,7 +16,7 @@ namespace Booking_WEB.Controllers.API
         UserDataAccessor userDataAccessor,
         IKdfService kdfService,
         IRandomService randomService
-        ) : ControllerBase
+        ) : Controller
     {
 
         private readonly UserAccessAccessor _userAccessAccessor = userAccessAccessor;
@@ -164,13 +165,17 @@ namespace Booking_WEB.Controllers.API
             var ua = await _userAccessAccessor.GerUserAccessByLoginAsync(login);
             if (ua == null) return NotFound();
 
-            return Ok(new
+            return Json(new RestResponse
             {
-                ua.UserData.Id,
-                ua.Login,
-                ua.UserData.FirstName,
-                ua.UserData.LastName,
-                ua.UserData.Email
+                Data = new
+                {
+                    ua.UserData.Id,
+                    ua.Login,
+                    ua.UserData.FirstName,
+                    ua.UserData.LastName,
+                    ua.UserData.Email
+                },
+                Status = RestStatus.RestStatus200,
             });
         }
     }

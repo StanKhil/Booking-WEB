@@ -7,8 +7,10 @@ namespace Booking_WEB.Filters
     {
         override public void OnActionExecuting(ActionExecutingContext context)
         {
-            Console.WriteLine("User is authenticated");
-            if (context.HttpContext.User.Identity?.IsAuthenticated ?? false)
+            Console.WriteLine(context.HttpContext.Request.Method == "GET");
+            if ((context.HttpContext.User.Identity?.IsAuthenticated ?? false )
+                || context.HttpContext.Request.Method == "GET"
+                )
             {
                 
                 base.OnActionExecuting(context);
