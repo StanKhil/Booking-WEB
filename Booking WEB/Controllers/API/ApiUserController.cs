@@ -173,7 +173,9 @@ namespace Booking_WEB.Controllers.API
                     ua.Login,
                     ua.UserData.FirstName,
                     ua.UserData.LastName,
-                    ua.UserData.Email
+                    ua.UserData.Email,
+                    ua.Feedbacks,
+                    ua.BookingItems
                 },
                 Status = RestStatus.RestStatus200,
             });

@@ -243,6 +243,47 @@ namespace Booking_WEB.Controllers.API
             }
         }
 
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<RestResponse>> GetById(Guid id)
+        {
+            try
+            {
+                var bookingItem = await _bookingItemAccessor.GetByIdAsync(id, false);
+                if (bookingItem == null)
+                {
+                    return NotFound(new RestResponse
+                    {
+                        Status = new RestStatus { Code = 404, IsOk = false, Phrase = "BookingItem not found" },
+                        Meta = BuildMeta("GetById"),
+                        Data = null
+                    });
+                }
+                return Ok(new RestResponse
+                {
+                    Status = new RestStatus { Code = 200, IsOk = true, Phrase = "OK" },
+                    Meta = BuildMeta("GetById"),
+                    Data = new
+                    {
+                        bookingItem.Id,
+                        bookingItem.StartDate,
+                        bookingItem.EndDate,
+                        bookingItem.RealtyId,
+                        bookingItem.UserAccessId,
+                        bookingItem.Realty,
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new RestResponse
+                {
+                    Status = RestStatus.RestStatus500,
+                    Meta = BuildMeta("GetById"),
+                    Data = ex.Message
+                });
+            }
+        }
+
         private RestMeta BuildMeta(string resourceName)
         {
             return new RestMeta
