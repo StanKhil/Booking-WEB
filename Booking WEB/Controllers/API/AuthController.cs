@@ -225,6 +225,7 @@ namespace Booking_WEB.Controllers.API
                 userAccess.UserData.Email,
                 RoleId = userAccess.UserRole.Id,
                 userAccess.Login,
+                userAccess.Id
             };
             string jwt = _jwtService.EncodeJwt(jwtPayload);
 

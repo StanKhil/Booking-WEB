@@ -1,6 +1,8 @@
 ﻿using Booking_WEB.Data;
 using Booking_WEB.Data.DataAccessors;
 using Booking_WEB.Data.Entities;
+using Booking_WEB.Models.Booking;
+using Booking_WEB.Models.Realty;
 using Booking_WEB.Models.Rest;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +22,7 @@ namespace Booking_WEB.Controllers.API
         private readonly ILogger<BookingItemController> _logger = logger;
 
         [HttpPost]
-        public async Task<ActionResult<RestResponse>> Create([FromBody] BookingItem model)
+        public async Task<ActionResult<RestResponse>> Create([FromBody] CreateBookingApiModel model)
         {
             try
             {
