@@ -1,12 +1,13 @@
 ﻿using Booking_WEB.Data;
 using Booking_WEB.Data.DataAccessors;
 using Booking_WEB.Data.Entities;
+using Booking_WEB.Models.Feedback;
+using Booking_WEB.Models.Rest;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
-using Booking_WEB.Models.Rest;
 
-namespace Booking_WEB.Controllers
+namespace Booking_WEB.Controllers.API
 {
     [ApiController]
     [Route("api/feedback")]
@@ -39,7 +40,7 @@ namespace Booking_WEB.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<RestResponse>> Create([FromBody] Feedback model)
+        public async Task<ActionResult<RestResponse>> Create([FromBody] CreateFeedbackApiModel model)
         {
             if (model == null || string.IsNullOrWhiteSpace(model.Text) ||
                 model.RealtyId == Guid.Empty || model.UserAccessId == Guid.Empty)
@@ -165,5 +166,48 @@ namespace Booking_WEB.Controllers
             });
         }
 
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<RestResponse>> GetById(Guid id)
+        {
+            try
+            {
+                var feedback = await _feedbackAccessor.GetByIdAsync(id);
+                if (feedback == null)
+                {
+                    return NotFound(new RestResponse
+                    {
+                        Status = new RestStatus { Code = 404, IsOk = false, Phrase = "BookingItem not found" },
+                        Meta = BuildMeta("GetById"),
+                        Data = null
+                    });
+                }
+
+                return Ok(new RestResponse
+                {
+                    Status = RestStatus.RestStatus200,
+                    Meta = BuildMeta("GetById"),
+                    Data = new
+                    {
+                        feedback.Rate,
+                        feedback.Text,
+                        feedback.Realty,
+                        FirstName = feedback.UserAccess.UserData.FirstName,
+                        LastNme = feedback.UserAccess.UserData.LastName,
+                        feedback.Id,
+                        Login = feedback.UserAccess.Login
+                    }
+                });
+
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, new RestResponse
+                {
+                    Status = RestStatus.RestStatus500,
+                    Meta = BuildMeta("GetById"),
+                    Data = ex.Message
+                });
+            }
+        }
     }
 }

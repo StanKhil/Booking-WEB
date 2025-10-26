@@ -9,6 +9,7 @@ using Booking_WEB.Services.Jwt;
 using Booking_WEB.Data.DataAccessors;
 using Microsoft.AspNetCore.Identity;
 using Booking_WEB.Services.Storage;
+using Booking_WEB.Controllers.API;
 
 namespace Booking_WEB
 {
@@ -38,6 +39,7 @@ namespace Booking_WEB
             builder.Services.AddScoped<RealtyAccessor>();
             builder.Services.AddScoped<UserDataAccessor>();
             builder.Services.AddScoped<BookingItemAccessor>();
+            builder.Services.AddScoped<FeedbackAccessor>();
             builder.Services.AddScoped<ItemImageAccessor>();
 
             builder.Services.AddDistributedMemoryCache();

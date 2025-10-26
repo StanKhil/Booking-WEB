@@ -14,7 +14,7 @@ namespace Booking_WEB.Data.DataAccessors
 
         public async Task<Feedback?> GetByIdAsync(Guid id, bool isEditable = false)
         {
-            var query = _context.Feedbacks.AsQueryable();
+            var query = _context.Feedbacks.Include(f => f.UserAccess).ThenInclude(ua => ua.UserData).AsQueryable();
             if (!isEditable)
                 query = query.AsNoTracking();
             return await query.FirstOrDefaultAsync(f => f.Id == id && f.DeletedAt == null);

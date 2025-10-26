@@ -15,6 +15,6 @@ namespace Booking_WEB.Models.Realty
         public AccRates? AccRates { get; set; }
         public City City { get; set; } = null!;
         public List<ItemImage> Images { get; set; } = [];
-        public List<Feedback> Feedbacks { get; set; } = [];
+        public List<Data.Entities.Feedback> Feedbacks { get; set; } = [];
     }
 }
