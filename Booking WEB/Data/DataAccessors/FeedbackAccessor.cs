@@ -33,8 +33,11 @@ namespace Booking_WEB.Data.DataAccessors
 
         public async Task SoftDeleteAsync(Feedback feedback)
         {
-            feedback.DeletedAt = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
+            await _context.Feedbacks
+                .Where(f => f.Id == feedback.Id)
+                .ExecuteUpdateAsync(f => f
+                    .SetProperty(fb => fb.DeletedAt, DateTime.UtcNow));
         }
+
     }
 }

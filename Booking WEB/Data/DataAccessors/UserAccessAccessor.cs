@@ -59,8 +59,8 @@ namespace Booking_WEB.Data.DataAccessors
             IQueryable<UserAccess> source = _context.UserAccesses
                 .Include(ua => ua.UserData)
                 .Include(ua => ua.UserRole)
-                .Include(ua => ua.BookingItems)
-                .Include(ua => ua.Feedbacks);
+                .Include(ua => ua.BookingItems.Where(b => b.DeletedAt == null))
+                .Include(ua => ua.Feedbacks.Where(b => b.DeletedAt == null));
             if (!isEditable)
                 source = source.AsNoTracking();
             return await source.FirstOrDefaultAsync(ua => ua.Login == userLogin && ua.UserData.DeletedAt == null);
