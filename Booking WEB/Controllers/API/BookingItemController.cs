@@ -2,6 +2,7 @@
 using Booking_WEB.Data.DataAccessors;
 using Booking_WEB.Data.Entities;
 using Booking_WEB.Models.Booking;
+using Booking_WEB.Models.Feedback;
 using Booking_WEB.Models.Realty;
 using Booking_WEB.Models.Rest;
 using Microsoft.AspNetCore.Mvc;
@@ -56,6 +57,17 @@ namespace Booking_WEB.Controllers.API
                         Data = "StartDate must be before EndDate"
                     });
                 }
+
+                if (model.StartDate < DateTime.UtcNow.Date.AddDays(3))
+                {
+                    return BadRequest(new RestResponse
+                    {
+                        Status = RestStatus.RestStatus400,
+                        Meta = BuildMeta("Create"),
+                        Data = "StartDate must be at least 3 days from today."
+                    });
+                }
+
 
                 var realty = await _realtyAccessor.GetRealtyBySlugAsync(model.RealtyId.ToString(), true);
                 if (realty == null)
@@ -136,7 +148,7 @@ namespace Booking_WEB.Controllers.API
         }
 
         [HttpPatch]
-        public async Task<ActionResult<RestResponse>> Update([FromBody] BookingItem model)
+        public async Task<ActionResult<RestResponse>> Update([FromBody] UpdateBookingApiModel model)
         {
             try
             {
@@ -171,6 +183,16 @@ namespace Booking_WEB.Controllers.API
                     });
                 }
 
+                if (model.StartDate < DateTime.UtcNow.Date.AddDays(3))
+                {
+                    return BadRequest(new RestResponse
+                    {
+                        Status = RestStatus.RestStatus400,
+                        Meta = BuildMeta("Create"),
+                        Data = "StartDate must be at least 3 days from today."
+                    });
+                }
+
                 bool hasOverlap = await _bookingItemAccessor.HasOverlapAsync(
                     model.RealtyId, model.StartDate, model.EndDate, model.Id);
 
@@ -191,11 +213,20 @@ namespace Booking_WEB.Controllers.API
 
                 await _bookingItemAccessor.UpdateAsync(bookingItem);
 
+                bool isAlreadyFeedbacked = bookingItem.UserAccess.Feedbacks.Any(f => f.RealtyId == bookingItem.RealtyId);
                 return Ok(new RestResponse
                 {
                     Status = new RestStatus { Code = 200, IsOk = true, Phrase = "Updated" },
                     Meta = BuildMeta("Update"),
-                    Data = new { bookingItem.Id }
+                    Data = new {
+                        bookingItem.Id,
+                        bookingItem.StartDate,
+                        bookingItem.EndDate,
+                        bookingItem.RealtyId,
+                        bookingItem.UserAccess,
+                        bookingItem.Realty,
+                        isAlreadyFeedbacked
+                    }
                 });
             }
             catch (Exception ex)
@@ -260,6 +291,7 @@ namespace Booking_WEB.Controllers.API
                         Data = null
                     });
                 }
+                bool isAlreadyFeedbacked = bookingItem.UserAccess.Feedbacks.Any(f => f.RealtyId == bookingItem.RealtyId);
                 return Ok(new RestResponse
                 {
                     Status = new RestStatus { Code = 200, IsOk = true, Phrase = "OK" },
@@ -270,8 +302,9 @@ namespace Booking_WEB.Controllers.API
                         bookingItem.StartDate,
                         bookingItem.EndDate,
                         bookingItem.RealtyId,
-                        bookingItem.UserAccessId,
+                        bookingItem.UserAccess,
                         bookingItem.Realty,
+                        isAlreadyFeedbacked
                     }
                 });
             }

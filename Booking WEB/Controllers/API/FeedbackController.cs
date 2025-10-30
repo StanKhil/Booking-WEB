@@ -1,6 +1,7 @@
 ﻿using Booking_WEB.Data;
 using Booking_WEB.Data.DataAccessors;
 using Booking_WEB.Data.Entities;
+using Booking_WEB.Models.Booking;
 using Booking_WEB.Models.Feedback;
 using Booking_WEB.Models.Rest;
 using Microsoft.AspNetCore.Mvc;
@@ -103,7 +104,7 @@ namespace Booking_WEB.Controllers.API
         }
 
         [HttpPatch("{id:guid}")]
-        public async Task<ActionResult<RestResponse>> Update(Guid id, [FromBody] Feedback model)
+        public async Task<ActionResult<RestResponse>> Update(Guid id, [FromBody] UpdateFeedbackApiModel model)
         {
             if (model == null || string.IsNullOrWhiteSpace(model.Text))
                 return BadRequest(new RestResponse
@@ -140,7 +141,15 @@ namespace Booking_WEB.Controllers.API
             {
                 Status = new RestStatus { Code = 200, IsOk = true, Phrase = "Updated" },
                 Meta = BuildMeta("Update", "PATCH"),
-                Data = new { feedback.Id }
+                Data = new {
+                    feedback.Rate,
+                    feedback.Text,
+                    feedback.Realty,
+                    FirstName = feedback.UserAccess.UserData.FirstName,
+                    LastNme = feedback.UserAccess.UserData.LastName,
+                    feedback.Id,
+                    Login = feedback.UserAccess.Login
+                }
             });
         }
 
