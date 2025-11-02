@@ -22,21 +22,34 @@ namespace Booking_WEB.Data.DataAccessors
 
         public async Task CreateAsync(Feedback feedback)
         {
+            var ua = await _context.UserAccesses.FirstOrDefaultAsync(ua => ua.Id == feedback.UserAccessId);
+
+            if(ua?.Feedbacks.Count() > 0)
+            {
+                throw new Exception("User has already submitted feedback for this realty.");
+            }
+
             _context.Feedbacks.Add(feedback);
             await _context.SaveChangesAsync();
         }
         public async Task UpdateAsync(Feedback feedback)
         {
-            _context.Feedbacks.Update(feedback);
-            await _context.SaveChangesAsync();
+            await _context.Feedbacks
+                .Where(f => f.Id == feedback.Id)
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(f => f.Rate, feedback.Rate)
+                    .SetProperty(f => f.Text, feedback.Text)
+                    .SetProperty(f => f.UpdatedAt, DateTime.UtcNow)
+                );
         }
 
+
+        // changed na hard delete for trigger
         public async Task SoftDeleteAsync(Feedback feedback)
         {
             await _context.Feedbacks
                 .Where(f => f.Id == feedback.Id)
-                .ExecuteUpdateAsync(f => f
-                    .SetProperty(fb => fb.DeletedAt, DateTime.UtcNow));
+                .ExecuteDeleteAsync();
         }
 
     }
