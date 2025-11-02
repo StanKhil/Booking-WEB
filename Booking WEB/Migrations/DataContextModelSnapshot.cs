@@ -45,7 +45,7 @@ namespace Booking_WEB.Migrations
                     b.HasIndex("RealtyId")
                         .IsUnique();
 
-                    b.ToTable("AccRates");
+                    b.ToTable("AccRates", (string)null);
                 });
 
             modelBuilder.Entity("Booking_WEB.Data.Entities.AccessToken", b =>
@@ -75,7 +75,7 @@ namespace Booking_WEB.Migrations
 
                     b.HasIndex("Sub");
 
-                    b.ToTable("AccessTokens");
+                    b.ToTable("AccessTokens", (string)null);
                 });
 
             modelBuilder.Entity("Booking_WEB.Data.Entities.BookingItem", b =>
@@ -108,7 +108,7 @@ namespace Booking_WEB.Migrations
 
                     b.HasIndex("UserAccessId");
 
-                    b.ToTable("BookingItems");
+                    b.ToTable("BookingItems", (string)null);
                 });
 
             modelBuilder.Entity("Booking_WEB.Data.Entities.Cards", b =>
@@ -135,7 +135,7 @@ namespace Booking_WEB.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Cards");
+                    b.ToTable("Cards", (string)null);
                 });
 
             modelBuilder.Entity("Booking_WEB.Data.Entities.City", b =>
@@ -155,7 +155,7 @@ namespace Booking_WEB.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.ToTable("Cities");
+                    b.ToTable("Cities", (string)null);
 
                     b.HasData(
                         new
@@ -202,7 +202,7 @@ namespace Booking_WEB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Countries");
+                    b.ToTable("Countries", (string)null);
 
                     b.HasData(
                         new
@@ -256,7 +256,7 @@ namespace Booking_WEB.Migrations
 
                     b.HasIndex("UserAccessId");
 
-                    b.ToTable("Feedbacks");
+                    b.ToTable("Feedbacks", (string)null);
                 });
 
             modelBuilder.Entity("Booking_WEB.Data.Entities.ItemImage", b =>
@@ -272,7 +272,7 @@ namespace Booking_WEB.Migrations
 
                     b.HasKey("ItemId", "ImageUrl");
 
-                    b.ToTable("ItemImages");
+                    b.ToTable("ItemImages", (string)null);
                 });
 
             modelBuilder.Entity("Booking_WEB.Data.Entities.Realty", b =>
@@ -313,7 +313,7 @@ namespace Booking_WEB.Migrations
                         .IsUnique()
                         .HasFilter("[Slug] IS NOT NULL");
 
-                    b.ToTable("Realties");
+                    b.ToTable("Realties", (string)null);
 
                     b.HasData(
                         new
@@ -452,7 +452,7 @@ namespace Booking_WEB.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("RealtyGroups");
+                    b.ToTable("RealtyGroups", (string)null);
 
                     b.HasData(
                         new
@@ -523,7 +523,7 @@ namespace Booking_WEB.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserAccesses");
+                    b.ToTable("UserAccesses", (string)null);
 
                     b.HasData(
                         new
@@ -638,7 +638,7 @@ namespace Booking_WEB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
 
                     b.HasData(
                         new
@@ -729,7 +729,7 @@ namespace Booking_WEB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRoles", (string)null);
 
                     b.HasData(
                         new
