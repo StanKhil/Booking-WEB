@@ -27,7 +27,15 @@ namespace Booking_WEB.Controllers.API
         public async Task<IActionResult> Create([FromForm] UserCreateFormModel model)
         {
             if (!IsAuthenticated())
-                return Unauthorized();
+            {
+                return Unauthorized(new RestResponse
+                {
+                    Status = RestStatus.RestStatus401,
+                    Meta = BuildMeta("User Creation"),
+                    Data = "Unauthorized"
+                });
+            }
+                
 
             if (model == null ||
                 string.IsNullOrWhiteSpace(model.FirstName) ||
@@ -36,12 +44,22 @@ namespace Booking_WEB.Controllers.API
                 string.IsNullOrWhiteSpace(model.Login) ||
                 string.IsNullOrWhiteSpace(model.Password))
             {
-                return BadRequest("FirstName, LastName, Email, Login and Password are required");
+                return BadRequest(new RestResponse
+                {
+                    Status = RestStatus.RestStatus400,
+                    Meta = BuildMeta("User Creation"),
+                    Data = "Invalid input"
+                });
             }
 
             if (await _userAccessAccessor.LoginExistsAsync(model.Login))
             {
-                return Conflict("Login already exists");
+                return Conflict(new RestResponse
+                {
+                    Status = RestStatus.RestStatus409,
+                    Meta = BuildMeta("User Creation"),
+                    Data = "Login already exists"
+                });
             }
 
             try
@@ -71,45 +89,91 @@ namespace Booking_WEB.Controllers.API
 
                 await _userDataAccessor.CreateAsync(user);
                 await _userAccessAccessor.CreateAsync(access);
-                return CreatedAtAction(nameof(GetByLogin), new { login = model.Login }, new
+                //return CreatedAtAction(nameof(GetByLogin), new { login = model.Login }, new
+                //{
+                //    user.Id,
+                //    user.Email,
+                //    access.Login
+                //});
+                return CreatedAtAction(nameof(GetByLogin), new { login = model.Login }, new RestResponse
                 {
-                    user.Id,
-                    user.Email,
-                    access.Login
+                    Status = RestStatus.RestStatus201,
+                    Meta = BuildMeta("User Creation"),
+                    Data = new
+                    {
+                        Message = "User created",
+                        Data = new { user.Id, user.Email, access.Login }
+                    }
                 });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Error = ex.Message });
+                return StatusCode(500, new RestResponse
+                {
+                    Status = RestStatus.RestStatus500,
+                    Meta = BuildMeta("User Creation"),
+                    Data = $"Internal server error: {ex.Message}"
+                });
+
             }
         }
 
         [HttpPatch("{login}")]
-        public async Task<IActionResult> UpdateAsync(string login, [FromBody] UserUpdateDeleteModel model)
+        public async Task<IActionResult> UpdateAsync(string login, [FromForm] UserUpdateDeleteModel model)
         {
             if (!IsAuthenticated())
-                return Unauthorized();
+                return Unauthorized(new RestResponse
+                {
+                    Status = RestStatus.RestStatus401,
+                    Meta = BuildMeta("User Update"),
+                    Data = "Unauthorized"
+                });
 
             if (model == null)
-                return BadRequest("Invalid input");
+                return BadRequest(new RestResponse
+                {
+                    Status = RestStatus.RestStatus400,
+                    Meta = BuildMeta("User Update"),
+                    Data = "Invalid input"
+                });
 
             var userAccess = await _userAccessAccessor.GerUserAccessByLoginAsync(login, isEditable: true);
             if (userAccess == null)
-                return NotFound("User not found");
+                return NotFound(new RestResponse
+                {
+                    Status = RestStatus.RestStatus404,
+                    Meta = BuildMeta("User Update"),
+                    Data = "UserAccess not found"
+                });
 
             var user = userAccess.UserData;
             if (user == null)
-                return NotFound("User not found");
+                return NotFound(new RestResponse
+                {
+                    Status = RestStatus.RestStatus404,
+                    Meta = BuildMeta("User Update"),
+                    Data = "User not found"
+                });
 
             var access = user.UserAccesses.FirstOrDefault();
             if (access == null)
-                return StatusCode(500, "User access not found");
+                return StatusCode(500, new RestResponse
+                {
+                    Status = RestStatus.RestStatus500,
+                    Meta = BuildMeta("User Update"),
+                    Data = "UserAccess data inconsistency"
+                });
 
             if (!string.IsNullOrWhiteSpace(model.Login) &&
                 model.Login != login &&
                 await _userAccessAccessor.LoginExistsAsync(model.Login))
             {
-                return Conflict("Login already exists");
+                return Conflict(new RestResponse
+                {
+                    Status = RestStatus.RestStatus409,
+                    Meta = BuildMeta("User Update"),
+                    Data = "Login already exists"
+                });
             }
 
             if (!string.IsNullOrWhiteSpace(model.FirstName)) user.FirstName = model.FirstName;
@@ -129,10 +193,11 @@ namespace Booking_WEB.Controllers.API
 
             await _userDataAccessor.SaveChangesAsync();
 
-            return Ok(new
+            return Ok(new RestResponse
             {
-                Message = "User updated",
-                Data = new { user.Id }
+                Status = RestStatus.RestStatus200,
+                Meta = BuildMeta("User Update"),
+                Data = "User updated successfully"
             });
         }
 
@@ -141,17 +206,37 @@ namespace Booking_WEB.Controllers.API
         public async Task<IActionResult> DeleteAsync(string login)
         {
             if (!IsAuthenticated())
-                return Unauthorized();
+                return Unauthorized(new RestResponse
+                {
+                    Status = RestStatus.RestStatus401,
+                    Meta = BuildMeta("User Deletion"),
+                    Data = "Unauthorized"
+                });
 
             bool loginExists = await _userAccessAccessor.LoginExistsAsync(login);
             if (!loginExists)
-                return NotFound("User not found");
+                return NotFound(new RestResponse
+                {
+                    Status = RestStatus.RestStatus404,
+                    Meta = BuildMeta("User Deletion"),
+                    Data = "User not found"
+                });
 
             var deleted = await _userAccessAccessor.DeleteUserAsync(login);
             if (!deleted)
-                return Conflict("User deletion conflict");
+                return Conflict(new RestResponse
+                {
+                    Status = RestStatus.RestStatus409,
+                    Meta = BuildMeta("User Deletion"),
+                    Data = "Error deleting user"
+                });
 
-            return NoContent();
+            return Ok(new RestResponse
+            {
+                Status = RestStatus.RestStatus200,
+                Meta = BuildMeta("User Deletion"),
+                Data = "User deleted successfully"
+            });
         }
 
         private bool IsAuthenticated()
@@ -179,6 +264,17 @@ namespace Booking_WEB.Controllers.API
                 },
                 Status = RestStatus.RestStatus200,
             });
+        }
+
+        private RestMeta BuildMeta(string resourceName)
+        {
+            return new RestMeta
+            {
+                ResourceName = resourceName,
+                ResourceUrl = HttpContext.Request.Path,
+                DataType = "application/json",
+                Method = HttpContext.Request.Method
+            };
         }
     }
 }
