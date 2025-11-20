@@ -23,7 +23,6 @@ namespace UnitTests.Accessors
         [TestMethod]
         public async Task CreateAsync_ShouldAddAccessToken()
         {
-            // Arrange
             var context = GetDbContext();
             var accessor = new AccessTokenAccessor(context);
 
@@ -48,7 +47,6 @@ namespace UnitTests.Accessors
 
             var created = await accessor.CreateAsync(token);
 
-            // Assert
             Assert.IsNotNull(created);
             Assert.AreEqual("test-jti", created.Jti);
 

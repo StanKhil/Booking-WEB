@@ -44,7 +44,7 @@ namespace Booking_WEB.Data.DataAccessors
         }
 
 
-        // changed na hard delete for trigger
+        // changed on hard delete for trigger
         public async Task SoftDeleteAsync(Feedback feedback)
         {
             await _context.Feedbacks
