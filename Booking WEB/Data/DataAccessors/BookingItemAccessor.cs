@@ -1,4 +1,5 @@
 ﻿using Booking_WEB.Data.Entities;
+using Booking_WEB.Models.Booking;
 using Microsoft.EntityFrameworkCore;
 
 namespace Booking_WEB.Data.DataAccessors
@@ -6,6 +7,7 @@ namespace Booking_WEB.Data.DataAccessors
     public class BookingItemAccessor(DataContext context)
     {
         private readonly DataContext _context = context ?? throw new Exception("context not found");
+
         public async Task<bool> ExistsAsync(Guid id)
         {
             return await _context.BookingItems.AnyAsync(bi => bi.Id == id && bi.DeletedAt == null);
@@ -59,5 +61,7 @@ namespace Booking_WEB.Data.DataAccessors
                     (startDate <= b.StartDate && endDate >= b.EndDate)   
                 ));
         }
+
+        
     }
 }

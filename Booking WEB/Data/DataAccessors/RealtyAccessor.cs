@@ -1,4 +1,5 @@
 ﻿using Booking_WEB.Data.Entities;
+using Booking_WEB.Models.Realty;
 using Microsoft.EntityFrameworkCore;
 
 namespace Booking_WEB.Data.DataAccessors
@@ -11,6 +12,36 @@ namespace Booking_WEB.Data.DataAccessors
         {
             _context = context;
         }
+
+        public async Task<List<Realty>> GetRealtiesByFilterAsync(SearchFiltersModel filters)
+        {
+            return await _context.Realties.Include(realty => realty.City).Include(realty => realty.RealtyGroup).Include(realty => realty.AccRates).AsNoTracking()
+                .Where(realty => realty.DeletedAt == null && (realty.AccRates == null || realty.AccRates!.AvgRate >= filters.Rating) && realty.Price >= filters.Price && filters.Checkboxes.Contains(realty.RealtyGroup.Name))
+                .ToListAsync();
+        }
+        //public async Task<List<Realty>> GetRealtiesByFilterAsync(String country, String city, String group, bool isEditable = false)
+        //{
+        //    IQueryable<Realty> query = _context.Realties
+        //        .Include(r => r.City)
+        //        .Include(r => r.RealtyGroup);
+
+        //    if (!isEditable)
+        //        query = query.AsNoTracking();
+
+        //    if (!string.IsNullOrWhiteSpace(city))
+        //    {
+        //        query = query.Where(r => r.City.Name == city);
+        //    }
+
+        //    if (!string.IsNullOrWhiteSpace(group))
+        //    {
+        //        query = query.Where(r => r.RealtyGroup.Name == group);
+        //    }
+
+        //    return await query
+        //        .Where(r => r.DeletedAt == null)
+        //        .ToListAsync();
+        //}
 
         public async Task<bool> SlugExistsAsync(string slug, Guid? excludeId = null)
         {
@@ -108,30 +139,6 @@ namespace Booking_WEB.Data.DataAccessors
             var group = await _context.RealtyGroups.FirstOrDefaultAsync(g => g.Name == groupName) ?? new RealtyGroup { Id = Guid.NewGuid(), Name = groupName };
             if (!await _context.RealtyGroups.AnyAsync(g => g.Id == group.Id)) _context.RealtyGroups.Add(group);
             return group.Id;
-        }
-
-        public async Task<List<Realty>> GetRealtiesByFilterAsync(String country, String city, String group, bool isEditable = false)
-        {
-            IQueryable<Realty> query = _context.Realties
-                .Include(r => r.City)
-                .Include(r => r.RealtyGroup);
-
-            if (!isEditable)
-                query = query.AsNoTracking();
-
-            if (!string.IsNullOrWhiteSpace(city))
-            {
-                query = query.Where(r => r.City.Name == city);
-            }
-
-            if (!string.IsNullOrWhiteSpace(group))
-            {
-                query = query.Where(r => r.RealtyGroup.Name == group);
-            }
-
-            return await query
-                .Where(r => r.DeletedAt == null)
-                .ToListAsync();
         }
 
         public async Task<List<Realty>> GetRealtiesSortedByPrice()

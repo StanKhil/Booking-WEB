@@ -22,6 +22,7 @@ namespace Booking_WEB.Controllers.API
         private readonly UserAccessAccessor _userAccessAccessor = userAccessAccessor;
         private readonly ILogger<BookingItemController> _logger = logger;
 
+       
         [HttpPost]
         public async Task<ActionResult<RestResponse>> Create([FromBody] CreateBookingApiModel model)
         {

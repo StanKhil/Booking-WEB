@@ -25,7 +25,7 @@ namespace Booking_WEB.Data.Entities
         public DateTime? DeletedAt { get; set; }
         public Guid CityId { get; set; }
 
-        [JsonIgnore]
+ 
         public City City { get; set; } = null!;
         public List<BookingItem> BookingItems { get; set; } = [];
         public RealtyGroup RealtyGroup { get; set; } = null!;

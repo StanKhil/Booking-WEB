@@ -1,16 +1,16 @@
-﻿using Booking_WEB.Data;
+﻿using Azure;
+using Booking_WEB.Data;
 using Booking_WEB.Data.DataAccessors;
 using Booking_WEB.Data.Entities;
+using Booking_WEB.Filters;
 using Booking_WEB.Models.Realty;
+using Booking_WEB.Models.Rest;
 using Booking_WEB.Services.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.Json;
-using Booking_WEB.Filters;
-using Booking_WEB.Models.Rest;
-using Azure;
 
 namespace Booking_WEB.Controllers.API
 {
@@ -31,6 +31,33 @@ namespace Booking_WEB.Controllers.API
         IOptions<StorageOptions> _options = options;
         String imgPath => HttpContext.Request.Scheme + "://" +
                HttpContext.Request.Host + "/Storage/Item/";
+
+
+        [HttpPost("search")]
+        public async Task<ActionResult<RestResponse>> Search([FromBody] SearchFiltersModel filters)
+        {
+            try
+            {
+                List<Realty> rawRealties = await _realtyAccessor.GetRealtiesByFilterAsync(filters);
+                IEnumerable<Realty> realties = AttachImagePaths(rawRealties);
+                return Ok(new RestResponse
+                {
+                    Status = RestStatus.RestStatus200,
+                    Meta = BuildMeta("Search"),
+                    Data = realties
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"BookingItem/Search: {e.Message}");
+                return StatusCode(500, new RestResponse
+                {
+                    Status = RestStatus.RestStatus500,
+                    Meta = BuildMeta("Search"),
+                    Data = e.Message
+                });
+            }
+        }
 
 
         [HttpPost]
@@ -319,33 +346,6 @@ namespace Booking_WEB.Controllers.API
             }
         }
 
-        [HttpGet("filter")]
-        public async Task<ActionResult<RestResponse>> GetByFilter([FromQuery] string? country, [FromQuery] string? city, [FromQuery] string? group)
-        {
-            try
-            {
-                var realties = await _realtyAccessor.GetRealtiesByFilterAsync(country!, city!, group!);
-                var result = AttachImagePaths(realties);
-                return Ok(new RestResponse
-                {
-                    Status = new RestStatus { Code = 200, IsOk = true, Phrase = "OK" },
-                    Meta = BuildMeta("GetByFilter"),
-                    Data = result
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Realty/GetByFilter: {ex.Message}");
-                return StatusCode(500, new RestResponse
-                {
-                    Status = RestStatus.RestStatus500,
-                    Meta = BuildMeta("GetByFilter"),
-                    Data = ex.Message
-                });
-            }
-        }
-
-
         [HttpGet("sort/price")]
         public async Task<ActionResult<RestResponse>> GetSortedByPrice()
         {
@@ -466,9 +466,7 @@ namespace Booking_WEB.Controllers.API
                     ImageUrl = string.IsNullOrEmpty(img.ImageUrl) ? null : imgPath + img.ImageUrl
                 }).ToList() ?? [],
 
-                RealtyGroup = r.RealtyGroup is null
-                    ? null!
-                    : r.RealtyGroup with
+                RealtyGroup = r.RealtyGroup is null ? null! : r.RealtyGroup with
                     {
                         ImageUrl = string.IsNullOrEmpty(r.RealtyGroup.ImageUrl)
                             ? null

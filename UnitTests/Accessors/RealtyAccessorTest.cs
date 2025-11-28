@@ -3,6 +3,7 @@ using Booking_WEB.Data.DataAccessors;
 using Booking_WEB.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Booking_WEB.Models.Realty;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace UnitTests.Accessors
@@ -252,7 +253,14 @@ namespace UnitTests.Accessors
 
             await ctx.SaveChangesAsync();
 
-            var result = await accessor.GetRealtiesByFilterAsync("Ukraine", "Kyiv", "House");
+
+            SearchFiltersModel filters = new SearchFiltersModel
+            {
+                Price = 3000,
+                Checkboxes = ["Hotels"],
+                Rating = 1
+            };
+            var result = await accessor.GetRealtiesByFilterAsync(filters);
 
             Assert.AreEqual(1, result.Count);
         }
