@@ -10,6 +10,7 @@ namespace Booking_WEB.Filters
             Console.WriteLine(context.HttpContext.Request.Method == "GET");
             if ((context.HttpContext.User.Identity?.IsAuthenticated ?? false )
                 || context.HttpContext.Request.Method == "GET"
+                || context.HttpContext.Request.Path.Value!.Contains("search")
                 )
             {
                 
