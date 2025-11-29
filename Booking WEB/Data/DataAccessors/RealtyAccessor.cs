@@ -15,7 +15,7 @@ namespace Booking_WEB.Data.DataAccessors
 
         public async Task<List<Realty>> GetRealtiesByFilterAsync(SearchFiltersModel filters)
         {
-            return await _context.Realties.Include(realty => realty.City).Include(realty => realty.RealtyGroup).Include(realty => realty.AccRates).Include(realty => realty.Images).AsNoTracking()
+            return await _context.Realties.Include(realty => realty.City).ThenInclude(city => city.Country).Include(realty => realty.RealtyGroup).Include(realty => realty.AccRates).Include(realty => realty.Images)
                 .Where(realty => realty.DeletedAt == null && (realty.AccRates == null || realty.AccRates!.AvgRate >= filters.Rating) && realty.Price >= filters.Price && filters.Checkboxes.Contains(realty.RealtyGroup.Name))
                 .ToListAsync();
         }

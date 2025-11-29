@@ -106,11 +106,13 @@ namespace Booking_WEB.Data
             modelBuilder.Entity<Entities.AccRates>()
                 .HasOne(ar => ar.Realty)
                 .WithOne(r => r.AccRates);
-            SeedData(modelBuilder);
 
             modelBuilder.Entity<Entities.City>()
                 .HasOne(city => city.Country)
-                .WithMany(country => country.Cities);
+                .WithMany(country => country.Cities)
+                .HasForeignKey(city => city.CountryId);
+
+            SeedData(modelBuilder);
         }
 
         private void SeedData(ModelBuilder modelBuilder)
@@ -304,32 +306,6 @@ namespace Booking_WEB.Data
                 }
                 );
 
-            modelBuilder.Entity<Country>().HasData(
-                new Country
-                {
-                    Id = Guid.Parse("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"),
-                    Name = "Ukraine"
-                },
-                new Country
-                {
-                    Id = Guid.Parse("bdf41cd9-c0f1-4349-8a44-4e67755d0415"),
-                    Name = "Poland"
-                }
-            );
-
-            modelBuilder.Entity<City>().HasData(
-                new City
-                {
-                    Id = Guid.Parse("03767d46-aab3-4cc4-989c-a696a7fdd434"),
-                    Name = "Lviv",
-                },
-                new City
-                {
-                    Id = Guid.Parse("0d156354-89f1-4d58-a735-876b7add59d2"),
-                    Name = "Krakow",
-                }
-            );
-
             SeedHotels(modelBuilder);
             SeedApartments(modelBuilder);
             SeedHouses(modelBuilder);
@@ -342,8 +318,13 @@ namespace Booking_WEB.Data
             modelBuilder.Entity<Country>().HasData(
                 new Country
                 {
-                    Id = Guid.Parse("D72AD227-AD60-4F30-897F-8A7AAA46E049"),
+                    Id = Guid.Parse("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"),
                     Name = "Ukraine"
+                },
+                new Country
+                {
+                    Id = Guid.Parse("bdf41cd9-c0f1-4349-8a44-4e67755d0415"),
+                    Name = "Poland"
                 });
         }
         private void SeedCities(ModelBuilder modelBuilder)
@@ -353,19 +334,19 @@ namespace Booking_WEB.Data
                 {
                     Id = Guid.Parse("59B082E4-19AB-4D7F-A061-4FBC08C59778"),
                     Name = "Kyiv",
-                    CountryId = Guid.Parse("D72AD227-AD60-4F30-897F-8A7AAA46E049")
+                    CountryId = Guid.Parse("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d")
                 },
                 new City
                 {
                     Id = Guid.Parse("C5EFCFDE-EE1F-4521-BB8F-F4CDB97C1578"),
                     Name = "Odesa",
-                    CountryId = Guid.Parse("D72AD227-AD60-4F30-897F-8A7AAA46E049")
+                    CountryId = Guid.Parse("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d")
                 },
                 new City
                 {
                     Id = Guid.Parse("AFD0DB5D-9207-42FB-9629-26F5D74EF0B0"),
                     Name = "Lviv",
-                    CountryId = Guid.Parse("D72AD227-AD60-4F30-897F-8A7AAA46E049")
+                    CountryId = Guid.Parse("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d")
                 });
         }
         private void SeedHotels(ModelBuilder modelBuilder)
