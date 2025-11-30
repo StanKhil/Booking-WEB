@@ -55,7 +55,7 @@ namespace Booking_WEB.Data.DataAccessors
             if (!isEditable)
                 query = query.AsNoTracking();
 
-            return await query.Include(r => r.Images).Include(r => r.Feedbacks.Where(b => b.DeletedAt == null))
+            return await query.Include(r => r.Images).Include(r => r.City).ThenInclude(c => c.Country).Include(r => r.Feedbacks.Where(b => b.DeletedAt == null))
                 .Include(r => r.City).Include(r => r.AccRates).Include(r => r.BookingItems.Where(b => b.DeletedAt == null)).FirstOrDefaultAsync(r => (r.Slug == slug || r.Id.ToString() == slug) && r.DeletedAt == null);
         }
 

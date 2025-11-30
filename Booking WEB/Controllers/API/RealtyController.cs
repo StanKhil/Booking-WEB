@@ -88,6 +88,7 @@ namespace Booking_WEB.Controllers.API
 
                 _storageService.TryGetMimeType(model.Image.FileName);
                 var savedName = await _storageService.SaveItemAsync(model.Image);
+                
 
                 var countryId = await _realtyAccessor.GetCountryIdByNameAsync(model.Country);
                 var cityId = await _realtyAccessor.GetCityIdByNameAsync(model.City, countryId);
@@ -104,7 +105,7 @@ namespace Booking_WEB.Controllers.API
                     GroupId = groupId,
                     DeletedAt = null
                 };
-
+                await _itemImageAccessor.AddRangeAsync(realty.Id, new List<string> { savedName });
                 await _realtyAccessor.CreateAsync(realty);
 
                 return CreatedAtAction(nameof(GetById), new { id = realty.Id }, new RestResponse

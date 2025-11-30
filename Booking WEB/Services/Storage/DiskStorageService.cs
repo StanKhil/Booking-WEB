@@ -51,9 +51,9 @@ namespace Booking_WEB.Services.Storage
             String ext = GetFileExtension(formFile.FileName);
 
             String savedName = Guid.NewGuid() + ext;
-            String path = Path.Combine(basePath, savedName);
+            String path = Path.Combine(basePath!, savedName);
 
-            using Stream stream = new StreamWriter(path).BaseStream;
+            using FileStream stream = new FileStream(path, FileMode.Create, FileAccess.Write);
             await formFile.CopyToAsync(stream);
 
             return savedName;
