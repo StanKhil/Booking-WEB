@@ -8,22 +8,22 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Booking_WEB.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-    name: "Countries",
-    columns: table => new
-    {
-        Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-        Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
-    },
-    constraints: table =>
-    {
-        table.PrimaryKey("PK_Countries", x => x.Id);
-    });
+                name: "Countries",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Countries", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "RealtyGroups",
@@ -34,7 +34,7 @@ namespace Booking_WEB.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Slug = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
@@ -288,32 +288,17 @@ namespace Booking_WEB.Migrations
                     ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Order = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemImages", x => new { x.ItemId, x.ImageUrl });
                 });
-
+                
 
             migrationBuilder.InsertData(
                 table: "Countries",
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-        { new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), "Ukraine" },
-        { new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"), "Poland" }
+                    { new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), "Ukraine" },
+                    { new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"), "Poland" }
                 });
-
-            migrationBuilder.InsertData(
-                table: "Cities",
-                columns: new[] { "Id", "CountryId", "Name" },
-                values: new object[,]
-                {
-        { new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), "Lviv" },
-        { new Guid("0d156354-89f1-4d58-a735-876b7add59d2"), new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"), "Krakow" }
-                });
-
-
 
             migrationBuilder.InsertData(
                 table: "RealtyGroups",
@@ -352,6 +337,16 @@ namespace Booking_WEB.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Cities",
+                columns: new[] { "Id", "CountryId", "Name" },
+                values: new object[,]
+                {
+                    { new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), "Lviv" },
+                    { new Guid("59b082e4-19ab-4d7f-a061-4fbc08c59778"), new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), "Kyiv" },
+                    { new Guid("923a6af0-30be-41aa-ae79-fdf41b7bb1b6"), new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), "Odesa" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "UserAccesses",
                 columns: new[] { "Id", "Dk", "Login", "RoleId", "Salt", "UserId" },
                 values: new object[,]
@@ -372,16 +367,16 @@ namespace Booking_WEB.Migrations
                 columns: new[] { "Id", "CityId", "DeletedAt", "Description", "GroupId", "Name", "Price", "Slug" },
                 values: new object[,]
                 {
-                    { new Guid("bbcad513-0a88-4368-8fbe-5ad874e2c5a2"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Готель \"Лісовий\" - це ідеальне місце для відпочинку на природі.", new Guid("f1ea6b3f-0021-417b-95c8-f6cd333d7207"), "Готель \"Лісовий\"", 250.00m, "hotel-forest" },
-                    { new Guid("0d156354-89f1-4d58-a735-876b7add59d2"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Квартира \"Центральна\" - це ідеальне місце для відпочинку в місті.", new Guid("8806ca58-8daa-4576-92ba-797de42ffaa7"), "Квартира \"Центральна\"", 100.00m, "apartment-central" },
+                    { new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), new Guid("59b082e4-19ab-4d7f-a061-4fbc08c59778"), null, "Готель \"Лісовий\" - це ідеальне місце для відпочинку на природі.", new Guid("f1ea6b3f-0021-417b-95c8-f6cd333d7207"), "Готель \"Лісовий\"", 250.00m, "hotel-forest" },
+                    { new Guid("0d156354-89f1-4d58-a735-876b7add59d2"), new Guid("59b082e4-19ab-4d7f-a061-4fbc08c59778"), null, "Квартира \"Центральна\" - це ідеальне місце для відпочинку в місті.", new Guid("8806ca58-8daa-4576-92ba-797de42ffaa7"), "Квартира \"Центральна\"", 100.00m, "apartment-central" },
                     { new Guid("37dcc68e-b7e7-4b55-b04e-147c1a4126b7"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Вілла \"Сонячна\" - це ідеальне місце для відпочинку на морі.", new Guid("6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"), "Вілла \"Сонячна\"", 500.00m, "villa-sunny" },
                     { new Guid("6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Будинок \"Гірський\" - це ідеальне місце для відпочинку в горах.", new Guid("97191468-a02f-4a78-927b-9ea660e9ea36"), "Будинок \"Гірський\"", 400.00m, "house-mountain" },
-                    { new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Готель \"Сонячний\" - це ідеальне місце для відпочинку на природі.", new Guid("f1ea6b3f-0021-417b-95c8-f6cd333d7207"), "Готель \"Сонячний\"", 150.00m, "hotel-sunny" },
+                    { new Guid("7687bebd-e8a3-4b28-abc8-8fc9cc403a8d"), new Guid("59b082e4-19ab-4d7f-a061-4fbc08c59778"), null, "Готель \"Сонячний\" - це ідеальне місце для відпочинку на природі.", new Guid("f1ea6b3f-0021-417b-95c8-f6cd333d7207"), "Готель \"Сонячний\"", 150.00m, "hotel-sunny" },
                     { new Guid("a0f7b463-6eef-4a70-8444-789bbea23369"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Будинок \"Лісовий\" - це ідеальне місце для відпочинку на природі.", new Guid("97191468-a02f-4a78-927b-9ea660e9ea36"), "Будинок \"Лісовий\"", 350.00m, "house-forest" },
-                    { new Guid("a3c55a79-05ea-4053-ad3c-7301f3b7a7e2"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Квартира \"Люкс\" - це ідеальне місце для відпочинку, якщо ви не хочете виходити з дому.", new Guid("8806ca58-8daa-4576-92ba-797de42ffaa7"), "Квартира \"Люкс\"", 150.00m, "apartment-luxury" },
-                    { new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Готель \"Зоряний\" - це ідеальне місце для відпочинку на природі.", new Guid("f1ea6b3f-0021-417b-95c8-f6cd333d7207"), "Готель \"Зоряний\"", 200.00m, "hotel-star" },
-                    { new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Вілла \"Лісова\" - це ідеальне місце для відпочинку на природі.", new Guid("6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"), "Вілла \"Лісова\"", 600.00m, "villa-forest" },
-                    { new Guid("eadb0b3b-523e-478b-88ee-b6cf57cbc05d"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Будинок \"Садиба\" - це ідеальне місце для відпочинку з друзями.", new Guid("97191468-a02f-4a78-927b-9ea660e9ea36"), "Будинок \"Садиба\"", 300.00m, "house-mansion" }
+                    { new Guid("a3c55a79-05ea-4053-ad3c-7301f3b7a7e2"), new Guid("59b082e4-19ab-4d7f-a061-4fbc08c59778"), null, "Квартира \"Люкс\" - це ідеальне місце для відпочинку, якщо ви не хочете виходити з дому.", new Guid("8806ca58-8daa-4576-92ba-797de42ffaa7"), "Квартира \"Люкс\"", 150.00m, "apartment-luxury" },
+                    { new Guid("bdf41cd9-c0f1-4349-8a44-4e67755d0415"), new Guid("59b082e4-19ab-4d7f-a061-4fbc08c59778"), null, "Готель \"Зоряний\" - це ідеальне місце для відпочинку на природі.", new Guid("f1ea6b3f-0021-417b-95c8-f6cd333d7207"), "Готель \"Зоряний\"", 200.00m, "hotel-star" },
+                    { new Guid("d5e36e96-0314-4b7e-9cbf-d0fae477ae36"), new Guid("03767d46-aab3-4cc4-989c-a696a7fdd434"), null, "Вілла \"Лісова\" - це ідеальне місце для відпочинку на природі.", new Guid("6a1d3de4-0d78-4d7d-8f6a-9e52694ff2ee"), "Вілла \"Лісова\"", 600.00m, "villa-forest" },
+                    { new Guid("eadb0b3b-523e-478b-88ee-b6cf57cbc05d"), new Guid("59b082e4-19ab-4d7f-a061-4fbc08c59778"), null, "Будинок \"Садиба\" - це ідеальне місце для відпочинку з друзями.", new Guid("97191468-a02f-4a78-927b-9ea660e9ea36"), "Будинок \"Садиба\"", 300.00m, "house-mansion" }
                 });
 
             migrationBuilder.CreateIndex(
