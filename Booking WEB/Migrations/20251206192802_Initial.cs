@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Booking_WEB.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -288,8 +288,23 @@ namespace Booking_WEB.Migrations
                     ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Order = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemImages", x => new { x.ItemId, x.ImageUrl });
+                    table.ForeignKey(
+                        name: "FK_ItemImages_Realties_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "Realties",
+                        principalColumn: "Id"
+                        );
+                    table.ForeignKey(
+                        name: "FK_ItemImages_RealtyGroups_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "RealtyGroups",
+                        principalColumn: "Id"
+                        );
                 });
-                
 
             migrationBuilder.InsertData(
                 table: "Countries",
