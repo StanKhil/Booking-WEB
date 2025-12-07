@@ -56,11 +56,11 @@ namespace Booking_WEB.Data
                 .HasPrincipalKey(p => p.Id)
                 .HasForeignKey(p => p.ItemId);
 
-            modelBuilder.Entity<Entities.RealtyGroup>()
-                .HasMany(r => r.Images)
-                .WithOne()
-                .HasPrincipalKey(r => r.Id)
-                .HasForeignKey(i => i.ItemId);
+            //modelBuilder.Entity<Entities.RealtyGroup>()
+            //    .HasMany(r => r.Images)
+            //    .WithOne()
+            //    .HasPrincipalKey(r => r.Id)
+            //    .HasForeignKey(i => i.ItemId);
 
             modelBuilder.Entity<Entities.RealtyGroup>()
                 .HasOne(rg => rg.ParentGroup)

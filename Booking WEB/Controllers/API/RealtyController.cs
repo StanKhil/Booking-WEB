@@ -105,8 +105,10 @@ namespace Booking_WEB.Controllers.API
                     GroupId = groupId,
                     DeletedAt = null
                 };
-                await _itemImageAccessor.AddRangeAsync(realty.Id, new List<string> { savedName });
+
                 await _realtyAccessor.CreateAsync(realty);
+                await _itemImageAccessor.AddRangeAsync(realty.Id, new List<string> { savedName });
+                
 
                 return CreatedAtAction(nameof(GetById), new { id = realty.Id }, new RestResponse
                 {
