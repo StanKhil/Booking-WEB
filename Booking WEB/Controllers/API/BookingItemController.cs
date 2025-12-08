@@ -305,6 +305,7 @@ namespace Booking_WEB.Controllers.API
                         bookingItem.RealtyId,
                         bookingItem.UserAccess,
                         bookingItem.Realty,
+                        bookingItem.Realty.Images,
                         isAlreadyFeedbacked
                     }
                 });
