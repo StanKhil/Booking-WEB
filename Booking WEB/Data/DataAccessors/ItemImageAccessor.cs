@@ -27,15 +27,17 @@ namespace Booking_WEB.Data.DataAccessors
 
         public async Task AddRangeAsync(Guid itemId, IEnumerable<string> urls)
         {
+            int order = 0;
             foreach (var url in urls)
             {
                 var image = new ItemImage
                 {
                     ItemId = itemId,
                     ImageUrl = url,
-                    Order = 0
+                    Order = order
                 };
                 _context.ItemImages.Add(image);
+                order++;
             }
             await _context.SaveChangesAsync();
         }
